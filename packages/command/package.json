@@ -52,9 +52,6 @@
     "typescript": "^4.1.3"
   },
   "license": "UNLICENSED",
-  "publishConfig": {
-    "registry": "https://registry.antfin-inc.com"
-  },
   "author": "chongzhi.ldq",
   "contributors": [
     {
@@ -83,5 +80,5 @@
       "url": "https://work.alibaba-inc.com/nwpipe/u/87546"
     }
   ],
-  "gitHead": "45114c715e465e5b47ae01773338606469c790c0"
+  "gitHead": "9ffa0d71b76ca9db0212516b7945064979e14baf"
 }

@@ -70,11 +70,8 @@
     "ts-node": "^9.0.0",
     "typescript": "^4.1.3"
   },
-  "publishConfig": {
-    "registry": "http://registry.npm.alibaba-inc.com"
-  },
   "engines": {
     "node": "*"
   },
-  "gitHead": "e566daf55f8229c4da81dde77216afb74a1e9629"
+  "gitHead": "9ffa0d71b76ca9db0212516b7945064979e14baf"
 }
