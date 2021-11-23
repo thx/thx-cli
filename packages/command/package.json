@@ -1,6 +1,6 @@
 {
   "name": "thx-cli",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "alimama command line tool!",
   "main": "dist/index.js",
   "bin": {
