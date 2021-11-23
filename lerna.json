@@ -1,0 +1,28 @@
+{
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "version": {
+      "exact": true
+    },
+    "bootstrap": {
+      "npmClient": "yarn"
+    },
+    "run": {
+      "npmClient": "yarn"
+    },
+    "exec": {
+      "npmClient": "yarn"
+    },
+    "publish": {
+      "verifyRegistry": false,
+      "verifyAccess": false,
+      "allowBranch": [
+        "master"
+      ]
+    }
+  },
+  "version": "independent",
+  "loglevel": "verbose"
+}

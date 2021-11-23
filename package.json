@@ -1,0 +1,136 @@
+{
+  "name": "root",
+  "scripts": {
+    "bootstrap": "yarn; lerna bootstrap; yarn run build",
+    "clean": "lerna clean --yes",
+    "dev": "FORCE_COLOR=1 lerna run dev --parallel",
+    "dev:mece": "npm-run-all -p link dev test:watch docs:watch madge:watch git:mode",
+    "dev:magix": "yarn run dev --scope @ali/mm-cli --scope @ali/mm-cli-core --scope @ali/mm-kit-magix",
+    "dev:react": "yarn run dev --scope @ali/mm-cli --scope @ali/mm-cli-core --scope @ali/mm-cli-server --scope @ali/mm-cli-webui --scope @ali/mm-kit-react --scope @ali/mm-scripts",
+    "test": "lerna run test --parallel",
+    "test:watch": "lerna run test:watch --parallel",
+    "build": "lerna run build",
+    "prerelease": "lerna publish prerelease --no-commit-hooks --loglevel verbose",
+    "publish": "lerna run build; lerna publish --no-commit-hooks --loglevel verbose",
+    "publish:pure:disabled": "lerna publish --no-commit-hooks --loglevel verbose",
+    "linter": "lerna run linter",
+    "check": "lerna run check --parallel",
+    "----- develop helper -----": "",
+    "unlink": "lerna exec -- yarn unlink",
+    "link": "lerna link; lerna run link; lerna exec -- tnpm link; lerna exec -- yarn link",
+    "git:mode": "git config core.fileMode false",
+    "----- upgrade dependencies -----": "",
+    "dev:init": "lerna exec --parallel -- yarn install; lerna link",
+    "dev:install": "lerna exec -- yarn install",
+    "dev:outdated": "lerna exec --parallel --no-bail -- yarn outdated",
+    "dev:upgrade": "lerna exec -- yarn upgrade",
+    "dev:depcheck": "lerna exec --parallel --no-bail -- npx depcheck",
+    "----- extra tools ----- ": "",
+    "madge": "lerna run madge",
+    "madge:watch": "lerna run madge:watch --parallel",
+    "docs": "lerna run docs",
+    "docs:watch": "lerna run docs:watch --parallel",
+    "contributors": "ali-contributors"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^9.1.1",
+    "@types/babel__generator": "^7.6.1",
+    "@types/babel__traverse": "^7.0.13",
+    "@types/chai": "^4.2.12",
+    "@types/cli-progress": "^3.8.0",
+    "@types/debug": "^4.1.5",
+    "@types/fs-extra": "^9.0.1",
+    "@types/inquirer": "^7.3.1",
+    "@types/jscodeshift": "^0.7.1",
+    "@types/koa": "^2.11.4",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-logger": "^3.1.1",
+    "@types/koa-router": "^7.4.1",
+    "@types/mocha": "^8.0.3",
+    "@types/mousetrap": "^1.6.3",
+    "@types/node": "^14.6.0",
+    "@types/node-fetch": "^2.5.7",
+    "@types/ora": "^3.2.0",
+    "@types/react": "^16.9.48",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/request-promise": "^4.1.46",
+    "@types/semver": "^7.3.3",
+    "@types/socket.io": "^2.1.11",
+    "@types/socket.io-client": "^1.4.33",
+    "@types/styled-components": "^5.1.2",
+    "@types/supertest": "^2.0.10",
+    "@types/urijs": "^1.19.11",
+    "@types/walk": "^2.3.0",
+    "ali-contributors": "^2.2.2",
+    "babel-eslint": "^10.1.0",
+    "commitlint": "^9.1.0",
+    "depcheck": "^1.2.0",
+    "eslint": "^7.5.0",
+    "husky": "^4.2.5",
+    "lerna": "^4.0.0",
+    "npm-run-all": "^4.1.5",
+    "shelljs": "^0.8.4",
+    "typedoc": "^0.19.2",
+    "typescript": "^3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run check",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "standardx": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint/eslint-plugin"
+    ],
+    "globals": [
+      "fetch"
+    ],
+    "ignore": [
+      "**/*.d.ts"
+    ]
+  },
+  "config": {
+    "coffeepay": {
+      "enable": false
+    }
+  },
+  "license": "UNLICENSED",
+  "author": "chongzhi.ldq",
+  "contributors": [
+    {
+      "name": "崇志",
+      "email": "chongzhi.ldq@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/50763",
+      "id": "50763"
+    },
+    {
+      "name": "墨智",
+      "email": "mozhi.gyy@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/59071",
+      "id": "59071"
+    },
+    {
+      "name": "昕雅",
+      "email": "yajun.wyj@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/76585",
+      "id": "76585"
+    },
+    {
+      "name": "慧知",
+      "email": "yingchun.fyc@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/88075",
+      "id": "88075"
+    },
+    {
+      "name": "示源",
+      "email": "nic.xlw@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/87546",
+      "id": "87546"
+    }
+  ],
+  "__npminstall_done": false,
+  "version": "0.0.0"
+}

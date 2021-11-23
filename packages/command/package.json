@@ -1,0 +1,87 @@
+{
+  "name": "mx-cli",
+  "version": "0.0.1",
+  "description": "alimama command line tool!",
+  "main": "dist/index.js",
+  "bin": {
+    "mm": "dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:mmfs/mm-cli.git",
+    "directory": "packages/command"
+  },
+  "scripts": {
+    "dev": "tsc --watch --pretty --preserveWatchOutput --project tsconfig.json",
+    "build": "tsc --listEmittedFiles --project tsconfig.json",
+    "build:clean": "rm -rf ./dist && yarn run build",
+    "test": "mocha --require ts-node/register --project tsconfig.json 'test/**/*.test.ts'",
+    "test:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --watch test --watch package.json --watch ../core/lib --exec 'yarn run test'",
+    "linter": "standard --fix src",
+    "check": "yarn run linter; yarn run test;",
+    "madge": "madge --image ../../docs/command.png src/index.ts",
+    "madge:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --exec 'yarn run madge'"
+  },
+  "dependencies": {
+    "mx-cli-core": "0.0.1",
+    "@ali/mm-cli-server": "2.0.66",
+    "@ali/mm-cli-webui": "2.0.65",
+    "babel-eslint": "^10.1.0",
+    "chalk": "^4.1.0",
+    "commander": "^6.0.0",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.3.3",
+    "inquirer-search-list": "^1.2.6",
+    "koa": "^2.11.0",
+    "koa-route": "^3.2.0",
+    "koa-static": "^5.0.0",
+    "log4js": "^6.3.0",
+    "minimist": "^1.2.5",
+    "npm-run-all": "^4.1.5",
+    "semver": "^7.3.2",
+    "simple-git": "^2.24.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "coffee": "^5.4.0",
+    "debug": "^4.1.1",
+    "madge": "^4.0.0",
+    "mocha": "^8.1.1",
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.3"
+  },
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "registry": "https://registry.antfin-inc.com"
+  },
+  "author": "chongzhi.ldq",
+  "contributors": [
+    {
+      "name": "崇志",
+      "email": "chongzhi.ldq@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/50763"
+    },
+    {
+      "name": "墨智",
+      "email": "mozhi.gyy@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/59071"
+    },
+    {
+      "name": "昕雅",
+      "email": "yajun.wyj@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/76585"
+    },
+    {
+      "name": "慧知",
+      "email": "yingchun.fyc@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/88075"
+    },
+    {
+      "name": "示源",
+      "email": "nic.xlw@alibaba-inc.com",
+      "url": "https://work.alibaba-inc.com/nwpipe/u/87546"
+    }
+  ],
+  "gitHead": "45114c715e465e5b47ae01773338606469c790c0"
+}

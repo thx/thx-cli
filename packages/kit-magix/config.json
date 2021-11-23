@@ -1,0 +1,25 @@
+{
+  "routes": {
+    "get":{
+      "/extra/demo/get": "demo.get",
+      "/extra/magix/config": "config.getConfig",
+      "/extra/magix/list/gallery": "config.getGalleryList"
+    },
+    "post":{
+      "/extra/demo/post": "demo.post",
+      "/extra/magix/check/models": "check.checkModels",
+      "/extra/magix/check/gallery": "check.checkGallery"
+    }
+  },
+  "socket": {
+    "magixModels": "socket.execModels",
+    "magixDev": "socket.execDev",
+    "magixDaily": "socket.execDaily",
+    "magixPublish": "socket.execPublish",
+    "magixChartpark": "socket.execChartpark",
+    "magixSpmlog": "socket.execSpmlog",
+    "magixIconfont": "socket.execIconfont",
+    "magixCheckIconfont": "socket.checkIconfont",
+    "magixGallery": "socket.execGallery"
+  }
+}

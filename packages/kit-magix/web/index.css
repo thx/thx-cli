@@ -1,0 +1,85 @@
+.test{
+  padding: 20px;
+  border: 1px solid #aaa;
+  margin: 20px;
+}
+.action-head{
+  font-size: 14px;
+  line-height: 32px;
+  color: #dedee0;
+}
+.warning-link{
+  font-size: 12px;
+  line-height: 24px;
+  color: #07a7ce;
+  cursor: pointer;
+}
+.action-btn{
+  padding: 10px 0;
+}
+.action-error{
+  margin-left: 30px;
+  vertical-align: middle;
+  display: inline-block;
+  color: red;
+}
+.task-config{
+  padding: 10px 0 ;
+}
+.task-config-label{
+  line-height: 24px;
+  margin: 0 10px 16px 0;
+  vertical-align: middle;
+  display: inline-block;
+}
+.task-config-value{
+  margin: 0 30px 16px 0;
+  height: 24px;
+  vertical-align: middle;
+  display: inline-block;
+}
+.task-config-tips{
+  line-height: 24px;
+  margin: 0 30px 16px -20px;
+  vertical-align: middle;
+  display: inline-block;
+  color: #999;
+}
+.side-extra-page{
+  padding: 10px 30px;
+}
+.task-config-textarea-label{
+  vertical-align: top;
+  line-height: 24px;
+  margin: 0 10px 16px 0;
+  display: inline-block;
+}
+._mr10{
+  margin-right: 10px !important;
+}
+
+.mr5{
+  margin-right: 5px;
+}
+.ml5{
+  margin-left: 5px;
+}
+.mb5{
+  margin-bottom: 5px;
+}
+
+/* 项目配置 */
+.item-short{
+  margin-right: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.width100{
+  width: 100px;
+}
+.width200{
+  width: 200px;
+}
+.side-extra-page .next-form-item-label{
+  color: hsla(0, 0%, 100%, 0.85);
+}

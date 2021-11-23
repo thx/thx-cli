@@ -1,0 +1,13 @@
+.global-toast {
+  margin: 5px 0;
+}
+.global-toast .next-notice.next-notice-warning.next-notice-standalone {
+  border-width: 1px;
+  padding: 8px;
+}
+.global-toast .message-body {
+  max-width: 400px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0;
+}

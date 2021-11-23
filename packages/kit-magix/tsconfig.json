@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/",
+    "target": "es5",
+    "module": "esnext",
+    "allowJs": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "dom",
+      "webworker"
+    ],
+    "paths": {}
+  },
+  "files": [
+    "./types/global.d.ts",
+    "./types/index.d.ts",
+    "./types/custom.d.ts"
+  ]
+}
