@@ -13,7 +13,7 @@
     "dev": "npm-run-all -p dev:app",
     "dev:app": "tsc --watch --pretty --preserveWatchOutput --project tsconfig-app.json",
     "dev:web": "mm-scripts dev",
-    "build": "npm-run-all -p build:app build:web",
+    "build": "npm-run-all -p build:app",
     "build:app": "tsc --listEmittedFiles --project tsconfig-app.json",
     "build:web": "mm-scripts build",
     "build:clean": "rm -fr ./dist; rm -fr ./web_dist; yarn run build",
@@ -64,7 +64,6 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "@ali/mm-scripts": "2.0.66",
     "madge": "^4.0.0",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.6",
