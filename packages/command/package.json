@@ -1,5 +1,5 @@
 {
-  "name": "mx-cli",
+  "name": "thx-cli",
   "version": "0.0.1",
   "description": "alimama command line tool!",
   "main": "dist/index.js",
@@ -23,7 +23,7 @@
     "madge:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --exec 'yarn run madge'"
   },
   "dependencies": {
-    "mx-cli-core": "0.0.1",
+    "thx-cli-core": "0.0.1",
     "@ali/mm-cli-server": "2.0.66",
     "@ali/mm-cli-webui": "2.0.65",
     "babel-eslint": "^10.1.0",

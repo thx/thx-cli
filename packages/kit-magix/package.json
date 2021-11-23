@@ -1,5 +1,5 @@
 {
-  "name": "mx-kit-magix",
+  "name": "thx-kit-magix",
   "version": "0.0.1",
   "description": "Magix 技术栈套件",
   "author": "chongzhi",
@@ -27,7 +27,7 @@
     "@ali/magix-combine-tool-config": "1.0.10",
     "@ali/magix-composer-config": "1.0.10",
     "@ali/magix-desiger-server": "^1.0.0",
-    "mx-cli-core": "0.0.1",
+    "thx-cli-core": "0.0.1",
     "@ali/mm-plugin-clear": "2.0.49",
     "@ali/rapper": "^1.5.10",
     "@ali/snowpack-v1": "^1.7.1",
