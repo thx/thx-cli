@@ -17,6 +17,7 @@
     },
     "publish": {
       "verifyRegistry": false,
+      "npmClient": "npm",
       "verifyAccess": false,
       "allowBranch": [
         "master"
