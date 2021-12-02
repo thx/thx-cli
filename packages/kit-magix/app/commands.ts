@@ -8,6 +8,11 @@ import * as fse from 'fs-extra'
 import { utils } from 'thx-cli-core'
 import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
+import mxScripts from 'thx-magix-scripts'
+
+console.log(`ccccc`)
+
+mxScripts()
 
 // commands list
 // import galleryCmd from './service/commands/gallery'

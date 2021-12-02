@@ -15,7 +15,6 @@ export {
   utils
 }
 
-
 /**
  * MO TODO 为什么要包装成构造函数呢？
  * export default new EventEmitter()
