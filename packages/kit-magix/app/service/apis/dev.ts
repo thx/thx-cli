@@ -5,7 +5,7 @@
  * mm dev -d <ip>: 启动对接真实接口ip地址的本地开发服务器
  * mm dev -p <port>: 指定服务器的端口号
  */
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import { EventEmitter } from 'events'
 import util from '../../util/util'
 import * as utilCheck from '../../util/check'

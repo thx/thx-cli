@@ -4,7 +4,7 @@
  *  - mm gallery -n <galleryName>: 指定同步某个组件，如果本地有组件有修改过，给出提示
  *  - mm gallery -l: 列出本地所有组件以及组件版本号
  */
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import { cyan, green, grey, redBright, white, yellow } from 'chalk'
 import util from '../../util/util'
 import * as fs from 'fs-extra'

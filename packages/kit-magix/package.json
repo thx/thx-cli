@@ -12,10 +12,8 @@
   "scripts": {
     "dev": "npm-run-all -p dev:app",
     "dev:app": "tsc --watch --pretty --preserveWatchOutput --project tsconfig-app.json",
-    "dev:web": "mm-scripts dev",
     "build": "npm-run-all -p build:app",
     "build:app": "tsc --listEmittedFiles --project tsconfig-app.json",
-    "build:web": "mm-scripts build",
     "build:clean": "rm -fr ./dist; rm -fr ./web_dist; yarn run build",
     "test": "TS_NODE_PROJECT=tsconfig-app.json mocha --require ts-node/register 'test/**/*.test.ts'",
     "test:watch": "nodemon --verbose --ext js,ts,tsx,json --watch app --watch web --watch test --watch package.json --watch ../core/lib --exec 'yarn run test'",

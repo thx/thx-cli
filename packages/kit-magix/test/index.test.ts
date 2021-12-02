@@ -1,5 +1,5 @@
 import { describe, it, after } from 'mocha'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import { spawn, SpawnOptions } from 'child_process'
 import { EXAMPLE_MAGIX, SPAWN_OPTIONS, validSubProcess } from '../../core/test/shared'
 import fetch from 'node-fetch'

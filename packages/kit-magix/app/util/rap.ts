@@ -1,5 +1,5 @@
 'use strict'
-import { rap } from '@ali/mm-cli-core'
+import { rap } from 'thx-cli-core'
 import * as request from 'request'
 import * as chalk from 'chalk'
 import * as ora from 'ora'

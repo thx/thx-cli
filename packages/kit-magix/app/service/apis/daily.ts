@@ -1,5 +1,5 @@
 
-import { utils, daily as coreDailyCommand } from '@ali/mm-cli-core'
+import { utils, daily as coreDailyCommand } from 'thx-cli-core'
 import { cyan, grey, redBright, yellow } from 'chalk'
 import util from '../../util/util'
 import * as utilCheck from '../../util/check'

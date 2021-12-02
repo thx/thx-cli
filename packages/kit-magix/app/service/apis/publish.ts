@@ -1,6 +1,6 @@
 
 import { EventEmitter } from 'events'
-import { utils, publish as corePublishCommand } from '@ali/mm-cli-core'
+import { utils, publish as corePublishCommand } from 'thx-cli-core'
 import util from '../../util/util'
 import * as utilCheck from '../../util/check'
 import * as chalk from 'chalk'

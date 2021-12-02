@@ -9,7 +9,7 @@ import util from '../../util/util'
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer' // A collection of common interactive command line userinterfaces.
 import devApis from '../apis/dev'
-// import { utils } from '@ali/mm-cli-core'
+// import { utils } from 'thx-cli-core'
 
 export default async (options) => {
   const params: any = {}

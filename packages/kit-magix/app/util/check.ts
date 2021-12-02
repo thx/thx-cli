@@ -1,4 +1,4 @@
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import * as fse from 'fs-extra'
 import * as chalk from 'chalk'
 import util from './util'

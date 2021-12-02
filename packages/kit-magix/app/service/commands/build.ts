@@ -1,4 +1,4 @@
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 
 /**
  */

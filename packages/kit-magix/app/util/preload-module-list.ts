@@ -3,7 +3,7 @@ import util from './util'
 import * as path from 'path'
 import * as walk from 'walk'
 import * as fse from 'fs-extra'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 
 // 生成项目的模块清单列表
 export async function genModuleList () {

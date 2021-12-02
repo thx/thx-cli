@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 
 /**
  * websocket接口: saveMagixCliConfig

@@ -1,7 +1,7 @@
 import * as fse from 'fs-extra'
 import * as walk from 'walk'
 import * as path from 'path'
-import { ICreateAppInfo } from '@ali/mm-cli-core/types'
+import { ICreateAppInfo } from 'thx-cli-core/types'
 
 export default {
 

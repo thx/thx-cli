@@ -1,6 +1,6 @@
 'use strict'
 
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import * as chalk from 'chalk'
 import publishApi from '../apis/publish'
 import util from '../../util/util'

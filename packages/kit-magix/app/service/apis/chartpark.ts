@@ -4,7 +4,7 @@
 import util from '../../util/util'
 import * as chalk from 'chalk'
 import { EventEmitter } from 'events'
-import { chartpark } from '@ali/mm-cli-core'
+import { chartpark } from 'thx-cli-core'
 
 export default {
   /**

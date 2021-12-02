@@ -6,7 +6,7 @@ import * as fs from 'fs'
 import util from '../../util/util'
 import * as fse from 'fs-extra'
 import * as inquirer from 'inquirer' // A collection of common interactive command line user interfaces
-import { utils, rap } from '@ali/mm-cli-core'
+import { utils, rap } from 'thx-cli-core'
 import * as chalk from 'chalk'
 import * as path from 'path'
 import rapUtil from '../../util/rap'

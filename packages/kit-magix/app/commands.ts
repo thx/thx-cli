@@ -5,8 +5,8 @@ import replaceUtil from './util/replace'
 import { checkPackageVersionsCorrect } from './util/check'
 import * as minimist from 'minimist'
 import * as fse from 'fs-extra'
-import { utils } from '@ali/mm-cli-core'
-import { ICreateAppInfo } from '@ali/mm-cli-core/types'
+import { utils } from 'thx-cli-core'
+import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
 
 // commands list

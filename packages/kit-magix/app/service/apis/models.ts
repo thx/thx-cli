@@ -10,7 +10,7 @@ import constant from '../../util/constant'
 import rapUtil from '../../util/rap'
 import rapper from '../../util/rapper'
 import logger from '../../logger'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 
 // 接口的type转换
 const METHOD_MAPS = constant.METHOD_MAPS

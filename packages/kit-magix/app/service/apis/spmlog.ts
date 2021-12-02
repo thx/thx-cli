@@ -2,7 +2,7 @@
  * 执行spmlog打点
  */
 import util from '../../util/util'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import * as chalk from 'chalk'
 import * as combineTool from 'magix-combine'
 import * as path from 'path'

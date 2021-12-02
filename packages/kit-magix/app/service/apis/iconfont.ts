@@ -8,7 +8,7 @@ import * as chalk from 'chalk'
 import * as path from 'path'
 import * as walk from 'walk'
 import { EventEmitter } from 'events'
-import { iconfont, utils } from '@ali/mm-cli-core'
+import { iconfont, utils } from 'thx-cli-core'
 
 //
 async function checkExec (cwd) {

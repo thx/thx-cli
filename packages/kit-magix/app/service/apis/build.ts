@@ -2,7 +2,7 @@
  * 用来本地测试构建结果
  */
 import { EventEmitter } from 'events'
-import { utils, build as coreBuildCommand } from '@ali/mm-cli-core'
+import { utils, build as coreBuildCommand } from 'thx-cli-core'
 // import * as chalk from 'chalk'
 // import * as CloudBuildClient from '@ali/cloudbuild-client'
 
