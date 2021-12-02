@@ -1,6 +1,6 @@
 {
   "name": "thx-magix-scripts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "types": "./types/index.d.ts",
   "main": "dist/index.js",
   "bin": {
@@ -14,7 +14,7 @@
     "madge:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --exec 'yarn run madge'"
   },
   "dependencies": {
-    "thx-cli-core": "0.0.6"
+    "thx-cli-core": "0.0.7"
   },
   "devDependencies": {
     "@types/node": "^14.14.11",

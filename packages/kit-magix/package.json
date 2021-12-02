@@ -1,6 +1,6 @@
 {
   "name": "thx-kit-magix",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Magix 技术栈套件",
   "author": "chongzhi",
   "main": "dist/commands.js",
@@ -22,7 +22,6 @@
     "madge": "madge --image ../../docs/kit-magix.png web/index.js"
   },
   "dependencies": {
-    "thx-magix-scripts": "0.0.1",
     "@ali/ai4md-cli": "^1.0.2",
     "@ali/cloudbuild-client": "^2.0.0",
     "@ali/magix-combine-tool-config": "1.0.10",
@@ -59,7 +58,8 @@
     "semver": "^7.3.2",
     "simple-git": "^2.17.0",
     "styled-components": "^5.2.1",
-    "thx-cli-core": "0.0.6",
+    "thx-cli-core": "0.0.7",
+    "thx-magix-scripts": "0.0.2",
     "walk": "2.3.14",
     "whatwg-fetch": "^3.0.0",
     "ws": "^7.3.1"
