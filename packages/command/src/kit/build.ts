@@ -4,9 +4,9 @@
  */
 import { CommanderStatic } from 'commander'
 import { EventEmitter } from 'events'
-import { utils, build as coreBuildCommand } from '@ali/mm-cli-core'
+import { utils, build as coreBuildCommand } from 'thx-cli-core'
 import logger from '../logger'
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 const { getPrecentBranch } = utils
 
 async function commandAction (command: CommanderStatic) {

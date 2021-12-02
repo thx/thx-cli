@@ -1,4 +1,4 @@
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
 
 async function commandAction (command: CommanderStatic) {

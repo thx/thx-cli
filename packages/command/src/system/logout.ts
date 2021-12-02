@@ -1,5 +1,5 @@
-import { utils } from '@ali/mm-cli-core'
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { utils } from 'thx-cli-core'
+import { ICommandConfig } from 'thx-cli-core/types'
 import { blueBright, green, grey } from 'chalk'
 import { CommanderStatic } from 'commander'
 

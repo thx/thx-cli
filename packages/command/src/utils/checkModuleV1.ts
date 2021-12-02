@@ -1,4 +1,4 @@
-import { IKitInfo, IPluginInfo } from '@ali/mm-cli-core/types'
+import { IKitInfo, IPluginInfo } from 'thx-cli-core/types'
 
 export function convertToNextInfo (info: any) : IKitInfo | IPluginInfo {
   const { name, title, value, package: packageName, ...extra } = info

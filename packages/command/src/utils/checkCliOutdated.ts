@@ -1,9 +1,9 @@
 import { grey, yellowBright, greenBright, blueBright } from 'chalk'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import * as semver from 'semver'
 import * as path from 'path'
 import logger from '../logger'
-import { IOutdatedPackage, IPackage } from '@ali/mm-cli-core/types'
+import { IOutdatedPackage, IPackage } from 'thx-cli-core/types'
 import * as minimist from 'minimist'
 import { SpawnOptions } from 'child_process'
 import { prompt, QuestionCollection } from 'inquirer'
@@ -13,7 +13,7 @@ const pkg: IPackage = require('../../package.json')
 
 // 需要检测版本的核心包
 const NEED_CHECK_DEP_PACKAGE_LIST = [
-  // '@ali/mm-cli-core', '@ali/mm-cli-server', '@ali/mm-cli-webui'
+  // 'thx-cli-core', '@ali/mm-cli-server', '@ali/mm-cli-webui'
 ]
 const CWD = path.join(__dirname, '../../')
 

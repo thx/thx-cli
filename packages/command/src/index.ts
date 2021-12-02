@@ -3,17 +3,17 @@
 import { grey, redBright, blueBright, whiteBright } from 'chalk' // MO Terminal string styling done right
 import * as program from 'commander' // MO the complete solution for node.js command-line programs
 import * as minimist from 'minimist'
-import { utils, gitlab } from '@ali/mm-cli-core'
+import { utils, gitlab } from 'thx-cli-core'
 import systemCommandList from './system/index'
 import logger from './logger'
 import {
   checkCliOutdated,
   checkModuleMissed,
   registerCommand,
-  registerKitCommandList,
-  registerPluginCommand
+  registerKitCommandList
+  // registerPluginCommand
 } from './utils/index'
-import { IKitInfo } from '@ali/mm-cli-core/types'
+import { IKitInfo } from 'thx-cli-core/types'
 const pkg = require('../package.json')
 const { initMMHome, getAppPkg, getAppPath, getAppRC, goldlog, getKit } = utils
 
@@ -128,31 +128,31 @@ async function prepare() {
 
     // MO 6. 注册插件命令
     // 套件与插件命令的升级安装提示隔离开
-    await utils.took(
-      redBright('prepare/注册插件命令'),
-      async () => {
-        program.command(blueBright.bold('插件命令：')) // 分隔符
-        const { plugins } = await utils.fetchModuleList()
-        const quickMatch = plugins.find(
-          pluginInfo =>
-            pluginInfo.command.name === SUB_COMMAND ||
-            pluginInfo.command.alias === SUB_COMMAND
-        )
-        if (quickMatch) {
-          isPluginCommand = true
-          // 判断安装套件
-          if (!quickMatch.version) await checkModuleMissed('plugin', quickMatch)
-          await registerPluginCommand(program, quickMatch)
-          return
-        }
-        logger.debug('plugins', plugins)
-        for (const pluginInfo of plugins) {
-          // if (!pluginInfo.version) continue
-          await registerPluginCommand(program, pluginInfo)
-        }
-      },
-      logger
-    )
+    // await utils.took(
+    //   redBright('prepare/注册插件命令'),
+    //   async () => {
+    //     program.command(blueBright.bold('插件命令：')) // 分隔符
+    //     const { plugins } = await utils.fetchModuleList()
+    //     const quickMatch = plugins.find(
+    //       pluginInfo =>
+    //         pluginInfo.command.name === SUB_COMMAND ||
+    //         pluginInfo.command.alias === SUB_COMMAND
+    //     )
+    //     if (quickMatch) {
+    //       isPluginCommand = true
+    //       // 判断安装套件
+    //       if (!quickMatch.version) await checkModuleMissed('plugin', quickMatch)
+    //       await registerPluginCommand(program, quickMatch)
+    //       return
+    //     }
+    //     logger.debug('plugins', plugins)
+    //     for (const pluginInfo of plugins) {
+    //       // if (!pluginInfo.version) continue
+    //       await registerPluginCommand(program, pluginInfo)
+    //     }
+    //   },
+    //   logger
+    // )
 
     // 如果是插件命令跳出后续套件安装环节
     if (isPluginCommand) return

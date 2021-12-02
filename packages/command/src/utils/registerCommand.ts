@@ -1,6 +1,6 @@
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import logger from '../logger'
 const { checkSudo } = utils
 

@@ -4,25 +4,25 @@
  * 多参数的以 [] 数组形式
  */
 
-import systemLogin from './login'
-import systemLogout from './logout'
+// import systemLogin from './login'
+// import systemLogout from './logout'
 import systemInstall from './install'
 import systemUninstall from './uninstall'
 import systemInit from './init'
-import systemAdd from './add'
+// import systemAdd from './add'
 import systemList from './list'
-import systemWeb from './web'
-import { ICommandList } from '@ali/mm-cli-core/types'
+// import systemWeb from './web'
+import { ICommandList } from 'thx-cli-core/types'
 
 const commands: ICommandList = [
-  systemLogin,
-  systemLogout,
+  // systemLogin,
+  // systemLogout,
   systemInstall,
   systemUninstall,
   systemInit,
-  systemAdd,
-  systemList,
-  systemWeb
+  // systemAdd,
+  systemList
+  // systemWeb
 ]
 
 export default commands

@@ -1,6 +1,6 @@
 import { CommanderStatic } from 'commander'
-import { utils, gitlab } from '@ali/mm-cli-core'
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { utils, gitlab } from 'thx-cli-core'
+import { ICommandConfig } from 'thx-cli-core/types'
 import { blueBright, green, grey } from 'chalk'
 
 async function commandAction (command: CommanderStatic) {

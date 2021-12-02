@@ -1,9 +1,9 @@
 import { CommanderStatic } from 'commander'
 import { blueBright, grey, redBright } from 'chalk'
 import { EventEmitter } from 'events'
-import { utils, daily as coreDailyCommand } from '@ali/mm-cli-core'
+import { utils, daily as coreDailyCommand } from 'thx-cli-core'
 import logger from '../logger'
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 const { isMaster, getPrecentBranch } = utils
 
 /**

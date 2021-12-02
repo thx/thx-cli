@@ -24,7 +24,7 @@ const EventEmitter = require('events')
 export default class RmxCoreBackup extends EventEmitter {
   // MO params: { type: 'kit' | 'plugin', name: '' }
   /** @deprecated */
-  constructor (params = {}) {
+  constructor(params = {}) {
     console.trace('@deprecated', __filename)
     super()
 

@@ -1,9 +1,9 @@
 import { cyan } from 'chalk'
 // import { checkUpdate } from './check'
 import checkModuleOutdated from './checkModuleOutdated'
-import { IPluginInfo } from '@ali/mm-cli-core/types'
+import { IPluginInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import logger from '../logger'
 import registerCommand from './registerCommand'
 const { MM_HOME } = utils

@@ -3,7 +3,7 @@
  * rmx dev -p <port>: 指定服务器的端口号
  */
 
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 import { blueBright, greenBright, grey } from 'chalk'
 import { CommanderStatic } from 'commander'
 import * as Koa from 'koa'

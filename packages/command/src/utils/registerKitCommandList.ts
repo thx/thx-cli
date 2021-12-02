@@ -2,9 +2,9 @@
 import checkModuleOutdated from './checkModuleOutdated'
 import systemCommandList from '../system/index'
 import defaultKitCommandList from '../kit/index'
-import { ICommandConfig, IKitInfo, ICommandList, ICommandMap } from '@ali/mm-cli-core/types'
+import { ICommandConfig, IKitInfo, ICommandList, ICommandMap } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import logger from '../logger'
 import registerCommand from './registerCommand'
 const { RMX_HOME } = utils

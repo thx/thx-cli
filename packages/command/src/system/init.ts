@@ -6,8 +6,8 @@ import { cyan, greenBright, yellowBright, grey, redBright, blueBright, underline
 import { EventEmitter } from 'events'
 import { CommanderStatic } from 'commander'
 import * as fse from 'fs-extra'
-import { utils, init as coreInitCommand } from '@ali/mm-cli-core'
-import { IKitInfo, IGitLabGroup, ICreateAppInfo, ICommandConfig, IModuleType, ICommandList } from '@ali/mm-cli-core/types'
+import { utils, init as coreInitCommand } from 'thx-cli-core'
+import { IKitInfo, IGitLabGroup, ICreateAppInfo, ICommandConfig, IModuleType, ICommandList } from 'thx-cli-core/types'
 import { checkModuleMissed } from '../utils/index'
 import logger from '../logger'
 const { getLength, fixLength, RMX_HOME } = utils

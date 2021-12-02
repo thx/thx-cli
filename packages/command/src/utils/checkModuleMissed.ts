@@ -1,6 +1,6 @@
 import { yellowBright } from 'chalk'
-import { IKitInfo, IPluginInfo } from '@ali/mm-cli-core/types'
-import { utils } from '@ali/mm-cli-core'
+import { IKitInfo, IPluginInfo } from 'thx-cli-core/types'
+import { utils } from 'thx-cli-core'
 import * as fse from 'fs-extra'
 import * as inquirer from 'inquirer' // A collection of common interactive command line user interfaces.
 import { installModule as sysInstallModule } from '../system/install'

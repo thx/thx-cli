@@ -4,7 +4,7 @@ import * as fse from 'fs-extra'
 import { spawn, SpawnOptions } from 'child_process'
 import { SPAWN_OPTIONS, validSubProcess } from '../../core/test/shared'
 import { expect } from 'chai'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 const pkg = require('../package.json')
 const { RMX_HOME } = utils
 

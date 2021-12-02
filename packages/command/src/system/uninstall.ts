@@ -5,11 +5,11 @@
  * 最后选择删除
  */
 
-import { uninstall as coreUninstallCommand, utils } from '@ali/mm-cli-core'
+import { uninstall as coreUninstallCommand, utils } from 'thx-cli-core'
 import * as inquirer from 'inquirer' // A collection of common interactive command line user interfaces.
 import { blueBright, grey, yellowBright } from 'chalk'
 import { CommanderStatic } from 'commander'
-import { IModuleType, IKitInfo, IPluginInfo, ICommandConfig } from '@ali/mm-cli-core/types'
+import { IModuleType, IKitInfo, IPluginInfo, ICommandConfig } from 'thx-cli-core/types'
 import { prepareTypeQuestionList, prepareModuleQuestionList } from './install'
 import { EventEmitter } from 'events'
 import logger from '../logger'

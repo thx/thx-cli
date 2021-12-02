@@ -1,5 +1,5 @@
-import { install as coreInstallCommand, utils } from '@ali/mm-cli-core'
-import { IModuleType, IKitInfo, IPluginInfo, IKitMap, IPluginMap, ICommandConfig, IModuleInfo } from '@ali/mm-cli-core/types'
+import { install as coreInstallCommand, utils } from 'thx-cli-core'
+import { IModuleType, IKitInfo, IPluginInfo, IKitMap, IPluginMap, ICommandConfig, IModuleInfo } from 'thx-cli-core/types'
 import { EventEmitter } from 'events'
 import * as inquirer from 'inquirer'
 import * as fse from 'fs-extra' // A collection of common interactive command line user interfaces.

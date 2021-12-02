@@ -9,7 +9,7 @@ import defaultKitBuild from './build'
 import defaultKitDaily from './daily'
 import defaultKitPublish from './publish'
 import defaultKitTest from './test'
-import { ICommandList } from '@ali/mm-cli-core/types'
+import { ICommandList } from 'thx-cli-core/types'
 
 const commands: ICommandList = [
   defaultKitDev,

@@ -4,7 +4,8 @@
   "description": "alimama command line tool!",
   "main": "dist/index.js",
   "bin": {
-    "thx": "dist/index.js"
+    "thx": "dist/index.js",
+    "mx": "dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -23,8 +24,6 @@
     "madge:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --exec 'yarn run madge'"
   },
   "dependencies": {
-    "@ali/mm-cli-server": "2.0.65",
-    "@ali/mm-cli-webui": "2.0.64",
     "babel-eslint": "^10.1.0",
     "chalk": "^4.1.0",
     "commander": "^6.0.0",

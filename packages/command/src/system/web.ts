@@ -1,9 +1,9 @@
 import { blueBright, grey, redBright } from 'chalk'
 import { CommanderStatic } from 'commander'
 import start from '@ali/mm-cli-server'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import logger from '../logger'
-import { ICommandConfig } from '@ali/mm-cli-core/types'
+import { ICommandConfig } from 'thx-cli-core/types'
 const { RMX_HOST, RMX_PORT, portIsOccupied, killPort } = utils
 
 async function commandAction (command?: CommanderStatic) {

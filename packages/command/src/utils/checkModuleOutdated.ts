@@ -1,10 +1,10 @@
 import { grey, greenBright, yellowBright, blueBright } from 'chalk'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import * as inquirer from 'inquirer'
 import { installModule as sysInstallModule } from '../system/install'
-import { IModuleInfo } from '@ali/mm-cli-core/types'
+import { IModuleInfo } from 'thx-cli-core/types'
 import * as minimist from 'minimist'
-import { needBlockProcessByModuleOutdated } from '@ali/mm-cli-core/dist/utils'
+import { needBlockProcessByModuleOutdated } from 'thx-cli-core/dist/utils'
 const argv = minimist(process.argv.slice(2))
 const { checkUpdateModule, getModuleList } = utils
 

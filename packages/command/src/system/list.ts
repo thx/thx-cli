@@ -1,5 +1,5 @@
-import { utils } from '@ali/mm-cli-core'
-import { IModuleType, IKitInfo, IPluginInfo, ICommandConfig } from '@ali/mm-cli-core/types'
+import { utils } from 'thx-cli-core'
+import { IModuleType, IKitInfo, IPluginInfo, ICommandConfig } from 'thx-cli-core/types'
 import { blueBright, cyan, greenBright, grey, white } from 'chalk'
 import { CommanderStatic } from 'commander'
 import logger from '../logger'
