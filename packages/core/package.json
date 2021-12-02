@@ -1,6 +1,6 @@
 {
   "name": "thx-cli-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "MM CLI 核心包",
   "main": "dist/index.js",
   "repository": {
