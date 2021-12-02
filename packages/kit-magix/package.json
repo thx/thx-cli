@@ -1,6 +1,6 @@
 {
   "name": "thx-kit-magix",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Magix 技术栈套件",
   "author": "chongzhi",
   "main": "dist/commands.js",
@@ -57,7 +57,7 @@
     "simple-git": "^2.17.0",
     "styled-components": "^5.2.1",
     "thx-cli-core": "0.0.7",
-    "thx-magix-scripts": "0.0.2",
+    "thx-magix-scripts": "0.0.3",
     "walk": "2.3.14",
     "whatwg-fetch": "^3.0.0",
     "ws": "^7.3.1"
