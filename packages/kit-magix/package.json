@@ -22,6 +22,7 @@
     "madge": "madge --image ../../docs/kit-magix.png web/index.js"
   },
   "dependencies": {
+    "thx-magix-scripts": "0.0.1",
     "@ali/ai4md-cli": "^1.0.2",
     "@ali/cloudbuild-client": "^2.0.0",
     "@ali/magix-combine-tool-config": "1.0.10",

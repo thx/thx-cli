@@ -1,0 +1,30 @@
+{
+  "name": "thx-magix-scripts",
+  "version": "0.0.1",
+  "types": "./types/index.d.ts",
+  "main": "dist/index.js",
+  "bin": {
+    "magix-scripts": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsc --watch --pretty --preserveWatchOutput --project tsconfig.json",
+    "build": "tsc --listEmittedFiles --project tsconfig.json",
+    "build:clean": "rm -rf ./dist && yarn run build",
+    "madge": "madge --image ../../docs/scripts.png src/dev.ts src/build.ts",
+    "madge:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --exec 'yarn run madge'"
+  },
+  "dependencies": {
+    "thx-cli-core": "0.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.11",
+    "@types/webpack-dev-server": "^3.11.1",
+    "chai": "^4.2.0",
+    "madge": "^4.0.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.1.1"
+  },
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/thx/thx-cli/tree/master/packages/magix-scripts"
+}

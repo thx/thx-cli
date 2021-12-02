@@ -1,4 +1,3 @@
-
 /**
  * 项目初始化命令
  */
@@ -6,7 +5,19 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 
 import * as chartparkUtil from '../platforms/chartpark'
-import { RMX_HOME, setAppPackage, spawnCommand, spawn, getLength, withSpinner, prefixLength, getGitLabGroupList, getConfig, setAppRCPart, getKit } from '../utils'
+import {
+  RMX_HOME,
+  setAppPackage,
+  spawnCommand,
+  spawn,
+  getLength,
+  withSpinner,
+  prefixLength,
+  getGitLabGroupList,
+  getConfig,
+  setAppRCPart,
+  getKit
+} from '../utils'
 import * as gitlabUtil from '../platforms/gitlab'
 import * as rapUtil from '../platforms/rap'
 import * as iconfontUtil from '../platforms/iconfont'
@@ -42,7 +53,10 @@ params参数列表：
 /**
  * 创建gitlab项目
  */
-const createGitLabRepository = async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+const createGitLabRepository = async (
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo
+) => {
   if (appInfo.gitlab === false) return
   return withSpinner(
     '创建 GitLab 仓库',
@@ -56,7 +70,8 @@ const createGitLabRepository = async (emitter: EventEmitter, appInfo: ICreateApp
       const groupId = groupMap[appInfo.group].id
 
       return gitlabUtil._createProject(token, appInfo.app, groupId)
-    }, (error) => {
+    },
+    error => {
       // 创建gitlab仓库失败的话，中断init流程
       console.log(error.message)
       if (error.statusCode === 400) {
@@ -68,7 +83,10 @@ const createGitLabRepository = async (emitter: EventEmitter, appInfo: ICreateApp
 }
 
 /** 创建rap2项目 */
-async function createRAPRepository (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function createRAPRepository(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo
+) {
   if (appInfo.rap === false) return
 
   return withSpinner(
@@ -79,7 +97,10 @@ async function createRAPRepository (emitter: EventEmitter, appInfo: ICreateAppIn
   )(emitter, appInfo)
 }
 /** 创建 iconfont 项目 */
-async function createIconfontProject (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function createIconfontProject(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo
+) {
   if (appInfo.iconfont === false) return
 
   return withSpinner(
@@ -111,7 +132,10 @@ async function createIconfontProject (emitter: EventEmitter, appInfo: ICreateApp
 /**
  * 创建chartpark项目
  */
-async function createChartparkProject (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function createChartparkProject(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo
+) {
   if (appInfo.chartpark === false) return
 
   return withSpinner(
@@ -140,9 +164,9 @@ async function createChartparkProject (emitter: EventEmitter, appInfo: ICreateAp
 }
 
 /**
-  * 自动创建spma
-  */
-async function createSpma (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+ * 自动创建spma
+ */
+async function createSpma(emitter: EventEmitter, appInfo: ICreateAppInfo) {
   if (appInfo.spma === false) return
 
   const { spma } = await withSpinner(
@@ -165,7 +189,7 @@ async function createSpma (emitter: EventEmitter, appInfo: ICreateAppInfo) {
 /**
  * 接入DEF平台发布系统
  */
-async function joinDef (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function joinDef(emitter: EventEmitter, appInfo: ICreateAppInfo) {
   if (appInfo.def === false) return
 
   return withSpinner(
@@ -179,7 +203,7 @@ async function joinDef (emitter: EventEmitter, appInfo: ICreateAppInfo) {
 /**
  * 创建clue项目
  */
-async function createClue (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function createClue(emitter: EventEmitter, appInfo: ICreateAppInfo) {
   if (appInfo.clue === false) return
 
   await withSpinner(
@@ -200,7 +224,7 @@ async function createClue (emitter: EventEmitter, appInfo: ICreateAppInfo) {
 /**
  * clone 已创建好的 gitlab 项目到项目目录
  */
-async function cloneTemplate (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function cloneTemplate(emitter: EventEmitter, appInfo: ICreateAppInfo) {
   await withSpinner(
     '克隆脚手架',
     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
@@ -233,22 +257,19 @@ async function cloneTemplate (emitter: EventEmitter, appInfo: ICreateAppInfo) {
         }
       }
     },
-    (error) => {
+    error => {
       logger.error(error)
-      console.error(`您没有该脚手架仓库访问权限或该仓库地址不存在，仓库地址：${appInfo.scaffold}`)
+      console.error(
+        `您没有该脚手架仓库访问权限或该仓库地址不存在，仓库地址：${appInfo.scaffold}`
+      )
     }
   )(emitter, appInfo)
 }
 
-async function createLocalApp (emitter: EventEmitter, appInfo: ICreateAppInfo,
-  {
-    rapProject,
-    iconfontProject,
-    defInfo,
-    gitProject,
-    spma,
-    chartparkProject
-  }
+async function createLocalApp(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo,
+  { rapProject, iconfontProject, defInfo, gitProject, spma, chartparkProject }
 ) {
   const git = simpleGit(appInfo.cwd)
   const appPath = `${appInfo.cwd}/${appInfo.app}`
@@ -257,7 +278,7 @@ async function createLocalApp (emitter: EventEmitter, appInfo: ICreateAppInfo,
   // const spinner = ora('创建本地项目...').start()
   emitter.emit('data', green('ⓘ 创建本地项目'))
   emitter.emit('data', appPath)
-  await fse.ensureDir(appPath)// 创建项目目录
+  await fse.ensureDir(appPath) // 创建项目目录
   await cloneTemplate(emitter, appInfo)
 
   // 2
@@ -278,10 +299,14 @@ async function createLocalApp (emitter: EventEmitter, appInfo: ICreateAppInfo,
       // emitter.emit('data', green('ⓘ 将各平台id写入本地rmxConfig中'))
       const pkgPath = `${appPath}/package.json`
       // 往package.json里写入项目gitlab仓库地址
-      setAppPackage('repository', {
-        type: 'git',
-        url: gitProject?.ssh_url_to_repo // eslint-disable-line camelcase
-      }, pkgPath)
+      setAppPackage(
+        'repository',
+        {
+          type: 'git',
+          url: gitProject?.ssh_url_to_repo // eslint-disable-line camelcase
+        },
+        pkgPath
+      )
       setAppPackage('name', appInfo.app, pkgPath)
 
       // 写入套件名称
@@ -289,21 +314,24 @@ async function createLocalApp (emitter: EventEmitter, appInfo: ICreateAppInfo,
       // RAP
       if (rapProject?.id) setAppRCPart('rapProjectId', rapProject.id, appPath)
       // iconfont
-      if (iconfontProject?.id) setAppRCPart('iconfontId', iconfontProject.id, appPath)
+      if (iconfontProject?.id)
+        setAppRCPart('iconfontId', iconfontProject.id, appPath)
       // DEF云发布
       if (defInfo?.id) setAppRCPart('defId', defInfo.id, appPath)
       // gitlab项目地址
-      if (gitProject?.web_url) setAppRCPart('gitlabUrl', gitProject.web_url, appPath) // eslint-disable-line camelcase
+      if (gitProject?.web_url)
+        setAppRCPart('gitlabUrl', gitProject.web_url, appPath) // eslint-disable-line camelcase
       // 埋点相关
       if (spma) setAppRCPart('spma', spma, appPath)
       // chartpark
-      if (chartparkProject?.projectId) setAppRCPart('chartParkId', chartparkProject.projectId, appPath)
+      if (chartparkProject?.projectId)
+        setAppRCPart('chartParkId', chartparkProject.projectId, appPath)
       // emitter.emit('data', green(`✔ 本地项目创建完毕`))
     }
   )(emitter, appInfo)
 }
 
-async function gitCommit (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function gitCommit(emitter: EventEmitter, appInfo: ICreateAppInfo) {
   if (appInfo.gitlab === false) return
 
   await withSpinner(
@@ -311,13 +339,16 @@ async function gitCommit (emitter: EventEmitter, appInfo: ICreateAppInfo) {
     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
       const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
       await git.add('-A')
-      await git.commit('first commit by @ali/mm-cli', '--no-verify')
+      await git.commit('first commit by @ali/mm-cli', { '--no-verify': null })
       await git.push('origin', 'master')
     }
   )(emitter, appInfo)
 }
 
-async function installDependencies (emitter: EventEmitter, appInfo: ICreateAppInfo) {
+async function installDependencies(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo
+) {
   if (appInfo.install === false) return
   await withSpinner(
     '安装应用依赖',
@@ -348,55 +379,92 @@ async function installDependencies (emitter: EventEmitter, appInfo: ICreateAppIn
   )(emitter, appInfo)
 }
 
-function outputPlatformInfo (emitter: EventEmitter, appInfo: ICreateAppInfo,
-  {
-    rapProject,
-    iconfontProject,
-    defInfo,
-    gitProject,
-    spma,
-    chartparkProject
-  }
+function outputPlatformInfo(
+  emitter: EventEmitter,
+  appInfo: ICreateAppInfo,
+  { rapProject, iconfontProject, defInfo, gitProject, spma, chartparkProject }
 ) {
-  if (gitProject?.web_url || rapProject?.id || defInfo?.id || iconfontProject?.id || chartparkProject?.projectId || spma) { // eslint-disable-line camelcase
+  if (
+    gitProject?.web_url ||
+    rapProject?.id ||
+    defInfo?.id ||
+    iconfontProject?.id ||
+    chartparkProject?.projectId ||
+    spma
+  ) {
+    // eslint-disable-line camelcase
     // MO TODO emitter.emit('data' => console.log
     const platforms = []
-    if (gitProject?.web_url) { // eslint-disable-line camelcase
+    if (gitProject?.web_url) {
+      // eslint-disable-line camelcase
       platforms.push({ title: 'GitLab 仓库', repository: gitProject.web_url })
     }
     if (rapProject?.id) {
-      platforms.push({ title: 'RAP2 仓库', repository: `https://rap2.alibaba-inc.com/repository/editor?id=${rapProject.id}` })
+      platforms.push({
+        title: 'RAP2 仓库',
+        repository: `https://rap2.alibaba-inc.com/repository/editor?id=${rapProject.id}`
+      })
     }
     if (defInfo?.id) {
-      platforms.push({ title: 'DEF 研发平台', repository: `https://work.def.alibaba-inc.com/app/${defInfo.id}/index` })
+      platforms.push({
+        title: 'DEF 研发平台',
+        repository: `https://work.def.alibaba-inc.com/app/${defInfo.id}/index`
+      })
     }
     if (iconfontProject?.id) {
-      platforms.push({ title: 'Iconfont 仓库', repository: `https://www.iconfont.cn/manage/index?manage_type=myprojects&projectId=${iconfontProject.id}` })
+      platforms.push({
+        title: 'Iconfont 仓库',
+        repository: `https://www.iconfont.cn/manage/index?manage_type=myprojects&projectId=${iconfontProject.id}`
+      })
     }
     if (chartparkProject?.projectId) {
-      platforms.push({ title: 'Chartpark 项目', repository: `https://chartpark.alibaba-inc.com/#!/manage/index?projectId=${chartparkProject.projectId}` })
+      platforms.push({
+        title: 'Chartpark 项目',
+        repository: `https://chartpark.alibaba-inc.com/#!/manage/index?projectId=${chartparkProject.projectId}`
+      })
     }
     if (spma) {
-      platforms.push({ title: 'APlus', repository: `https://aplus.alibaba-inc.com/aplus/page.htm?pageId=17164&id=${spma}` })
-      platforms.push({ title: '数据小站 DataPlus', repository: `https://data.alimama.net/#!/performance/index?spma=${spma}` })
+      platforms.push({
+        title: 'APlus',
+        repository: `https://aplus.alibaba-inc.com/aplus/page.htm?pageId=17164&id=${spma}`
+      })
+      platforms.push({
+        title: '数据小站 DataPlus',
+        repository: `https://data.alimama.net/#!/performance/index?spma=${spma}`
+      })
     }
     console.log(greenBright('\nⓘ 已自动创建以下关联项目'))
-    const maxLength = Math.max(...platforms.map(item => getLength(item.title)), 10)
+    const maxLength = Math.max(
+      ...platforms.map(item => getLength(item.title)),
+      10
+    )
     platforms.forEach(item =>
-      console.log('  ', prefixLength(item.title, maxLength), underline(item.repository))
+      console.log(
+        '  ',
+        prefixLength(item.title, maxLength),
+        underline(item.repository)
+      )
     )
     console.log('')
   }
 }
 
-export default async function init (appInfo: ICreateAppInfo, emitter: EventEmitter) {
+export default async function init(
+  appInfo: ICreateAppInfo,
+  emitter: EventEmitter
+) {
   const { kit: kitName } = appInfo
   const kitInfo = await getKit(kitName)
   const { package: kitPackage } = kitInfo
   let kitCommandListModule = require(`${RMX_HOME}/kit/${appInfo.kit}/node_modules/${kitPackage}/dist/commands`)
-  kitCommandListModule = kitCommandListModule.__esModule ? kitCommandListModule.default : kitCommandListModule
+  kitCommandListModule = kitCommandListModule.__esModule
+    ? kitCommandListModule.default
+    : kitCommandListModule
   const kitCommandList = await kitCommandListModule()
-  const kitInitCommand = kitCommandList.find(commandConfig => commandConfig.name === 'init' || commandConfig.command === 'init')
+  const kitInitCommand = kitCommandList.find(
+    commandConfig =>
+      commandConfig.name === 'init' || commandConfig.command === 'init'
+  )
 
   // init 命令的 __before__ 方法先执行
   try {
@@ -412,7 +480,10 @@ export default async function init (appInfo: ICreateAppInfo, emitter: EventEmitt
   // 获取 gitlab token
   const projectPath = `${appInfo.cwd}/${appInfo.app}`
   if (await fse.pathExists(projectPath)) {
-    return emitter.emit('error', `初始化失败，当前目录下已存在同名文件夹 ${projectPath}`)
+    return emitter.emit(
+      'error',
+      `初始化失败，当前目录下已存在同名文件夹 ${projectPath}`
+    )
   }
 
   const gitProject = await createGitLabRepository(emitter, appInfo)

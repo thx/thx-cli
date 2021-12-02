@@ -162,7 +162,9 @@ export default async () => {
               // stderr.pipe(process.stderr)
             })
             await git.add('-A')
-            await git.commit('first commit by @ali/mm-cli', '--no-verify')
+            await git.commit('first commit by @ali/mm-cli', {
+              '--no-verify': null
+            })
             await git.push('origin', 'master')
           }
         )(emitter, appInfo)
