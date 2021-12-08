@@ -3,7 +3,7 @@
  */
 import * as chalk from 'chalk'
 import { EventEmitter } from 'events'
-import * as sn from '@ali/snowpack-v1'
+import * as sn from 'thx-snowpack-v1'
 import { utils } from 'thx-cli-core'
 const { withSpinner } = utils
 

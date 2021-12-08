@@ -40,3 +40,10 @@ export const SOCKET_EVENT = {
   TASK_CHUNK: 'TASK_CHUNK',
   TASK_CLEAR: 'TASK_CLEAR'
 }
+
+export const METHOD_MAPS = {
+  1: 'GET',
+  2: 'POST',
+  3: 'PUT',
+  4: 'DELETE'
+}

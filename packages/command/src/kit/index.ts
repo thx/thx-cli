@@ -5,18 +5,18 @@
  * 多参数的以 [] 数组形式
  */
 import defaultKitDev from './dev'
-import defaultKitBuild from './build'
-import defaultKitDaily from './daily'
-import defaultKitPublish from './publish'
-import defaultKitTest from './test'
+// import defaultKitBuild from './build'
+// import defaultKitDaily from './daily'
+// import defaultKitPublish from './publish'
+// import defaultKitTest from './test'
 import { ICommandList } from 'thx-cli-core/types'
 
 const commands: ICommandList = [
-  defaultKitDev,
-  defaultKitBuild,
-  defaultKitDaily,
-  defaultKitPublish,
-  defaultKitTest
+  defaultKitDev
+  // defaultKitBuild
+  // defaultKitDaily,
+  // defaultKitPublish,
+  // defaultKitTest
 ]
 
 export default commands

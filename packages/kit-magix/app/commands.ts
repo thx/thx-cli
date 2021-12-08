@@ -8,24 +8,9 @@ import * as fse from 'fs-extra'
 import { utils } from 'thx-cli-core'
 import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
-import mxScripts from 'thx-magix-scripts'
+// import mxScripts from 'thx-magix-scripts'
 
-console.log(`ccccc`)
-
-mxScripts()
-
-// commands list
-// import galleryCmd from './service/commands/gallery'
-// import devCmd from './service/commands/dev'
-// import addCmd from './service/commands/add'
-// import buildCmd from './service/commands/build'
-// import dailyCmd from './service/commands/daily'
-// import publishCmd from './service/commands/publish'
-// import modelsCmd from './service/commands/models'
-// import spmlogCmd from './service/commands/spmlog'
-// import iconfontCmd from './service/commands/iconfont'
-// import chartparkCmd from './service/commands/chartpark'
-// import syncCmd from './service/commands/sync'
+// mxScripts()
 
 const { execCommand, withSpinner, checkDependencies } = utils
 
@@ -46,9 +31,9 @@ export default async () => {
   ]
   if (checkCommands.includes(command)) {
     // 判断目录下有没有node_modules，如果没有则先执行npm install安装包
-    const rootUser = process.env.USER // tnpm install 会判断 USER==='root'，sudo 不允许安装
+    const rootUser = process.env.USER // npm install 会判断 USER==='root'，sudo 不允许安装
     process.env.USER = ''
-    await checkDependencies('tnpm', ['install', '--color'])
+    await checkDependencies('npm', ['install', '--color'])
     process.env.USER = rootUser // 还原
 
     // 检测 package.json 里包版本与本地安装版本是否一致，给出升级提示
@@ -81,13 +66,13 @@ export default async () => {
       // 项目名称的校验
       nameValidate(value, answer, scaffoldsMap) {
         // 项目名称有校验规则的，校验一下
-        const scaffoldInfo = scaffoldsMap[answer.scaffold.repository]
-        const rule = scaffoldInfo.nameValid.rule
+        const scaffoldInfo = scaffoldsMap[answer?.scaffold?.repository]
+        const rule = scaffoldInfo?.nameValid?.rule
         if (rule) {
           const regExp = new RegExp(rule)
           if (!regExp.test(value)) {
             return (
-              scaffoldInfo.nameValid.tips ||
+              scaffoldInfo?.nameValid?.tips ??
               `项目名称规则校验失败，规则为：${rule}`
             )
           }
@@ -119,31 +104,32 @@ export default async () => {
       const pkgPath = `${appPath}/package.json`
       const pkg = await fse.readJSON(pkgPath)
 
-      await withSpinner(
-        '写入各平台 id 到 magixCliConfig 中',
-        async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-          pkg.magixCliConfig = pkg.magixCliConfig || {}
-          pkg.magixCliConfig.rapProjectId = snapshoot?.rapProject?.id || ''
-          pkg.magixCliConfig.iconfontId = snapshoot?.iconfontProject?.id || ''
-          pkg.magixCliConfig.defId = snapshoot?.defInfo?.id || ''
-          pkg.magixCliConfig.spma = snapshoot?.spma || ''
-          pkg.magixCliConfig.chartParkId =
-            snapshoot?.chartparkProject?.projectId || ''
-          pkg.magixCliConfig.gitlabUrl = snapshoot?.gitProject?.web_url || ''
-          await fse.writeJson(pkgPath, pkg, { spaces: 2 })
-        }
-      )(emitter, appInfo)
+      // await withSpinner(
+      //   '写入各平台 id 到 magixCliConfig 中',
+      //   async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+      //     pkg.magixCliConfig = pkg.magixCliConfig || {}
+      //     pkg.magixCliConfig.rapProjectId = snapshoot?.rapProject?.id || ''
+      //     pkg.magixCliConfig.iconfontId = snapshoot?.iconfontProject?.id || ''
+      //     pkg.magixCliConfig.defId = snapshoot?.defInfo?.id || ''
+      //     pkg.magixCliConfig.spma = snapshoot?.spma || ''
+      //     pkg.magixCliConfig.chartParkId =
+      //       snapshoot?.chartparkProject?.projectId || ''
+      //     pkg.magixCliConfig.gitlabUrl = snapshoot?.gitProject?.web_url || ''
+      //     await fse.writeJson(pkgPath, pkg, { spaces: 2 })
+      //   }
+      // )(emitter, appInfo)
 
-      await withSpinner(
-        '设置入口页的 spma 值',
-        async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-          replaceUtil.setSpma(snapshoot?.spma, app)
-        }
-      )(emitter, appInfo)
+      // await withSpinner(
+      //   '设置入口页的 spma 值',
+      //   async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+      //     replaceUtil.setSpma(snapshoot?.spma, app)
+      //   }
+      // )(emitter, appInfo)
 
       /**
        * 初始化项目后，进行全文件的项目名称的替换，目前只支持zs_scaffold脚手架
        */
+
       if (snapshoot?.scaffoldInfo?.replaceable) {
         await withSpinner(
           '开始进行脚手架的项目全局项目名称替换',
@@ -167,10 +153,10 @@ export default async () => {
               // stderr.pipe(process.stderr)
             })
             await git.add('-A')
-            await git.commit('first commit by @ali/mm-cli', {
+            await git.commit('first commit by thx-cli', {
               '--no-verify': null
             })
-            await git.push('origin', 'master')
+            // await git.push('origin', 'master')
           }
         )(emitter, appInfo)
       }
@@ -186,11 +172,14 @@ export default async () => {
         )}`
       )
       console.log(
-        `  ${grey('●')} ${blueBright('mm daily')}    ${grey('日常发布')}`
+        `  ${grey('●')} ${blueBright('mm build')}      ${grey('本地构建项目')}`
       )
-      console.log(
-        `  ${grey('●')} ${blueBright('mm publish')}  ${grey('正式发布')}`
-      )
+      // console.log(
+      //   `  ${grey('●')} ${blueBright('mm daily')}    ${grey('日常发布')}`
+      // )
+      // console.log(
+      //   `  ${grey('●')} ${blueBright('mm publish')}  ${grey('正式发布')}`
+      // )
       console.log(
         `  ${grey('●')} ${blueBright('mm -h')}       ${grey(
           '查看所有命令帮助'
@@ -343,193 +332,193 @@ export default async () => {
   /**
    * mm daily命令，配置遵循commander工具
    */
-  commands.push({
-    command: 'daily',
-    alias: 'd',
-    description: '将当前的开发分支发布到预发环境',
-    options: [
-      ['-m, --message <message>', 'commit信息'],
-      ['--nospm', '发布前不执行打点任务']
-    ],
-    // 必须为异步方法
-    async action(options: CommanderStatic) {
-      await require('./service/commands/daily').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('Examples:')
-          console.log('  $ mm daily')
-          console.log()
-        }
-      ]
-    ]
-    // 执行命令前的勾子函数
-    // async before(options) {
-    //     if (!options.nospm) {
-    //         const magixCliConfig = await util.getMagixCliConfig()
-    //         let currentBranch = await util.getPrecentBranch()
+  // commands.push({
+  //   command: 'daily',
+  //   alias: 'd',
+  //   description: '将当前的开发分支发布到预发环境',
+  //   options: [
+  //     ['-m, --message <message>', 'commit信息'],
+  //     ['--nospm', '发布前不执行打点任务']
+  //   ],
+  //   // 必须为异步方法
+  //   async action(options: CommanderStatic) {
+  //     await require('./service/commands/daily').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('Examples:')
+  //         console.log('  $ mm daily')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  //   // 执行命令前的勾子函数
+  //   // async before(options) {
+  //   //     if (!options.nospm) {
+  //   //         const magixCliConfig = await util.getMagixCliConfig()
+  //   //         let currentBranch = await util.getPrecentBranch()
 
-    //         //发布前执行spm打点
-    //         await util.runSpmlog(magixCliConfig, currentBranch)
-    //     }
-    // }
-  })
+  //   //         //发布前执行spm打点
+  //   //         await util.runSpmlog(magixCliConfig, currentBranch)
+  //   //     }
+  //   // }
+  // })
 
   /**
    * mm publish命令，配置遵循commander工具
    */
-  commands.push({
-    command: 'publish',
-    alias: 'p',
-    description:
-      '将当前的开发分支发布到线上生产环境 (会删除掉当前分支并回到 master)',
-    options: [
-      ['-m, --message <message>', 'commit 信息'],
-      ['--nospm', '发布前不执行打点任务'],
-      ['-i, --international', '是否同时发布到国际版 cdn'],
-      ['-p, --prod', '是否跳过 daily 发布直接发布生产环境'],
-      ['-a, --all-reviewer', '是否全选已配置的代码审阅人员'],
-      [
-        '-c, --code-reviewers <reviewers>',
-        '直接指定代码审阅人员工号，多工号以逗号分隔'
-      ]
-    ],
-    // 必须为异步方法
-    async action(options) {
-      await require('./service/commands/publish').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('Examples:')
-          console.log('  $ mm publish')
-          console.log()
-        }
-      ]
-    ]
-    // 执行命令前的勾子函数
-    // async before(options) {
-    //     if (!options.nospm) {
-    //         const magixCliConfig = await util.getMagixCliConfig()
-    //         let currentBranch = await util.getPrecentBranch()
+  // commands.push({
+  //   command: 'publish',
+  //   alias: 'p',
+  //   description:
+  //     '将当前的开发分支发布到线上生产环境 (会删除掉当前分支并回到 master)',
+  //   options: [
+  //     ['-m, --message <message>', 'commit 信息'],
+  //     ['--nospm', '发布前不执行打点任务'],
+  //     ['-i, --international', '是否同时发布到国际版 cdn'],
+  //     ['-p, --prod', '是否跳过 daily 发布直接发布生产环境'],
+  //     ['-a, --all-reviewer', '是否全选已配置的代码审阅人员'],
+  //     [
+  //       '-c, --code-reviewers <reviewers>',
+  //       '直接指定代码审阅人员工号，多工号以逗号分隔'
+  //     ]
+  //   ],
+  //   // 必须为异步方法
+  //   async action(options) {
+  //     await require('./service/commands/publish').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('Examples:')
+  //         console.log('  $ mm publish')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  //   // 执行命令前的勾子函数
+  //   // async before(options) {
+  //   //     if (!options.nospm) {
+  //   //         const magixCliConfig = await util.getMagixCliConfig()
+  //   //         let currentBranch = await util.getPrecentBranch()
 
-    //         //发布前执行spm打点
-    //         await util.runSpmlog(magixCliConfig, currentBranch)
-    //     }
-    // }
-  })
+  //   //         //发布前执行spm打点
+  //   //         await util.runSpmlog(magixCliConfig, currentBranch)
+  //   //     }
+  //   // }
+  // })
 
   /**
    * 根据当前项目RAP的projectId，生成models.js接口集合文件
    */
 
-  commands.push({
-    command: 'models',
-    alias: 'm',
-    description: '根据当前项目 RAP 的 projectId，生成 models.js 接口集合文件',
-    async action(options) {
-      await require('./service/commands/models').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log('    $ mm models')
-          console.log()
-        }
-      ]
-    ]
-  })
+  // commands.push({
+  //   command: 'models',
+  //   alias: 'm',
+  //   description: '根据当前项目 RAP 的 projectId，生成 models.js 接口集合文件',
+  //   async action(options) {
+  //     await require('./service/commands/models').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('  Examples:')
+  //         console.log()
+  //         console.log('    $ mm models')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  // })
 
   /**
    * 黄金令箭埋点
    */
 
-  commands.push({
-    command: 'spmlog',
-    alias: 'sl',
-    description: '黄金令箭埋点，同时同步数据小站配置',
-    options: [
-      // ["-d, --dataconfig", "只同步数据小站的数据到本地"],
-      ['-r, --remove-spm', '清空所有 spm 打点']
-    ],
-    async action(options) {
-      await require('./service/commands/spmlog').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log('    $ mm spmlog')
-          console.log('    $ mm spmlog -r')
-          console.log()
-        }
-      ]
-    ]
-  })
+  // commands.push({
+  //   command: 'spmlog',
+  //   alias: 'sl',
+  //   description: '黄金令箭埋点，同时同步数据小站配置',
+  //   options: [
+  //     // ["-d, --dataconfig", "只同步数据小站的数据到本地"],
+  //     ['-r, --remove-spm', '清空所有 spm 打点']
+  //   ],
+  //   async action(options) {
+  //     await require('./service/commands/spmlog').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('  Examples:')
+  //         console.log()
+  //         console.log('    $ mm spmlog')
+  //         console.log('    $ mm spmlog -r')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  // })
 
   /**
    * iconfont相关的命令
    * --check 比对项目与iconfont平台的icon，列出项目中没有用到的icon
    */
-  commands.push({
-    command: 'iconfont',
-    alias: 'if',
-    description: 'iconfont 相关的命令',
-    options: [
-      ['--check', '比对项目与 iconfont 平台的 icon，列出项目中没有用到的 icon']
-    ],
-    async action(options) {
-      await require('./service/commands/iconfont').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log('    $ mm iconfont --check')
-          console.log()
-        }
-      ]
-    ]
-  })
+  // commands.push({
+  //   command: 'iconfont',
+  //   alias: 'if',
+  //   description: 'iconfont 相关的命令',
+  //   options: [
+  //     ['--check', '比对项目与 iconfont 平台的 icon，列出项目中没有用到的 icon']
+  //   ],
+  //   async action(options) {
+  //     await require('./service/commands/iconfont').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('  Examples:')
+  //         console.log()
+  //         console.log('    $ mm iconfont --check')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  // })
 
   /**
    * 同步chartPark的options到本地
    */
-  commands.push({
-    command: 'chartpark',
-    alias: 'cp',
-    description: '同步 chartpark 平台图表配置信息到本地',
-    async action(options) {
-      await require('./service/commands/chartpark').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log('    $ mm chartpark')
-          console.log()
-        }
-      ]
-    ]
-  })
+  // commands.push({
+  //   command: 'chartpark',
+  //   alias: 'cp',
+  //   description: '同步 chartpark 平台图表配置信息到本地',
+  //   async action(options) {
+  //     await require('./service/commands/chartpark').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('  Examples:')
+  //         console.log()
+  //         console.log('    $ mm chartpark')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  // })
 
   /**
    * 安装dependencies包，并同步到项目中

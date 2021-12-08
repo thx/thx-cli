@@ -5,7 +5,7 @@
     "clean": "lerna clean --yes",
     "dev": "FORCE_COLOR=1 lerna run dev --parallel",
     "dev:mece": "npm-run-all -p link dev test:watch docs:watch madge:watch git:mode",
-    "dev:magix": "yarn run dev --scope thx-cli --scope thx-cli-core --scope thx-kit-magix",
+    "dev:magix": "yarn run dev --scope thx-cli --scope thx-cli-core --scope thx-kit-magix --scope thx-magix-scripts",
     "dev:react": "yarn run dev --scope thx-cli --scope thx-cli-core --scope @ali/mm-cli-server --scope @ali/mm-cli-webui --scope @ali/mm-kit-react --scope @ali/mm-scripts",
     "test": "lerna run test --parallel",
     "test:watch": "lerna run test:watch --parallel",

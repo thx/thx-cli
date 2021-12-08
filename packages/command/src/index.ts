@@ -3,19 +3,21 @@
 import { grey, redBright, blueBright, whiteBright } from 'chalk' // MO Terminal string styling done right
 import * as program from 'commander' // MO the complete solution for node.js command-line programs
 import * as minimist from 'minimist'
-import { utils, gitlab } from 'thx-cli-core'
+import { utils, gitlab, cliUtils } from 'thx-cli-core'
 import systemCommandList from './system/index'
+import defaultKitCommandList from './kit/index'
 import logger from './logger'
-import {
-  checkCliOutdated,
-  checkModuleMissed,
-  registerCommand,
-  registerKitCommandList
-  // registerPluginCommand
-} from './utils/index'
 import { IKitInfo } from 'thx-cli-core/types'
+
 const pkg = require('../package.json')
 const { initMMHome, getAppPkg, getAppPath, getAppRC, goldlog, getKit } = utils
+const {
+  checkCliOutdated,
+  registerCommand,
+  checkModuleMissed,
+  registerKitCommandList,
+  registerPluginCommand
+} = cliUtils
 
 // http://patorjk.com/software/taag/#p=display&f=Slant&t=M%20M%20C%20L%20I
 logger.info(
@@ -48,8 +50,8 @@ function outputHelp() {
   // examples
   console.log()
   console.log('Examples:')
-  console.log(`  ${grey('$')} ${blueBright.bold('mm init')}`)
-  console.log(`  ${grey('$')} ${blueBright.bold('mm dev')}`)
+  console.log(`  ${grey('$')} ${blueBright.bold('thx init')}`)
+  console.log(`  ${grey('$')} ${blueBright.bold('thx dev')}`)
   console.log('')
 
   // test for help info
@@ -75,7 +77,7 @@ async function prepare() {
       console.log(
         blueBright(`ⓘ 本命令已自动转 sudo 执行 ${grey('(dev 需要 sudo 权限)')}`)
       )
-      await utils.spawnCommand('sudo', ['mm', ...process.argv.slice(2)])
+      await utils.spawnCommand('sudo', ['thx', ...process.argv.slice(2)])
     } catch (error) {
       console.log(redBright(`${error}`))
     }
@@ -93,10 +95,10 @@ async function prepare() {
     // goldlog('mm-cli.system.command', process.argv)
 
     // MO 1. 检查自身是否需要更新。只做提示，不会自动强制更新。
-    await checkCliOutdated()
+    await checkCliOutdated(pkg)
 
     // MO 2. 检测域登录状态。如果未登录，则先提示登录。
-    await gitlab.login()
+    // await gitlab.login()
 
     let isSystemCommand = false // 系统命令
     let isKitCommand = false // 套件命令
@@ -128,31 +130,31 @@ async function prepare() {
 
     // MO 6. 注册插件命令
     // 套件与插件命令的升级安装提示隔离开
-    // await utils.took(
-    //   redBright('prepare/注册插件命令'),
-    //   async () => {
-    //     program.command(blueBright.bold('插件命令：')) // 分隔符
-    //     const { plugins } = await utils.fetchModuleList()
-    //     const quickMatch = plugins.find(
-    //       pluginInfo =>
-    //         pluginInfo.command.name === SUB_COMMAND ||
-    //         pluginInfo.command.alias === SUB_COMMAND
-    //     )
-    //     if (quickMatch) {
-    //       isPluginCommand = true
-    //       // 判断安装套件
-    //       if (!quickMatch.version) await checkModuleMissed('plugin', quickMatch)
-    //       await registerPluginCommand(program, quickMatch)
-    //       return
-    //     }
-    //     logger.debug('plugins', plugins)
-    //     for (const pluginInfo of plugins) {
-    //       // if (!pluginInfo.version) continue
-    //       await registerPluginCommand(program, pluginInfo)
-    //     }
-    //   },
-    //   logger
-    // )
+    await utils.took(
+      redBright('prepare/注册插件命令'),
+      async () => {
+        program.command(blueBright.bold('插件命令：')) // 分隔符
+        const { plugins } = await utils.fetchModuleList()
+        const quickMatch = plugins.find(
+          pluginInfo =>
+            pluginInfo.command.name === SUB_COMMAND ||
+            pluginInfo.command.alias === SUB_COMMAND
+        )
+        if (quickMatch) {
+          isPluginCommand = true
+          // 判断安装套件
+          if (!quickMatch.version) await checkModuleMissed('plugin', quickMatch)
+          await registerPluginCommand(program, quickMatch)
+          return
+        }
+        logger.debug('plugins', plugins)
+        for (const pluginInfo of plugins) {
+          // if (!pluginInfo.version) continue
+          await registerPluginCommand(program, pluginInfo)
+        }
+      },
+      logger
+    )
 
     // 如果是插件命令跳出后续套件安装环节
     if (isPluginCommand) return
@@ -197,7 +199,12 @@ async function prepare() {
                 }`
               )}`
             )
-          isKitCommand = await registerKitCommandList(program, kitInfo)
+          isKitCommand = await registerKitCommandList(
+            program,
+            kitInfo,
+            systemCommandList,
+            defaultKitCommandList
+          )
         }
       },
       logger

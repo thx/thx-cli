@@ -6,23 +6,23 @@
 
 // import systemLogin from './login'
 // import systemLogout from './logout'
+// import systemAdd from './add'
+// import systemWeb from './web'
 import systemInstall from './install'
 import systemUninstall from './uninstall'
 import systemInit from './init'
-// import systemAdd from './add'
 import systemList from './list'
-// import systemWeb from './web'
 import { ICommandList } from 'thx-cli-core/types'
 
 const commands: ICommandList = [
   // systemLogin,
   // systemLogout,
+  // systemAdd,
+  // systemWeb,
   systemInstall,
   systemUninstall,
   systemInit,
-  // systemAdd,
   systemList
-  // systemWeb
 ]
 
 export default commands

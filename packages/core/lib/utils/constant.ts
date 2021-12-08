@@ -2,17 +2,18 @@ import * as moment from 'moment'
 import * as chalk from 'chalk'
 import { join } from 'path'
 import * as os from 'os'
-import { PROCESS_STATE, SOCKET_EVENT } from './constant-browser'
+import { PROCESS_STATE, SOCKET_EVENT, METHOD_MAPS } from './constant-browser'
 
-export function NOW () {
+// 内外网的标识，根据入口命令判断，mm 开头为内网
+const isOpenSource = !/\/mm$/.test(process.argv[1])
+
+export function NOW() {
   return moment().format('HH:mm:ss.SSS') // YYYY-MM-DD
 }
 
-// 套件/插件列表，来自 alp 配置 https://alp.alibaba-inc.com/#!/page/jsonp-editor/index?id=2901719
-export const ALP_API = 'https://mo.m.taobao.com/rmx_cli_kits_plugins_list'
-
-// 套件/插件列表，来自 alp 配置 https://alp.alibaba-inc.com/#!/page/jsonp-editor/index?id=3220428
-export const ALP_API_V1 = 'https://mo.m.taobao.com/v1/mm_cli_module_list' // MO TODO
+export const ALP_API_V1 = isOpenSource
+  ? 'https://mo.m.taobao.com/common/thx-cli-module-list' // 内网套件插件列表
+  : 'https://mo.m.taobao.com/v1/mm_cli_module_list' // 外网套件插件列表
 
 /**  @deprecated */
 export const choices = [
@@ -68,7 +69,11 @@ export const MODULE_TYPE = {
 }
 
 export const MODULE_TYPE_LIST = [
-  { name: 'kit', title: '套件', description: '特定技术栈的全链路开发解决方案。' },
+  {
+    name: 'kit',
+    title: '套件',
+    description: '特定技术栈的全链路开发解决方案。'
+  },
   { name: 'plugin', title: '插件', description: '为命令行扩展单个命令。' }
 ]
 
@@ -91,6 +96,8 @@ export { PROCESS_STATE }
 
 export { SOCKET_EVENT }
 
+export { METHOD_MAPS }
+
 /** MM CLI */
 
 /** @deprecated => MM_HOST */
@@ -104,7 +111,7 @@ export const MM_HOST = '127.0.0.1'
 export const MM_PORT = 6868
 
 /** @deprecated => MM_CACHE_FOLDER */
-export const RMX_CACHE_FOLDER = '.mm'
+export const RMX_CACHE_FOLDER = isOpenSource ? '.thx' : '.mm'
 /** @deprecated => MM_HOME */
 export const RMX_HOME = join(os.homedir(), RMX_CACHE_FOLDER)
 /** @deprecated => MM_RC_FILE */
@@ -116,7 +123,7 @@ export const RMX_RC_JSON = '.rmxrc.json'
 
 // =>
 /** MM CLI 本地缓存目录（名称） */
-export const MM_CACHE_FOLDER = '.mm' // MO TODO .rmx 排查
+export const MM_CACHE_FOLDER = isOpenSource ? '.thx' : '.mm' // 外网用 .thx 目录，内网用 .mm 目录
 /** MM CLI 套件缓存目录（名称） */
 export const MM_KIT_FOLDER = 'kit'
 /** MM CLI 插件缓存目录（名称） */

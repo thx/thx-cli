@@ -6,32 +6,34 @@ import { EventEmitter } from 'events'
 import * as fse from 'fs-extra'
 import util from '../../util/util'
 import { resolve } from 'path'
-import constant from '../../util/constant'
 import rapUtil from '../../util/rap'
 import rapper from '../../util/rapper'
 import logger from '../../logger'
 import { utils } from 'thx-cli-core'
 
 // 接口的type转换
-const METHOD_MAPS = constant.METHOD_MAPS
+const METHOD_MAPS = utils.METHOD_MAPS
 // const ORIGIN_MODELS_PATH = 'src/app/models/models.js'
 const ORIGIN_MODELS_TEMPLATE_PATH = '../tmpl/models.js'
 const modelsTmplKey = 'modelsTmpl' // magixCliConfig中的相关模板路径配置的key值
 const modelsPathKey = 'modelsPath' // magixCliConfig中的相关生成路径配置的key值
 
 export default {
-
   // params.cwd 当前工作目录
   // params.models  由check()返回
   // params.repeatApis  由check()返回
   // params.originModels 由check()返回
   // 返回emitter，包含事件data,close
-  exec (params: any = {}) {
+  exec(params: any = {}) {
     const emitter = new EventEmitter()
 
     setTimeout(async () => {
       const cwd = params.cwd
-      const managerTmplGenerater = await util.getTmplGenerater(ORIGIN_MODELS_TEMPLATE_PATH, modelsTmplKey, cwd)
+      const managerTmplGenerater = await util.getTmplGenerater(
+        ORIGIN_MODELS_TEMPLATE_PATH,
+        modelsTmplKey,
+        cwd
+      )
       const appPath = await utils.getAppPath()
       const pkg = await utils.getAppPkg(appPath)
       const magixCliConfig = await util.getMagixCliConfig(cwd)
@@ -42,7 +44,10 @@ export default {
       const rmxConfig = pkg.rmxConfig || {}
       // 获取RAP项目ID
       // 没有配置从本地matfile
-      const projectId = rmxConfig.rapProjectId || magixCliConfig.rapProjectId || magixCliConfig.matProjectId
+      const projectId =
+        rmxConfig.rapProjectId ||
+        magixCliConfig.rapProjectId ||
+        magixCliConfig.matProjectId
 
       // 生成models.js的路径默认值
       const originModelsPath = magixCliConfig[modelsPathKey] || ''
@@ -51,22 +56,46 @@ export default {
       //
       emitter.emit('data', cyan('↳ 以下是接口详情列表：(接口名：接口描述)'))
       for (const model of models) {
-        emitter.emit('data', `  ├── ${model.name}：` + gray(`${model.__apiName__}`))
+        emitter.emit(
+          'data',
+          `  ├── ${model.name}：` + gray(`${model.__apiName__}`)
+        )
       }
 
       // 总计
-      emitter.emit('data', cyan(`➤ 共${models.length}个接口 (项目id: ${projectId})`))
+      emitter.emit(
+        'data',
+        cyan(`➤ 共${models.length}个接口 (项目id: ${projectId})`)
+      )
 
       // 接口重复提示
       if (repeatApis.length) {
         emitter.emit('data', yellow('✘ RAP上存在重复的接口，请去重: '))
         repeatApis.forEach(api => {
           if (+rapVersion === 2) {
-            emitter.emit('data', grey(`  项目id: ${api.repositoryId} - ${api.name} - ${api.url}`))
-            emitter.emit('data', grey(`  └─ https://rap2.alibaba-inc.com/repository/editor?id=${api.repositoryId}&itf=${api.id}`))
+            emitter.emit(
+              'data',
+              grey(`  项目id: ${api.repositoryId} - ${api.name} - ${api.url}`)
+            )
+            emitter.emit(
+              'data',
+              grey(
+                `  └─ https://rap2.alibaba-inc.com/repository/editor?id=${api.repositoryId}&itf=${api.id}`
+              )
+            )
           } else {
-            emitter.emit('data', grey(`  项目id: ${api.projectId} - ${api.name} - ${api.requestUrl}`))
-            emitter.emit('data', grey(`  └─ http://rap.alibaba-inc.com/workspace/myWorkspace.do?projectId=${api.projectId}#${api.id}`))
+            emitter.emit(
+              'data',
+              grey(
+                `  项目id: ${api.projectId} - ${api.name} - ${api.requestUrl}`
+              )
+            )
+            emitter.emit(
+              'data',
+              grey(
+                `  └─ http://rap.alibaba-inc.com/workspace/myWorkspace.do?projectId=${api.projectId}#${api.id}`
+              )
+            )
           }
         })
       }
@@ -87,10 +116,14 @@ export default {
         rapper(originModels, projectId, servicePath)
           .on('data', msg => {
             emitter.emit('data', msg)
-          }).on('close', resp => {
+          })
+          .on('close', resp => {
             if (typeof resp === 'object') {
               logger.debug(__filename)
-              logger.warn(redBright('@deprecated 请不要在 close 事件中返回一个对象'), resp)
+              logger.warn(
+                redBright('@deprecated 请不要在 close 事件中返回一个对象'),
+                resp
+              )
             }
 
             if (resp.error) {
@@ -117,7 +150,7 @@ export default {
   //         originModels: []
   //     }
   // }
-  async check (params: any = {}) {
+  async check(params: any = {}) {
     const appPath = await utils.getAppPath()
     const pkg = await utils.getAppPkg(appPath)
     const magixCliConfig = pkg.magixCliConfig || {}
@@ -135,17 +168,22 @@ export default {
 
     // 获取RAP项目ID
     // 没有配置从本地matfile
-    const projectId = rmxConfig.rapProjectId || magixCliConfig.rapProjectId || magixCliConfig.matProjectId
+    const projectId =
+      rmxConfig.rapProjectId ||
+      magixCliConfig.rapProjectId ||
+      magixCliConfig.matProjectId
 
     // rap项目id不能为空
     if (!projectId) {
       return {
-        error: 'rapProjectId不能为空，请检查package.json->magixCliConfig.rapProjectId是否正确配置了'
+        error:
+          'rapProjectId不能为空，请检查package.json->magixCliConfig.rapProjectId是否正确配置了'
       }
       // rap项目id只能为纯数字
     } else if (/\D/.test(projectId)) {
       return {
-        error: 'rapProjectId只能为纯数字，请检查package.json->magixCliConfig.rapProjectId配置'
+        error:
+          'rapProjectId只能为纯数字，请检查package.json->magixCliConfig.rapProjectId配置'
       }
     }
 
@@ -168,16 +206,20 @@ export default {
         }
       }
 
-      originModels.forEach((action) => {
+      originModels.forEach(action => {
         // 正则解析url转为name
         // http://etao.alimama.net/bp/myActivity/activityInfo' --> /bp/myActivity/activityInfo
-        const urlToName = rapUtil.parseActionUrlRap2(action, magixCliConfig.supportApiPathParams)
+        const urlToName = rapUtil.parseActionUrlRap2(
+          action,
+          magixCliConfig.supportApiPathParams
+        )
         const method = action.method
 
         // 去除掉:id, [0-9]{4}这种信息
         // api/get/:id/data -> api/get/
         let requestUrl = action.url.replace(/:id.*/, '')
-        if (magixCliConfig.supportApiPathParams) { // 支持带id的url直接完整保留
+        if (magixCliConfig.supportApiPathParams) {
+          // 支持带id的url直接完整保留
           requestUrl = action.url
         }
         // .replace(/[^\/]*(?:\[.+\])?(?:\{.+\}).*/, '')
@@ -203,10 +245,11 @@ export default {
 
         apiMaps[urlToName] = action
       })
-    } else { // 老的RAP数据处理
+    } else {
+      // 老的RAP数据处理
       originModels = await rapUtil.getRapModels(projectId)
 
-      originModels.forEach((action) => {
+      originModels.forEach(action => {
         // 正则解析url转为name
         // http://etao.alimama.net/bp/myActivity/activityInfo' --> /bp/myActivity/activityInfo
         const urlToName = rapUtil.parseActionUrl(action)
@@ -214,7 +257,9 @@ export default {
 
         // 去除掉:id, [0-9]{4}这种信息
         // api/get/:id/data -> api/get/
-        const requestUrl = action.requestUrl.replace(/:id.*/, '').replace(/[^/]*(?:\[.+\])?(?:\{.+\}).*/, '')
+        const requestUrl = action.requestUrl
+          .replace(/:id.*/, '')
+          .replace(/[^/]*(?:\[.+\])?(?:\{.+\}).*/, '')
 
         if (!urlToName || !requestUrl) {
           return
@@ -242,9 +287,9 @@ export default {
     const modelsJsPath = resolve(appPath, originModelsPath)
 
     /**
-         * 校验RAP平台的接口跟本地接口有没有被删除或编辑的情况，有的话给出提示
-         * 接口增加的情况不做提示
-         */
+     * 校验RAP平台的接口跟本地接口有没有被删除或编辑的情况，有的话给出提示
+     * 接口增加的情况不做提示
+     */
 
     const noMatchAPis = []
     try {

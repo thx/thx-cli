@@ -3,10 +3,16 @@ import * as fse from 'fs-extra'
 import * as os from 'os'
 import { readJSON, safeWriteJSON, mkdirSync } from './file'
 import { join } from 'path'
-import { MM_CONFIG_JSON, MM_HOME, MM_KIT_FOLDER, MM_PLUGIN_FOLDER, RMX_CACHE_FOLDER, RMX_HOME } from './constant'
+import {
+  MM_CONFIG_JSON,
+  MM_HOME,
+  MM_KIT_FOLDER,
+  MM_PLUGIN_FOLDER,
+  MM_CACHE_FOLDER
+} from './constant'
 import { IRMXConfig } from '../../types'
 
-const MM_CONFIG_PATH = join(RMX_HOME, 'config.json')
+const MM_CONFIG_PATH = join(MM_HOME, 'config.json')
 
 /**
  * 获取 `.rmx` 目录位置
@@ -14,14 +20,18 @@ const MM_CONFIG_PATH = join(RMX_HOME, 'config.json')
  * @return {String}
  * @deprecated
  */
-export function getRmxHomeDir () {
-  console.trace('不推荐继续使用 `getRmxHomeDir()`，请改用 `RMX_HOME`')
-  return join(os.homedir(), RMX_CACHE_FOLDER) // MO 应该是一个常量量，而不是函数。函数意味着，有计算过程，并且可能有不同的返回值。
+export function getRmxHomeDir() {
+  console.trace('不推荐继续使用 `getRmxHomeDir()`，请改用 `MM_HOME`')
+  return join(os.homedir(), MM_CACHE_FOLDER) // MO 应该是一个常量量，而不是函数。函数意味着，有计算过程，并且可能有不同的返回值。
 }
 
-export function initMMHome () {
-  const dirs = [MM_HOME, join(MM_HOME, MM_KIT_FOLDER), join(MM_HOME, MM_PLUGIN_FOLDER)]
-  dirs.forEach((dir) => {
+export function initMMHome() {
+  const dirs = [
+    MM_HOME,
+    join(MM_HOME, MM_KIT_FOLDER),
+    join(MM_HOME, MM_PLUGIN_FOLDER)
+  ]
+  dirs.forEach(dir => {
     if (!fs.existsSync(dir)) mkdirSync(dir)
   })
 
@@ -31,7 +41,7 @@ export function initMMHome () {
     portssl: 443, // https 端口号
     apps: [], // 应用列表
     webui: {} // WebUI 自定义配置
-    // defaultDir: RMX_HOME // rmx 默认项目目录
+    // defaultDir: MM_HOME // rmx 默认项目目录
   }
   if (!fs.existsSync(mmConfigPath)) {
     safeWriteJSON(mmConfigPath, mmConfigDefaultContent)
@@ -41,34 +51,34 @@ export function initMMHome () {
   }
 }
 
-export function getMMConfig (): IRMXConfig {
+export function getMMConfig(): IRMXConfig {
   return getRmxConfig()
 }
 
-export function setMMConfig (config: IRMXConfig) {
+export function setMMConfig(config: IRMXConfig) {
   setRmxConfig(config)
 }
 
 /**
-   * 获取 .rmx 全局配置
-   *
-   * @return {json}
-   * @deprecated => getMMConfig()
-   */
+ * 获取 .rmx 全局配置
+ *
+ * @return {json}
+ * @deprecated => getMMConfig()
+ */
 // MO FIXED getRmxConfig => getRmxConfig | getApplicationRmxConfig
 // MO rmx config 的类型定义是什么？
-export function getRmxConfig (): IRMXConfig {
-  const config = readJSON(join(RMX_HOME, 'config.json'))
+export function getRmxConfig(): IRMXConfig {
+  const config = readJSON(join(MM_HOME, 'config.json'))
   // if (!config.apps && config.projects) {
   //   config.apps = config.projects
   // }
 
   Object.defineProperty(config, 'projects', {
-    set (projects) {
+    set(projects) {
       console.trace('废弃，不建议使用 `projects`，请替换为 `apps`。')
       this.apps = projects // cmd => terminal
     },
-    get () {
+    get() {
       console.trace('废弃，不建议使用 `projects`，请替换为 `apps`。')
       return this.apps
     }
@@ -80,8 +90,8 @@ export function getRmxConfig (): IRMXConfig {
 // 获取配置
 // path[string]：xx.yy.zz
 /** 获取 rmx 全局配置 */
-export function getConfig (path): any {
-  this._initConfig()
+export function getConfig(path): any {
+  _initConfig()
   const config = fse.readJsonSync(MM_CONFIG_PATH)
   const pathSplit = path.split('.')
   let result = {}
@@ -96,8 +106,8 @@ export function getConfig (path): any {
 }
 
 /** @deprecated MO TODO setRmxConfig => setMMConfig */
-export function setRmxConfig (config: IRMXConfig) {
-  safeWriteJSON(join(RMX_HOME, 'config.json'), config)
+export function setRmxConfig(config: IRMXConfig) {
+  safeWriteJSON(join(MM_HOME, 'config.json'), config)
 }
 
 // 保存在[用户目录]/.rmx/config.json
@@ -112,13 +122,13 @@ export function setRmxConfig (config: IRMXConfig) {
  * MO TODO 是否有必要限制套件&插件的可配置范围
  * 套件或插件设置配置项，请调用 setModuleConfig(pkgName, value)。
  */
-export function setConfig (path, value) {
-  this._initConfig()
+export function setConfig(path, value) {
+  _initConfig()
   // console.log(MM_CONFIG_PATH, path, value)
   const config = fse.readJsonSync(MM_CONFIG_PATH)
   const pathSplit = path.split('.')
   let i = 0
-  function recur (_config, key) {
+  function recur(_config, key) {
     i++
     if (i === pathSplit.length) {
       _config[key] = value
@@ -140,7 +150,7 @@ export function setConfig (path, value) {
  * 获取套件&插件的配置项
  * MO TODO 套件&插件迁移
  */
-export function setModuleConfig (pkgName: string, value: any) {
+export function setModuleConfig(pkgName: string, value: any) {
   const mmConfig = getRmxConfig()
   mmConfig[pkgName] = value
   setRmxConfig(mmConfig)
@@ -150,16 +160,20 @@ export function setModuleConfig (pkgName: string, value: any) {
  * 设置套件&插件的配置项
  * MO TODO 套件&插件迁移
  */
-export function getModuleConfig (pkgName: string) {
+export function getModuleConfig(pkgName: string) {
   const mmConfig = getRmxConfig()
   return mmConfig[pkgName] || {}
 }
 
 /** 初始化一个空的 config.json */
-export function _initConfig () {
+export function _initConfig() {
   if (!fse.pathExistsSync(MM_CONFIG_PATH)) {
-    fse.outputJSONSync(MM_CONFIG_PATH, {}, {
-      spaces: 2
-    })
+    fse.outputJSONSync(
+      MM_CONFIG_PATH,
+      {},
+      {
+        spaces: 2
+      }
+    )
   }
 }

@@ -4,6 +4,3 @@
 export { default as init } from './init'
 export { default as install } from './install'
 export { default as uninstall } from './uninstall'
-export { default as build } from './build'
-export { default as daily } from './daily'
-export { default as publish } from './publish'

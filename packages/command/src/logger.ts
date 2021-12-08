@@ -1,5 +1,7 @@
 import { utils } from 'thx-cli-core'
+import { Logger } from 'log4js'
 const { getLogger } = utils
 
 const pkg = require('../package.json')
-export default getLogger(pkg.name)
+const logger: Logger = getLogger(pkg.name)
+export default logger

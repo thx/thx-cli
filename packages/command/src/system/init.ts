@@ -2,26 +2,55 @@
  * 项目初始化命令
  */
 import * as inquirer from 'inquirer' // A collection of common interactive command line user interfaces.
-import { cyan, greenBright, yellowBright, grey, redBright, blueBright, underline } from 'chalk'
+import {
+  cyan,
+  greenBright,
+  yellowBright,
+  grey,
+  redBright,
+  blueBright
+  // underline
+} from 'chalk'
 import { EventEmitter } from 'events'
 import { CommanderStatic } from 'commander'
 import * as fse from 'fs-extra'
-import { utils, init as coreInitCommand } from 'thx-cli-core'
-import { IKitInfo, IGitLabGroup, ICreateAppInfo, ICommandConfig, IModuleType, ICommandList } from 'thx-cli-core/types'
-import { checkModuleMissed } from '../utils/index'
+import { utils, init as coreInitCommand, cliUtils } from 'thx-cli-core'
+import {
+  IKitInfo,
+  // IGitLabGroup,
+  ICreateAppInfo,
+  ICommandConfig,
+  IModuleType,
+  ICommandList
+} from 'thx-cli-core/types'
 import logger from '../logger'
-const { getLength, fixLength, RMX_HOME } = utils
+const { getLength, fixLength, MM_HOME } = utils
+const { checkModuleMissed } = cliUtils
 // MO TODO
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 
 const OPTION_LIST = [
-  'scaffold', 'branch', 'directory', 'group', 'app',
+  'scaffold',
+  'branch',
+  'directory',
+  'group',
+  'app',
   'gitlab',
-  'createDef', 'createRap', 'createIconfont', 'createChartpark', 'createSpma', 'createClue',
-  'def', 'rap', 'iconfont', 'chartpark', 'spma', 'clue',
+  'createDef',
+  'createRap',
+  'createIconfont',
+  'createChartpark',
+  'createSpma',
+  'createClue',
+  'def',
+  'rap',
+  'iconfont',
+  'chartpark',
+  'spma',
+  'clue',
   'install'
 ]
-function pick (host: any, props: Array<string>) {
+function pick(host: any, props: Array<string>) {
   const result = {}
   for (const prop of props) {
     if (host[prop] !== undefined) result[prop] = host[prop]
@@ -29,21 +58,25 @@ function pick (host: any, props: Array<string>) {
   return result
 }
 
-export async function prepareKitName () {
+export async function prepareKitName() {
   // 从 ALP 获取可当前套件用的脚手架列表
   const { kits } = await utils.getModuleList()
   const maxTitleLength = Math.max(...kits.map(kit => getLength(kit.title)), 10)
   const maxPkgLength = Math.max(...kits.map(kit => getLength(kit.package)), 10)
-  const questions = [{
-    type: 'list',
-    name: 'kit',
-    message: blueBright('『请选择套件』：'), // MO 1. 请选择套件：
-    choices: kits.map(kit => ({
-      name: `${fixLength(kit.title, maxTitleLength)} ${grey(fixLength(kit.package, maxPkgLength))} ${grey(kit.description)}`,
-      value: kit, // kit.package
-      short: `${kit.title} ${kit.package}`
-    }))
-  }]
+  const questions = [
+    {
+      type: 'list',
+      name: 'kit',
+      message: blueBright('『请选择套件』：'), // MO 1. 请选择套件：
+      choices: kits.map(kit => ({
+        name: `${fixLength(kit.title, maxTitleLength)} ${grey(
+          fixLength(kit.package, maxPkgLength)
+        )} ${grey(kit.description)}`,
+        value: kit, // kit.package
+        short: `${kit.title} ${kit.package}`
+      }))
+    }
+  ]
 
   const answer = await inquirer.prompt(questions)
   const nextKit: IKitInfo = answer.kit
@@ -64,33 +97,37 @@ export async function prepareKitName () {
   return nextKit.name
 }
 
-async function prepareQuestionList (kitName: string, appInfo: any, params) {
+async function prepareQuestionList(kitName: string, appInfo: any, params) {
   // 被授权的 GitLab 分组
-  const authorizedGroups: Array<IGitLabGroup> = await utils.getGitLabGroupList()
+  // const authorizedGroups: Array<IGitLabGroup> = await utils.getGitLabGroupList()
   // 套件限定的 GitLab 分组
-  let groupsFilterByKit = authorizedGroups
-  {
-    // 支持限定 GitLab 分组列表
-    const effectiveGroupList: Array<string> = params.unstable_groups
-    if (effectiveGroupList && effectiveGroupList.length) {
-      groupsFilterByKit = authorizedGroups.filter(group => {
-        return effectiveGroupList.find((pattern: string | RegExp) => {
-          if (typeof pattern === 'string') return pattern === group.name
-          if (pattern instanceof RegExp) return pattern.test(group.name)
-          return false
-        })
-      })
-    }
-  }
+  // let groupsFilterByKit = authorizedGroups
+
+  // {
+  //   // 支持限定 GitLab 分组列表
+  //   const effectiveGroupList: Array<string> = params.unstable_groups
+  //   if (effectiveGroupList && effectiveGroupList.length) {
+  //     groupsFilterByKit = authorizedGroups.filter(group => {
+  //       return effectiveGroupList.find((pattern: string | RegExp) => {
+  //         if (typeof pattern === 'string') return pattern === group.name
+  //         if (pattern instanceof RegExp) return pattern.test(group.name)
+  //         return false
+  //       })
+  //     })
+  //   }
+  // }
 
   // 获取 GitLab 分组信息
-  const groups = groupsFilterByKit
-  const maxGroupLength = Math.max(...groups.map(group => getLength(group.name)), 10)
-  const groupChoices = groups.map((group: IGitLabGroup) => ({
-    name: `${fixLength(group.name, maxGroupLength)} ${grey(group.description)}`,
-    value: group.name,
-    short: group.name
-  }))
+  // const groups = groupsFilterByKit
+  // const maxGroupLength = Math.max(
+  //   ...groups.map(group => getLength(group.name)),
+  //   10
+  // )
+  // const groupChoices = groups.map((group: IGitLabGroup) => ({
+  //   name: `${fixLength(group.name, maxGroupLength)} ${grey(group.description)}`,
+  //   value: group.name,
+  //   short: group.name
+  // }))
   // 从 ALP 获取可当前套件用的脚手架列表
   const { kits } = await utils.getModuleList()
   const kit = kits.find(kit => kit.name === kitName)
@@ -98,12 +135,25 @@ async function prepareQuestionList (kitName: string, appInfo: any, params) {
     acc[cur.repository] = cur
     return acc
   }, {})
-  const maxTitleLength = Math.max(...kit.scaffolds.map(scaffold => getLength(scaffold.title)), 10)
-  const maxDescriptionLength = Math.max(...kit.scaffolds.map(scaffold => getLength(scaffold.description)), 10)
-  const maxRepositoryLength = Math.max(...kit.scaffolds.map(scaffold => getLength(scaffold.repository)), 10)
+  const maxTitleLength = Math.max(
+    ...kit.scaffolds.map(scaffold => getLength(scaffold.title)),
+    10
+  )
+  const maxDescriptionLength = Math.max(
+    ...kit.scaffolds.map(scaffold => getLength(scaffold.description)),
+    10
+  )
+  const maxRepositoryLength = Math.max(
+    ...kit.scaffolds.map(scaffold => getLength(scaffold.repository)),
+    10
+  )
   const scaffoldChoices = kit.scaffolds.map(scaffold => {
     return {
-      name: `${fixLength(scaffold.title, maxTitleLength)} ${grey(fixLength(scaffold.description, maxDescriptionLength))} ${grey(fixLength(scaffold.repository, maxRepositoryLength))} ${grey.italic(scaffold.directory)}`,
+      name: `${fixLength(scaffold.title, maxTitleLength)} ${grey(
+        fixLength(scaffold.description, maxDescriptionLength)
+      )} ${grey(
+        fixLength(scaffold.repository, maxRepositoryLength)
+      )} ${grey.italic(scaffold.directory)}`,
       value: scaffold,
       short: scaffold.title
     }
@@ -118,13 +168,13 @@ async function prepareQuestionList (kitName: string, appInfo: any, params) {
       choices: scaffoldChoices,
       when: appInfo.scaffold === undefined
     },
-    {
-      type: 'list',
-      name: 'group',
-      message: blueBright('『请选择 GitLab 分组』：'), // 『请选择应用归属的 GitLab 分组』：
-      choices: groupChoices,
-      when: appInfo.group === undefined && appInfo.gitlab !== false
-    },
+    // {
+    //   type: 'list',
+    //   name: 'group',
+    //   message: blueBright('『请选择 GitLab 分组』：'), // 『请选择应用归属的 GitLab 分组』：
+    //   choices: groupChoices,
+    //   when: appInfo.group === undefined && appInfo.gitlab !== false
+    // },
     {
       type: 'input',
       name: 'app',
@@ -135,55 +185,61 @@ async function prepareQuestionList (kitName: string, appInfo: any, params) {
         }
         return true
       },
-      when: appInfo.app === undefined || appInfo.app === '' ||
-       typeof appInfo.app === 'function' // MO 与 command.name() 冲突
-    },
-    {
-      type: 'confirm',
-      name: 'def',
-      default: true,
-      message: blueBright('『是否接入 DEF 云构建』:'),
-      when: appInfo.def === undefined
-    },
-    {
-      type: 'confirm',
-      name: 'rap',
-      default: true,
-      message: blueBright('『是否创建 RAP2 项目』:'),
-      when: appInfo.rap === undefined
-    },
-    {
-      type: 'confirm',
-      name: 'iconfont',
-      default: true,
-      message: blueBright('『是否创建 Iconfont 项目』:'),
-      when: appInfo.iconfont === undefined
-    },
-    {
-      type: 'confirm',
-      name: 'chartpark',
-      default: true,
-      message: blueBright('『是否创建 ChartPark 项目』:'),
-      when: appInfo.chartpark === undefined
-    },
-    {
-      type: 'confirm',
-      name: 'spma',
-      default: true,
-      message: blueBright('『是否创建 SPM 埋点』:'),
-      when: appInfo.spma === undefined
-    },
-    {
-      type: 'confirm',
-      name: 'clue',
-      default: true,
-      message: blueBright('『是否创建 Clue 项目』:'),
-      when: appInfo.clue === undefined
+      when:
+        appInfo.app === undefined ||
+        appInfo.app === '' ||
+        typeof appInfo.app === 'function' // MO 与 command.name() 冲突
     }
+    // {
+    //   type: 'confirm',
+    //   name: 'def',
+    //   default: true,
+    //   message: blueBright('『是否接入 DEF 云构建』:'),
+    //   when: appInfo.def === undefined
+    // },
+    // {
+    //   type: 'confirm',
+    //   name: 'rap',
+    //   default: true,
+    //   message: blueBright('『是否创建 RAP2 项目』:'),
+    //   when: appInfo.rap === undefined
+    // },
+    // {
+    //   type: 'confirm',
+    //   name: 'iconfont',
+    //   default: true,
+    //   message: blueBright('『是否创建 Iconfont 项目』:'),
+    //   when: appInfo.iconfont === undefined
+    // },
+    // {
+    //   type: 'confirm',
+    //   name: 'chartpark',
+    //   default: true,
+    //   message: blueBright('『是否创建 ChartPark 项目』:'),
+    //   when: appInfo.chartpark === undefined
+    // },
+    // {
+    //   type: 'confirm',
+    //   name: 'spma',
+    //   default: true,
+    //   message: blueBright('『是否创建 SPM 埋点』:'),
+    //   when: appInfo.spma === undefined
+    // },
+    // {
+    //   type: 'confirm',
+    //   name: 'clue',
+    //   default: true,
+    //   message: blueBright('『是否创建 Clue 项目』:'),
+    //   when: appInfo.clue === undefined
+    // }
   ]
 }
 
-async function commandAction (kitName: string, command: CommanderStatic, sysParams) {
+async function commandAction(
+  kitName: string,
+  command: CommanderStatic,
+  sysParams
+) {
   if (!kitName) {
     kitName = await prepareKitName()
   }
@@ -195,10 +251,16 @@ async function commandAction (kitName: string, command: CommanderStatic, sysPara
   // 安装套件
   await checkModuleMissed('kit', kitInfo)
 
-  let kitCommandListModule = require(`${RMX_HOME}/kit/${kitInfo.name}/node_modules/${kitInfo.package}/dist/commands`)
-  kitCommandListModule = kitCommandListModule.__esModule ? kitCommandListModule.default : kitCommandListModule
+  let kitCommandListModule = require(`${MM_HOME}/kit/${kitInfo.name}/node_modules/${kitInfo.package}/dist/commands`)
+  kitCommandListModule = kitCommandListModule.__esModule
+    ? kitCommandListModule.default
+    : kitCommandListModule
   const kitCommandList: ICommandList = await kitCommandListModule()
-  const kitInitCommand = kitCommandList.find(commandConfig => commandConfig.command === 'init' || commandConfig.name === 'init') || {}
+  const kitInitCommand =
+    kitCommandList.find(
+      commandConfig =>
+        commandConfig.command === 'init' || commandConfig.name === 'init'
+    ) || {}
   const { params: kitParams } = kitInitCommand
 
   // 优先级：套件参数 extra > 命令行参数 command > 问答参数 appInfo
@@ -213,7 +275,8 @@ async function commandAction (kitName: string, command: CommanderStatic, sysPara
       kitOptionList.push(question.name)
     })
   }
-  const appInfo: ICreateAppInfo = { // MO TODO 提升 kitParams 到通用规则
+  const appInfo: ICreateAppInfo = {
+    // MO TODO 提升 kitParams 到通用规则
     cwd: process.cwd(),
     kit: kitName,
     ...pick(sysParams, kitOptionList),
@@ -225,7 +288,10 @@ async function commandAction (kitName: string, command: CommanderStatic, sysPara
   logger.info(appInfo)
 
   // 初始化问题集
-  const initQuestionList = await prepareQuestionList(kitName, appInfo, { ...sysParams, ...kitParams })
+  const initQuestionList = await prepareQuestionList(kitName, appInfo, {
+    ...sysParams,
+    ...kitParams
+  })
   // MO 支持套件自定义扩展问题集
   if (kitParams.questions) {
     initQuestionList.push(...kitParams.questions)
@@ -251,30 +317,37 @@ async function commandAction (kitName: string, command: CommanderStatic, sysPara
   // 校验应用目录是否已经存在
   const appPath = `${appInfo.cwd}/${appInfo.app}`
   if (await fse.pathExists(appPath)) {
-    const answers = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'clear',
-      default: true,
-      message: yellowBright(`当前目录下已存在同名文件夹 ${appInfo.app}，是否先执行删除？`)
-    }])
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'clear',
+        default: true,
+        message: yellowBright(
+          `当前目录下已存在同名文件夹 ${appInfo.app}，是否先执行删除？`
+        )
+      }
+    ])
     if (answers.clear) {
       await fse.remove(appPath)
     }
   }
 
   return new Promise((resolve, reject) => {
-    async function doit () {
+    async function doit() {
       const emitter = new EventEmitter()
       emitter
-        .on('data', (message) => logger.info(message))
-        .on('error', (error) => {
+        .on('data', message => logger.info(message))
+        .on('error', error => {
           logger.error(error)
           reject(error)
         })
-        .on('close', (resp) => {
+        .on('close', resp => {
           if (typeof resp === 'object') {
             logger.debug(__filename)
-            logger.warn(redBright('@deprecated 请不要在 close 事件中返回一个对象'), resp)
+            logger.warn(
+              redBright('@deprecated 请不要在 close 事件中返回一个对象'),
+              resp
+            )
           }
 
           if (resp.error) {
@@ -295,7 +368,7 @@ async function commandAction (kitName: string, command: CommanderStatic, sysPara
   })
 }
 
-function parseBool (value: string): boolean {
+function parseBool(value: string): boolean {
   if (value === 'true') return true
   if (value === 'false') return false
   return !!value
@@ -312,14 +385,53 @@ const commandConfig: ICommandConfig = {
     ['--scaffold   <scaffold>', '脚手架仓库地址'],
     ['--branch     <branch>', '脚手架仓库分支'],
     ['--directory  <directory>', '脚手架仓库的子目录'],
-    ['--group      <group>  ', `GitLab 分组名称         ${underline('http://gitlab.alibaba-inc.com/dashboard/groups')}`],
-    ['--gitlab     [boolean]', `是否创建 GitLab 项目    ${underline('http://gitlab.alibaba-inc.com/')}`, parseBool],
-    ['--rap        [boolean]', `是否创建 RAP2 项目      ${underline('https://rap2.alibaba-inc.com/')}`, parseBool],
-    ['--def        [boolean]', `是否接入 DEF 云构建     ${underline('https://work.def.alibaba-inc.com/my')}`, parseBool],
-    ['--iconfont   [boolean]', `是否创建 Iconfont 项目  ${underline('https://www.iconfont.cn/')}`, parseBool],
-    ['--chartpark  [boolean]', `是否创建 ChartPark 项目 ${underline('https://chartpark.alibaba-inc.com/')}`, parseBool],
-    ['--spma       [boolean]', `是否创建 spma 埋点      ${underline('https://aplus.alibaba-inc.com/aplusplus/index.htm')}`, parseBool],
-    ['--clue       [boolean]', `是否创建 Clue 项目      ${underline('https://clue.alibaba-inc.com/')}`, parseBool],
+    // [
+    //   '--group      <group>  ',
+    //   `GitLab 分组名称         ${underline(
+    //     'http://gitlab.alibaba-inc.com/dashboard/groups'
+    //   )}`
+    // ],
+    // [
+    //   '--gitlab     [boolean]',
+    //   `是否创建 GitLab 项目    ${underline('http://gitlab.alibaba-inc.com/')}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--rap        [boolean]',
+    //   `是否创建 RAP2 项目      ${underline('https://rap2.alibaba-inc.com/')}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--def        [boolean]',
+    //   `是否接入 DEF 云构建     ${underline(
+    //     'https://work.def.alibaba-inc.com/my'
+    //   )}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--iconfont   [boolean]',
+    //   `是否创建 Iconfont 项目  ${underline('https://www.iconfont.cn/')}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--chartpark  [boolean]',
+    //   `是否创建 ChartPark 项目 ${underline(
+    //     'https://chartpark.alibaba-inc.com/'
+    //   )}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--spma       [boolean]',
+    //   `是否创建 spma 埋点      ${underline(
+    //     'https://aplus.alibaba-inc.com/aplusplus/index.htm'
+    //   )}`,
+    //   parseBool
+    // ],
+    // [
+    //   '--clue       [boolean]',
+    //   `是否创建 Clue 项目      ${underline('https://clue.alibaba-inc.com/')}`,
+    //   parseBool
+    // ],
     ['--install    [boolean]', '是否自动安装依赖', parseBool]
     // 废弃，=> name
     // ['-n, --projectName <name>', '项目名称'],
@@ -332,12 +444,12 @@ const commandConfig: ICommandConfig = {
     // ['--createClue [boolean]', '（废弃）是否创建clue', parseBool],
   ],
   // MO TODO params 套件传入的？
-  async action (kit: IModuleType, command: CommanderStatic, params: any) {
+  async action(kit: IModuleType, command: CommanderStatic, params: any) {
     await commandAction(kit, command, params)
   },
   params: {
     // 校验应用名称
-    nameValidate (value: string, answer) {
+    nameValidate(value: string, answer) {
       if (!value.trim()) {
         return '应用名称不能为空'
       }
@@ -349,10 +461,13 @@ const commandConfig: ICommandConfig = {
     }
   },
   on: [
-    ['--help', () => {
-      console.log('\nExamples:')
-      console.log(`  ${grey('$')} ${blueBright('mm init')}`)
-    }]
+    [
+      '--help',
+      () => {
+        console.log('\nExamples:')
+        console.log(`  ${grey('$')} ${blueBright('mm init')}`)
+      }
+    ]
   ]
 }
 

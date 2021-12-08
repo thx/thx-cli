@@ -1,13 +1,19 @@
-import { RMX_HOME, spawn, withSpinner, MODULE_TYPE_MAP, spawnCommand } from '../utils'
+import {
+  MM_HOME,
+  spawn,
+  withSpinner,
+  MODULE_TYPE_MAP,
+  spawnCommand
+} from '../utils'
 import { SpawnOptions } from 'child_process'
 import * as fse from 'fs-extra'
 import { redBright, greenBright } from 'chalk'
 import { EventEmitter } from 'events'
 import logger from '../logger'
 
-export default async function install (emitter: EventEmitter, params) {
+export default async function install(emitter: EventEmitter, params) {
   const { type, module, link } = params
-  const moduleDir = `${RMX_HOME}/${type}/${module.name}`
+  const moduleDir = `${MM_HOME}/${type}/${module.name}`
 
   // 子进程执行的 options 配置
   const options: SpawnOptions = {
@@ -24,9 +30,19 @@ export default async function install (emitter: EventEmitter, params) {
   }
 
   // 执行安装或链接命令
-  function doit (): Promise<any> {
+  function doit(): Promise<any> {
     return new Promise((resolve, reject) => {
-      const command = process.platform === 'win32' ? 'tnpm.cmd' : 'tnpm' // npm update | yarn add
+      // 内外网的标识，根据入口命令判断，mm 开头为内网
+      const isOpenSource = !/\/mm$/.test(process.argv[1])
+      const isWin32 = process.platform === 'win32'
+
+      let command
+      if (isOpenSource) {
+        command = isWin32 ? 'npm.cmd' : 'npm' // 开源的用 npm 安装
+      } else {
+        command = isWin32 ? 'tnpm.cmd' : 'tnpm'
+      }
+
       const args = [link ? 'link' : 'update', module.package, '--color']
 
       // tnpm install 禁止 SUDO 执行 （根据判断env.USER是否为 root），所以需要将 USER 设为其他值
@@ -37,7 +53,10 @@ export default async function install (emitter: EventEmitter, params) {
         .on('data', message => emitter.emit('data', message))
         .on('error', error => {
           console.error(error)
-          emitter.emit('error', redBright(`✘ ${MODULE_TYPE_MAP[type]} ${module.name} 安装失败！`))
+          emitter.emit(
+            'error',
+            redBright(`✘ ${MODULE_TYPE_MAP[type]} ${module.name} 安装失败！`)
+          )
           reject(error)
         })
         .on('close', async code => {
@@ -46,7 +65,10 @@ export default async function install (emitter: EventEmitter, params) {
 
           if (code !== 0) {
             console.error(code)
-            emitter.emit('error', redBright(`✘ ${MODULE_TYPE_MAP[type]} ${module.name} 安装失败！`))
+            emitter.emit(
+              'error',
+              redBright(`✘ ${MODULE_TYPE_MAP[type]} ${module.name} 安装失败！`)
+            )
             reject(code)
             return
           }
@@ -54,8 +76,17 @@ export default async function install (emitter: EventEmitter, params) {
             logger.info('install', module.name, module.package)
 
             // 插件/套件目录下放一个 info.json，描述基础信息
-            await fse.writeJSON(`${moduleDir}/info.json`, { type, ...module }, { spaces: 2 })
-            emitter.emit('data', greenBright(`✔ ${MODULE_TYPE_MAP[type]} ${module.name} 安装成功！`))
+            await fse.writeJSON(
+              `${moduleDir}/info.json`,
+              { type, ...module },
+              { spaces: 2 }
+            )
+            emitter.emit(
+              'data',
+              greenBright(
+                `✔ ${MODULE_TYPE_MAP[type]} ${module.name} 安装成功！`
+              )
+            )
             resolve(undefined)
           }
         })
@@ -71,6 +102,5 @@ export default async function install (emitter: EventEmitter, params) {
     async (emitter: EventEmitter, params: any) => {
       await doit()
     }
-
   )(emitter, params)
 }

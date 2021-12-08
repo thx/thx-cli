@@ -1,5 +1,3 @@
-#!/usr/bin/env node
+import * as util from './util/index'
 
-export default function () {
-  console.log(`magix-scripts....`)
-}
+export { util }
