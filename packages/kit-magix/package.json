@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "@ali/ai4md-cli": "^1.0.2",
-    "@ali/magix-combine-tool-config": "1.0.10",
-    "@ali/magix-composer-config": "1.0.10",
+    "magix-combine-tool-config": "1.0.18",
+    "magix-composer-config": "1.0.11",
     "@ali/magix-desiger-server": "^1.0.0",
     "@ali/mm-plugin-clear": "2.0.49",
     "@ali/rapper": "^1.5.10",
@@ -58,7 +58,11 @@
     "thx-magix-scripts": "0.0.4",
     "walk": "2.3.14",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^7.3.1"
+    "ws": "^7.3.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-esbuild": "^0.8.4",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2"
   },
   "devDependencies": {
     "madge": "^4.0.0",

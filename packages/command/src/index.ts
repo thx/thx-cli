@@ -3,12 +3,14 @@
 import { grey, redBright, blueBright, whiteBright } from 'chalk' // MO Terminal string styling done right
 import * as program from 'commander' // MO the complete solution for node.js command-line programs
 import * as minimist from 'minimist'
-import { utils, gitlab, cliUtils } from 'thx-cli-core'
+import { utils, cliUtils } from 'thx-cli-core'
 import systemCommandList from './system/index'
 import defaultKitCommandList from './kit/index'
 import logger from './logger'
 import { IKitInfo } from 'thx-cli-core/types'
 
+// 入口命令名称 thx/mx
+const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
 const pkg = require('../package.json')
 const { initMMHome, getAppPkg, getAppPath, getAppRC, goldlog, getKit } = utils
 const {
@@ -50,8 +52,8 @@ function outputHelp() {
   // examples
   console.log()
   console.log('Examples:')
-  console.log(`  ${grey('$')} ${blueBright.bold('thx init')}`)
-  console.log(`  ${grey('$')} ${blueBright.bold('thx dev')}`)
+  console.log(`  ${grey('$')} ${blueBright.bold(`${cliName} init`)}`)
+  console.log(`  ${grey('$')} ${blueBright.bold(`${cliName} dev`)}`)
   console.log('')
 
   // test for help info
@@ -77,7 +79,7 @@ async function prepare() {
       console.log(
         blueBright(`ⓘ 本命令已自动转 sudo 执行 ${grey('(dev 需要 sudo 权限)')}`)
       )
-      await utils.spawnCommand('sudo', ['thx', ...process.argv.slice(2)])
+      await utils.spawnCommand('sudo', [cliName, ...process.argv.slice(2)])
     } catch (error) {
       console.log(redBright(`${error}`))
     }
@@ -218,7 +220,9 @@ async function prepare() {
     program.on('command:*', function () {
       console.error(
         redBright(
-          `\n✘ 无效命令 %s，请执行 ${blueBright('mm -h')} 查看所有可用命令\n`
+          `\n✘ 无效命令 %s，请执行 ${blueBright(
+            `${cliName} -h`
+          )} 查看所有可用命令\n`
         ),
         program.args.join(' ')
       )

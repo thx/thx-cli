@@ -1,5 +1,4 @@
 export * from './check'
 export * from './preload-module-list'
-export { default as rap } from './rap'
 export { default as replace } from './replace'
 export * from './util'

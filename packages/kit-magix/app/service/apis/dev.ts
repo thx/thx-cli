@@ -7,35 +7,43 @@
  */
 import { utils } from 'thx-cli-core'
 import { EventEmitter } from 'events'
-import util from '../../util/util'
-import * as utilCheck from '../../util/check'
+import { util, matMiddleWare, galleryApi } from 'thx-magix-scripts'
 import * as chalk from 'chalk'
 import * as fse from 'fs-extra'
 import * as getPort from 'get-port'
 import * as WebSocket from 'ws'
 import * as Mat from 'mat'
-import rap from '../../mat-middleware/rap'
-import proxy from '../../mat-middleware/proxy'
-import rapVerify from '../../mat-middleware/rap-verify'
 import * as magixCombine from 'magix-combine'
 import * as magixComposer from 'magix-composer'
-import magixHmr from '../../mat-middleware/injects/magix-hmr/index'
-import rewriteTypes from '../../mat-middleware/rewrite-extension'
-import magixAnalyse from '../../mat-middleware/magix-combine'
-import magixWebui from '../../mat-middleware/injects/web-sprite/index'
-import magixDesiger from '../../mat-middleware/injects/magix-desiger'
-import devEnv from '../../mat-middleware/injects/dev-env'
-import magixInspectorInject from '../../mat-middleware/injects/magix-inspector'
-import crossConfigsInject from '../../mat-middleware/injects/cross-configs'
-import * as magixCombineToolConfig from '@ali/magix-combine-tool-config'
-import * as magixComposerConfig from '@ali/magix-composer-config'
+import * as magixCombineToolConfig from 'magix-combine-tool-config'
+import * as magixComposerConfig from 'magix-composer-config'
 import { clear } from '@ali/mm-plugin-clear'
 import * as open from 'open'
-import { genModuleList, genPreloadModule } from '../../util/preload-module-list'
-import { syncGalleryPkg } from './gallery'
+const { syncGalleryPkg } = galleryApi
+
+const {
+  rap,
+  proxy,
+  rapVerify,
+  magixHmr,
+  rewriteExtension: rewriteTypes,
+  magixCombine: magixAnalyse,
+  webSprite: magixWebui,
+  magixDesiger,
+  devEnv,
+  magixInspector: magixInspectorInject,
+  crossConfigs: crossConfigsInject
+} = matMiddleWare
+
+const {
+  genModuleList,
+  genPreloadModule,
+  checkBuilder,
+  checkBuilderUpdateTips,
+  checkGalleryUpdate
+} = util
 
 export default {
-
   /**
    * 参数
    * params.cwd [string] 项目目录
@@ -48,7 +56,7 @@ export default {
    * params.isHttps [boolean] 是否开启反向代理https的接口，默认关闭
    * params.isDebug [boolean] 开启debug模式，会校验rap接口等，默认关闭.
    */
-  exec (params: any = {}) {
+  exec(params: any = {}) {
     let mat
     try {
       mat = new Mat()
@@ -66,7 +74,7 @@ export default {
       const appPkg = utils.getAppPkg(appPath)
       const { magixCliConfig = {} } = appPkg
       const { magixCombineConfig = {} } = magixCliConfig
-      const isMagix5 = magixCliConfig.magixVersion === '5'// magix5 标识
+      const isMagix5 = magixCliConfig.magixVersion === '5' // magix5 标识
 
       if (!appPkg) {
         return emitter.emit('close', {
@@ -74,7 +82,7 @@ export default {
         })
       }
 
-      if (!await utils.isInAppRoot(cwd)) {
+      if (!(await utils.isInAppRoot(cwd))) {
         return emitter.emit('close', {
           error: '请在项目根目录下执行本命令'
         })
@@ -82,9 +90,9 @@ export default {
 
       // 校验本地套件依赖的包版本与线上构建器版本是否一致，不一致给出升级套件提示
       if (magixCliConfig.cloudBuild) {
-        const checkBuilder = await utilCheck.checkBuilder(isMagix5)
-        if (!checkBuilder.isMatch) {
-          await utilCheck.checkBuilderUpdateTips(checkBuilder.unmatchPkg)
+        const checkBuilderResult = await checkBuilder(isMagix5)
+        if (!checkBuilderResult.isMatch) {
+          await checkBuilderUpdateTips(checkBuilderResult.unmatchPkg)
           // return emitter.emit('close', {})
         }
       }
@@ -99,14 +107,22 @@ export default {
       let combineTool
 
       if (isMagix5) {
-        const composerConfig = await magixComposerConfig(appPkg, magixCombineConfig, cwd)
+        const composerConfig = await magixComposerConfig(
+          appPkg,
+          magixCombineConfig,
+          cwd
+        )
 
         // magix5 编译工具
         combineTool = magixComposer
         combineTool.clearConfig()
         combineTool.config(composerConfig)
       } else {
-        const combineToolConfig = await magixCombineToolConfig(appPkg, magixCombineConfig, cwd)
+        const combineToolConfig = await magixCombineToolConfig(
+          appPkg,
+          magixCombineConfig,
+          cwd
+        )
 
         // 老的 magix3 编译工具
         combineTool = magixCombine
@@ -117,10 +133,22 @@ export default {
       }
 
       // 提供额外的magixCliConfig里配置关闭辅助工具浮层的能力
-      params.isCloseHmr = params.isCloseHmr === undefined ? magixCliConfig.closeHmr : params.isCloseHmr
-      params.isCloseDocs = params.isCloseDocs === undefined ? magixCliConfig.closeDocs : params.isCloseDocs
-      params.isCloseDesiger = params.isCloseDesiger === undefined ? magixCliConfig.closeDesiger : params.isCloseDesiger
-      params.isCloseInspector = params.isCloseInspector === undefined ? magixCliConfig.closeInspector : params.isCloseInspector
+      params.isCloseHmr =
+        params.isCloseHmr === undefined
+          ? magixCliConfig.closeHmr
+          : params.isCloseHmr
+      params.isCloseDocs =
+        params.isCloseDocs === undefined
+          ? magixCliConfig.closeDocs
+          : params.isCloseDocs
+      params.isCloseDesiger =
+        params.isCloseDesiger === undefined
+          ? magixCliConfig.closeDesiger
+          : params.isCloseDesiger
+      params.isCloseInspector =
+        params.isCloseInspector === undefined
+          ? magixCliConfig.closeInspector
+          : params.isCloseInspector
 
       // 启动mat反向代理服务器
       const command = 'tnpx' // npx直接绕过安装执行
@@ -137,13 +165,20 @@ export default {
         },
         err => {
           if (err.code === 'ENOENT') {
-            emitter.emit('data', chalk.redBright(`✖︎ 未找到本地安装的组件，请尝试执行 ${chalk.cyan('mm gallery')} 安装`))
+            emitter.emit(
+              'data',
+              chalk.redBright(
+                `✖︎ 未找到本地安装的组件，请尝试执行 ${chalk.cyan(
+                  'mm gallery'
+                )} 安装`
+              )
+            )
           }
         }
       )()
 
       // 检查组件库是否需要升级
-      await utilCheck.checkGalleryUpdate(magixCliConfig, (msg) => {
+      await checkGalleryUpdate(magixCliConfig, msg => {
         emitter.emit('data', msg)
       })
 
@@ -194,15 +229,18 @@ export default {
 
       // 去掉https://等，只留下host
       // 读取ipConfig里的端口信息
-      const hostNameMatchs = /^(?:(?:https?:)?\/\/)?([^/:]+)(?::(\d+))?\/?(.*)/.exec(fullHostName)
+      const hostNameMatchs = /^(?:(?:https?:)?\/\/)?([^/:]+)(?::(\d+))?\/?(.*)/.exec(
+        fullHostName
+      )
       const hostName = hostNameMatchs && hostNameMatchs[1]
       const ipConfigPort = hostNameMatchs && hostNameMatchs[2]
       const pathname = hostNameMatchs && hostNameMatchs[3]
 
       /**
        * 端口优先级，命令行 -p > ipConfig里的端口 > matPort配置
-      */
-      const matPort = params.port || ipConfigPort || magixCliConfig.matPort || '1234'
+       */
+      const matPort =
+        params.port || ipConfigPort || magixCliConfig.matPort || '1234'
 
       args.push('-t')
       args.push(matPort)
@@ -237,9 +275,14 @@ export default {
         }
 
         //
-        if (!fse.pathExistsSync(keyPathDefault) || !fse.pathExistsSync(certPathDefault)) {
+        if (
+          !fse.pathExistsSync(keyPathDefault) ||
+          !fse.pathExistsSync(certPathDefault)
+        ) {
           return emitter.emit('close', {
-            error: `检测到本地还未安装自签名 ssl 证书，请先执行 ${chalk.cyan('mm cert --install')} 插件命令进行本地证书一键自动安装。`
+            error: `检测到本地还未安装自签名 ssl 证书，请先执行 ${chalk.cyan(
+              'mm cert --install'
+            )} 插件命令进行本地证书一键自动安装。`
           })
         }
       }
@@ -249,11 +292,25 @@ export default {
         const randomKey = Math.random() // 标识添加的host块
         utils.setHosts(hostName, randomKey)
 
-        emitter.emit('data', chalk.greenBright(`✔ 已将 ${chalk.cyanBright(`127.0.0.1 ${hostName}`)} 配置写入系统 hosts`))
+        emitter.emit(
+          'data',
+          chalk.greenBright(
+            `✔ 已将 ${chalk.cyanBright(
+              `127.0.0.1 ${hostName}`
+            )} 配置写入系统 hosts`
+          )
+        )
 
         // 中断进程时删除当前设置的host配置
         process.on('exit', () => {
-          emitter.emit('data', chalk.greenBright(`✔ 已将 ${chalk.cyanBright(`127.0.0.1 ${hostName}`)} 配置从系统 hosts 中移除`))
+          emitter.emit(
+            'data',
+            chalk.greenBright(
+              `✔ 已将 ${chalk.cyanBright(
+                `127.0.0.1 ${hostName}`
+              )} 配置从系统 hosts 中移除`
+            )
+          )
 
           utils.clearHosts(randomKey)
         })
@@ -262,7 +319,10 @@ export default {
       }
 
       // 设置完hosts需要清除chrome的dns以及hsts
-      emitter.emit('data', chalk.greenBright('ⓘ 开始执行清除 chrome 的 hsts 及 dns 缓存操作'))
+      emitter.emit(
+        'data',
+        chalk.greenBright('ⓘ 开始执行清除 chrome 的 hsts 及 dns 缓存操作')
+      )
       await clear(hostName)
 
       // mm dev 时重新生成预加载模块清单
@@ -294,7 +354,7 @@ export default {
 
       // magix-desiger用到的端口号
       // const dPort = options.mport || await getPort() || 3007
-      const dPort = await getPort() || 3007
+      const dPort = (await getPort()) || 3007
       const aiPort = await getPort()
 
       // if (options.mport) {
@@ -309,7 +369,12 @@ export default {
         /**
          * 兼容老的方式，在项目里直接放matfile.js，执行指定的devCommand/proxyCommand来执行mat
          */
-        emitter.emit('data', chalk.yellow('ⓘ 检测到当前为老项目，将直接执行 devCommand 或 proxyCommand 的命令'))
+        emitter.emit(
+          'data',
+          chalk.yellow(
+            'ⓘ 检测到当前为老项目，将直接执行 devCommand 或 proxyCommand 的命令'
+          )
+        )
         try {
           // 执行 启动本地服务器 命令
           utils.spawnCommand(command, args)
@@ -331,15 +396,18 @@ export default {
         // - /index.html?time=111
         // - /?time=111
         // indexMatch 支持单个字符串，或数组
-        const indexMatch = typeof magixCliConfig.indexMatch === 'string'
-          ? [magixCliConfig.indexMatch]
-          : (magixCliConfig.indexMatch || ['index.html'])
+        const indexMatch =
+          typeof magixCliConfig.indexMatch === 'string'
+            ? [magixCliConfig.indexMatch]
+            : magixCliConfig.indexMatch || ['index.html']
 
         // 从autoOpenUrl配置里提取出来的入口文件也加入indexMatch中，并放到第一个
         if (pathname) {
           indexMatch.unshift(pathname)
         }
-        const indexPatterns = [new RegExp(`^(\/(\\?.+)?|\/(${indexMatch.join('|')})(\\?.+)?)$`)]
+        const indexPatterns = [
+          new RegExp(`^(\/(\\?.+)?|\/(${indexMatch.join('|')})(\\?.+)?)$`)
+        ]
 
         // mat配置：端口等等
         mat.env({
@@ -348,16 +416,22 @@ export default {
           certPath: certPathDefault,
           isHttps: params.isHttps,
           root: cwd || process.cwd(),
-          logger (msg) {
+          logger(msg) {
             emitter.emit('data', msg)
           },
           index: indexMatch[0],
           port: matPort,
           limit: magixCliConfig.datalimit || '10mb', // post请求时可以携带参数的大小上限
           timeout: magixCliConfig.timeout || 60 * 1000, // 请求的过期时间，默认60秒
-          ready: function (port) { // 服务启动成功后的回调
+          ready: function(port) {
+            // 服务启动成功后的回调
             const openOptions = { app: 'google chrome' }
-            open(`${params.isHttps ? 'https' : 'http'}://${hostName}:${port}/${pathname}`, openOptions)
+            open(
+              `${
+                params.isHttps ? 'https' : 'http'
+              }://${hostName}:${port}/${pathname}`,
+              openOptions
+            )
           },
           // 是否禁止mat的log输出
           log: params.isDebug
@@ -366,9 +440,13 @@ export default {
         // api接口匹配规则
         // apiMatch 支持单个字符串，或数组
         let apiPatterns = [/api\//, /\.json/, /\.action/]
-        if (magixCliConfig.apiMatch) { // 项目中magixCliConfig配置了apiMatch
+        if (magixCliConfig.apiMatch) {
+          // 项目中magixCliConfig配置了apiMatch
           apiPatterns = []
-          const _apiMatch = typeof magixCliConfig.apiMatch === 'string' ? [magixCliConfig.apiMatch] : magixCliConfig.apiMatch
+          const _apiMatch =
+            typeof magixCliConfig.apiMatch === 'string'
+              ? [magixCliConfig.apiMatch]
+              : magixCliConfig.apiMatch
 
           for (const match of _apiMatch) {
             if (match.includes('.')) {
@@ -386,7 +464,7 @@ export default {
 
         // hmr配置
         const magixHmrConfig = {
-          customLog (msg) {
+          customLog(msg) {
             emitter.emit('data', msg)
           },
           cwd,
@@ -419,11 +497,10 @@ export default {
         hmrInst = magixHmr(magixHmrConfig, ws)
 
         // pushState
-        mat.task('pushState', function () {
-          mat.url([/^((?!\.(css|less|js|html|ico|swf|do)).)*$/])
-            .rewrite([
-              [/(\/.*)+/, `/${indexMatch[0]}`]
-            ])
+        mat.task('pushState', function() {
+          mat
+            .url([/^((?!\.(css|less|js|html|ico|swf|do)).)*$/])
+            .rewrite([[/(\/.*)+/, `/${indexMatch[0]}`]])
         })
         const relevantTasks = magixCliConfig.isPushState ? ['pushState'] : []
 
@@ -434,20 +511,28 @@ export default {
         const rapVersion = magixCliConfig.rapVersion || '2'
 
         mat.task('rap', relevantTasks, async () => {
-          emitter.emit('data', chalk.green(`[mat] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${rapProjectId || '尚未配置'}）`))
+          emitter.emit(
+            'data',
+            chalk.green(
+              `[mat] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${rapProjectId ||
+                '尚未配置'}）`
+            )
+          )
           // 匹配js文件，用magix-combine工具进行预编译
-          mat.url(jsPatterns)
-            .rewrite([function (url) {
-              return rewriteTypes(url, undefined, cwd)
-            }])
+          mat
+            .url(jsPatterns)
+            .rewrite([
+              function(url) {
+                return rewriteTypes(url, undefined, cwd)
+              }
+            ])
             .use(magixAnalyse(combineTool, ws, cwd))
 
           // 注入开发环境变量
           // window.__isRap__: mm dev
           // window.__isDaily__: mm dev -d
           // window.__isOnline__: mm dev -o
-          const indexMatchUrl = mat.url(indexPatterns)
-            .use(devEnv())
+          const indexMatchUrl = mat.url(indexPatterns).use(devEnv())
 
           if (!params.isCloseInspector) {
             // 注入magix-inspector插件
@@ -466,10 +551,12 @@ export default {
 
           if (!params.isCloseDesiger) {
             // mm dev注入的magix-desiger
-            indexMatchUrl.use(magixDesiger({
-              mdPort: dPort,
-              aiPort
-            }))
+            indexMatchUrl.use(
+              magixDesiger({
+                mdPort: dPort,
+                aiPort
+              })
+            )
           }
 
           // mm dev注入crossConfigs
@@ -478,23 +565,28 @@ export default {
           }
 
           // api接口rap模拟数据
-          const apiMatchUrl = mat.url(apiPatterns)
+          const apiMatchUrl = mat
+            .url(apiPatterns)
             // rap接口模拟
-            .use(rap({
-              rapVersion,
-              projectId: rapProjectId
-            }))
+            .use(
+              rap({
+                rapVersion,
+                projectId: rapProjectId
+              })
+            )
 
           if (params.isDebug) {
             // rap接口校验
-            apiMatchUrl.use(rapVerify({
-              rapVersion,
-              isRap: true,
-              projectId: rapProjectId,
-              log (msg) {
-                emitter.emit('data', msg)
-              }
-            }))
+            apiMatchUrl.use(
+              rapVerify({
+                rapVersion,
+                isRap: true,
+                projectId: rapProjectId,
+                log(msg) {
+                  emitter.emit('data', msg)
+                }
+              })
+            )
           }
         })
 
@@ -502,13 +594,23 @@ export default {
          * 本地mat服务器对接真实环境接口(如daily,预发等环境) (对应命令mm dev -d 10.12.13.245)
          */
         mat.task('proxy', relevantTasks, async () => {
-          emitter.emit('data', chalk.green(`[mat] 启动对接真实接口开发环境 ${chalk.cyan(`(接口代理 ip 地址:${proxyPass || '尚未配置'})`)}`))
+          emitter.emit(
+            'data',
+            chalk.green(
+              `[mat] 启动对接真实接口开发环境 ${chalk.cyan(
+                `(接口代理 ip 地址:${proxyPass || '尚未配置'})`
+              )}`
+            )
+          )
 
           // 匹配js文件，用magix-combine工具进行预编译
-          mat.url(jsPatterns)
-            .rewrite([function (url) {
-              return rewriteTypes(url, undefined, cwd)
-            }])
+          mat
+            .url(jsPatterns)
+            .rewrite([
+              function(url) {
+                return rewriteTypes(url, undefined, cwd)
+              }
+            ])
             .use(magixAnalyse(combineTool, ws, cwd))
 
           // 注入开发环境变量
@@ -533,10 +635,12 @@ export default {
 
           if (!params.isCloseDesiger) {
             // mm dev注入的magix-desiger
-            indexMatchUrl.use(magixDesiger({
-              mdPort: dPort,
-              aiPort
-            }))
+            indexMatchUrl.use(
+              magixDesiger({
+                mdPort: dPort,
+                aiPort
+              })
+            )
           }
 
           // mm dev注入crossConfigs
@@ -545,24 +649,29 @@ export default {
           }
 
           // api接口反向代理到真实接口
-          const apiMatchUrl = mat.url(apiPatterns)
+          const apiMatchUrl = mat
+            .url(apiPatterns)
             // 真实接口反向代理
-            .use(proxy({
-              projectId: rapProjectId,
-              proxyPass,
-              protocolAlias: protocolAlias
-            }))
+            .use(
+              proxy({
+                projectId: rapProjectId,
+                proxyPass,
+                protocolAlias: protocolAlias
+              })
+            )
 
           if (params.isDebug) {
             // rap接口校验
-            apiMatchUrl.use(rapVerify({
-              rapVersion,
-              isRap: false,
-              projectId: rapProjectId,
-              log (msg) {
-                emitter.emit('data', msg)
-              }
-            }))
+            apiMatchUrl.use(
+              rapVerify({
+                rapVersion,
+                isRap: false,
+                projectId: rapProjectId,
+                log(msg) {
+                  emitter.emit('data', msg)
+                }
+              })
+            )
           }
         })
 
@@ -601,7 +710,10 @@ export default {
           }
           const app = await appWrapper(config)
           app.listen(config.port)
-          emitter.emit('data', chalk.green(`✔ magix-desiger 服务成功启动[${config.port}]！`))
+          emitter.emit(
+            'data',
+            chalk.green(`✔ magix-desiger 服务成功启动[${config.port}]！`)
+          )
 
           // ai desiger
           const aiWrapper = require('@ali/ai4md-cli/app')
@@ -610,9 +722,17 @@ export default {
             pwd
           })
           aiApp.listen(aiPort)
-          emitter.emit('data', chalk.green(`✔ ai-desiger 服务成功启动[${aiPort}]！`))
+          emitter.emit(
+            'data',
+            chalk.green(`✔ ai-desiger 服务成功启动[${aiPort}]！`)
+          )
         } catch (error) {
-          emitter.emit('data', chalk.yellow(`ⓘ magix-desiger 服务启动异常，原因如下：\n${error.message}`))
+          emitter.emit(
+            'data',
+            chalk.yellow(
+              `ⓘ magix-desiger 服务启动异常，原因如下：\n${error.message}`
+            )
+          )
         }
       }
     }, 0)

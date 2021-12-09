@@ -5,7 +5,8 @@ import * as os from 'os'
 import { PROCESS_STATE, SOCKET_EVENT, METHOD_MAPS } from './constant-browser'
 
 // 内外网的标识，根据入口命令判断，mm 开头为内网
-const isOpenSource = !/\/mm$/.test(process.argv[1])
+const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
+const isOpenSource = cliName !== 'mm'
 
 export function NOW() {
   return moment().format('HH:mm:ss.SSS') // YYYY-MM-DD
