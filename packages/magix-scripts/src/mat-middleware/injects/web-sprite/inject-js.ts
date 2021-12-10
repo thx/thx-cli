@@ -1,5 +1,8 @@
 export function getInjectJs(wsPort) {
   return `;(function(){
+  /**
+   * Web Sprite 注入代码
+   */
 
   const ws = new WebSocket('ws://127.0.0.1:${wsPort}')
   ws.addEventListener('open', e =>{

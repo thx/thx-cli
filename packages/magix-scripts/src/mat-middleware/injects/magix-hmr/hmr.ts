@@ -9,6 +9,9 @@ export default (wsPort, host, isMagix5) => {
   return `
 ;
 (function () {
+    /**
+     * Magix HMR 注入代码
+     */
 
     // path.join 浏览器实现
     const CHAR_FORWARD_SLASH = 47
@@ -132,9 +135,9 @@ export default (wsPort, host, isMagix5) => {
         const oldMountView = Magix.Vframe.prototype.${
           isMagix5 ? 'mount' : 'mountView'
         };
-        Magix.Vframe.prototype.mountView = function (${
-          isMagix5 ? 'node, ' : ''
-        }path, params) {
+        Magix.Vframe.prototype.${
+          isMagix5 ? 'mount' : 'mountView'
+        } = function (${isMagix5 ? 'node, ' : ''}path, params) {
             this.viewInitParams = params;
             oldMountView.apply(this, arguments);
         };

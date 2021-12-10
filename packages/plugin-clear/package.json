@@ -1,0 +1,39 @@
+{
+  "name": "thx-plugin-clear",
+  "version": "2.0.52",
+  "description": "MM CLI 插件：清除 Chrome 的 HSTS 及 DNS 缓存",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:mmfs/mm-cli.git",
+    "directory": "packages/plugin-clear"
+  },
+  "scripts": {
+    "dev": "tsc --watch --pretty --preserveWatchOutput --project tsconfig.json",
+    "build": "tsc --listEmittedFiles --project tsconfig.json",
+    "build:clean": "rm -rf ./dist && yarn run build",
+    "test": "mocha --require ts-node/register --project tsconfig.json 'test/**/*.test.ts'",
+    "test:watch": "nodemon --verbose --ext js,ts,tsx,json --watch src --watch test --watch package.json --watch ../core/lib --exec 'yarn run test'"
+  },
+  "dependencies": {
+    "thx-cli-core": "0.0.8",
+    "chalk": "^4.1.0",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.0.0",
+    "urijs": "^1.19.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "madge": "^3.12.0",
+    "mocha": "^8.1.3",
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0"
+  },
+  "license": "UNLICENSED",
+  "rmxConfig": {
+    "kit": "dev",
+    "type": "plugin",
+    "name": "clear"
+  },
+  "gitHead": "b1996f8226f252e5b3d1e9f3037271680f30233a"
+}

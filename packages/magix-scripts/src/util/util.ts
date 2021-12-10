@@ -3,6 +3,7 @@ import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import * as Path from 'path'
 import * as requestP from 'request-promise'
+import { spawn, SpawnOptions } from 'child_process'
 
 /**
  * 递归往上寻找项目中某文件
@@ -163,4 +164,57 @@ export function compatGalleriesConfig(magixCliConfig: any = {}) {
   }
 
   return galleriesConfig
+}
+
+// 降权执行
+function spawnDowngradeSudo(command, args, options = {}) {
+  const _options: SpawnOptions = {
+    // MO TODO 不设置 any 会属性兼容报错
+    shell: process.platform === 'win32' // win 下需要设置 shell 为 true
+  }
+  Object.assign(_options, options)
+
+  // 降权
+  if (process.env.SUDO_GID) {
+    _options.gid = parseInt(process.env.SUDO_GID, 10)
+  }
+  if (process.env.SUDO_UID) {
+    _options.uid = parseInt(process.env.SUDO_UID, 10)
+  }
+
+  return new Promise((resolve, reject) => {
+    const sp = spawn(command, args, _options)
+
+    sp.stderr.on('data', data => {
+      if (data.includes('No such file or directory')) {
+        const error = new Error()
+        // @ts-ignore
+        error.code = 'ENOENT'
+        reject(error)
+      }
+    })
+
+    sp.on('close', code => {
+      resolve(code)
+    })
+  })
+}
+
+// 同步 node_modules 下组件的 package.json 到项目组件目录下，改名为 pkg.json
+export async function syncGalleryPkg(galleries = []) {
+  // 用子进程降权的形式执行，以防止文件权限污染
+  const promises = []
+  for (const gallery of galleries) {
+    if (gallery.name && gallery.path) {
+      promises.push(
+        spawnDowngradeSudo('cp', [
+          '-R',
+          `node_modules/${gallery.name}/package.json`,
+          `${gallery.path}/pkg.json`
+        ])
+      )
+    }
+  }
+
+  await Promise.all(promises)
 }

@@ -112,7 +112,11 @@ export default async command => {
     const startTime = timekeepingStart()
     await magixCombineTool.combine()
     console.log(
-      chalk.grey(`magix-combine 编译耗时：${timekeepingEnd(startTime)} 秒`)
+      chalk.grey(
+        `${
+          isMagix5 ? 'magix-composer' : 'magix-combine'
+        } 编译耗时：${timekeepingEnd(startTime)} 秒`
+      )
     )
 
     // 代码压缩

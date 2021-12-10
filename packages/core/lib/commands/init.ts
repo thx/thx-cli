@@ -82,15 +82,16 @@ async function createLocalApp(
   await cloneTemplate(emitter, appInfo)
 
   // 2
-  await withSpinner(
-    '设置远程仓库',
-    async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-      await spawnCommand('rm', ['-rf', '.git'], { cwd: appPath })
-      await git.cwd(appPath)
-      await git.init()
-      // await git.addRemote('origin', gitProject?.ssh_url_to_repo) // eslint-disable-line camelcase
-    }
-  )(emitter, appInfo)
+  await spawnCommand('rm', ['-rf', '.git'], { cwd: appPath })
+  // await withSpinner(
+  //   '设置远程仓库',
+  //   async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+  //     await spawnCommand('rm', ['-rf', '.git'], { cwd: appPath })
+  //     await git.cwd(appPath)
+  //     await git.init()
+  //     // await git.addRemote('origin', gitProject?.ssh_url_to_repo) // eslint-disable-line camelcase
+  //   }
+  // )(emitter, appInfo)
 
   // 3 设置项目相关配置信息
   await withSpinner(
@@ -115,19 +116,19 @@ async function createLocalApp(
   )(emitter, appInfo)
 }
 
-async function gitCommit(emitter: EventEmitter, appInfo: ICreateAppInfo) {
-  if (appInfo.gitlab === false) return
+// async function gitCommit(emitter: EventEmitter, appInfo: ICreateAppInfo) {
+//   if (appInfo.gitlab === false) return
 
-  await withSpinner(
-    '提交本地代码',
-    async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-      const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
-      await git.add('-A')
-      await git.commit('first commit by @ali/mm-cli', { '--no-verify': null })
-      // await git.push('origin', 'master')
-    }
-  )(emitter, appInfo)
-}
+//   await withSpinner(
+//     '提交本地代码',
+//     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+//       const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
+//       await git.add('-A')
+//       await git.commit('first commit by @ali/mm-cli', { '--no-verify': null })
+//       // await git.push('origin', 'master')
+//     }
+//   )(emitter, appInfo)
+// }
 
 async function installDependencies(
   emitter: EventEmitter,
@@ -137,7 +138,7 @@ async function installDependencies(
   await withSpinner(
     '安装应用依赖',
     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-      const command = process.platform === 'win32' ? 'tnpm.cmd' : 'tnpm'
+      const command = process.platform === 'win32' ? 'npm.cmd' : 'npm'
       const args = ['install', '--color']
       const options = { cwd: `${appInfo.cwd}/${appInfo.app}` }
       return new Promise((resolve, reject) => {
@@ -206,7 +207,7 @@ export default async function init(
   }
 
   await createLocalApp(emitter, appInfo)
-  await gitCommit(emitter, appInfo)
+  // await gitCommit(emitter, appInfo)
   await installDependencies(emitter, appInfo)
 
   // init 命令的 __after__ 后执行

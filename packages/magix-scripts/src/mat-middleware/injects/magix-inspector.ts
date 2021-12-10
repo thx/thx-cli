@@ -17,7 +17,12 @@ export default () => {
       'utf8'
     )
 
-    html = html.replace('</body>', `<script>${inspectorJs}</script> </body>`)
+    html = html.replace('</body>', `<script>
+    /**
+     * Magix Inspector 注入代码
+     */
+
+    ${inspectorJs}</script> </body>`)
     this.body = html
   }
 }

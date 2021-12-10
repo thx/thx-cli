@@ -10,6 +10,8 @@ import { CommanderStatic } from 'commander'
 
 const { checkPackageVersionsCorrect, replace: replaceUtil } = util
 const { execCommand, withSpinner, checkDependencies } = utils
+// 入口命令名称 thx/mx
+const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
 
 export default async () => {
   const argv = minimist(process.argv.slice(2))
@@ -99,37 +101,40 @@ export default async () => {
       if (pkg.magixCliConfig.initCompleted) {
         await execCommand(pkg.magixCliConfig.initCompleted, { cwd: appPath })
       }
-      if (gitlab !== false) {
-        await withSpinner(
-          '提交本地代码',
-          async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-            const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
-            git.outputHandler((command, stdout, stderr) => {
-              // stdout.pipe(process.stdout)
-              // stderr.pipe(process.stderr)
-            })
-            await git.add('-A')
-            await git.commit('first commit by thx-cli', {
-              '--no-verify': null
-            })
-            // await git.push('origin', 'master')
-          }
-        )(emitter, appInfo)
-      }
+
+      // if (gitlab !== false) {
+      //   await withSpinner(
+      //     '提交本地代码',
+      //     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
+      //       const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
+      //       git.outputHandler((command, stdout, stderr) => {
+      //         // stdout.pipe(process.stdout)
+      //         // stderr.pipe(process.stderr)
+      //       })
+      //       await git.add('-A')
+      //       await git.commit('first commit by thx-cli', {
+      //         '--no-verify': null
+      //       })
+      //       await git.push('origin', 'master')
+      //     }
+      //   )(emitter, appInfo)
+      // }
 
       console.log(`\n应用 ${cyanBright(app)} 创建成功！你可以执行以下命令：\n`)
       console.log(`  ${grey('●')} ${blueBright(`cd ${app}`)}`)
       console.log(
-        `  ${grey('●')} ${blueBright('mm dev')}      ${grey(
+        `  ${grey('●')} ${blueBright(`${cliName} dev`)}      ${grey(
           '启动本地开发服务'
         )}`
       )
       console.log(
-        `  ${grey('●')} ${blueBright('mm build')}      ${grey('本地构建项目')}`
+        `  ${grey('●')} ${blueBright(`${cliName} build`)}      ${grey(
+          '本地构建项目'
+        )}`
       )
 
       console.log(
-        `  ${grey('●')} ${blueBright('mm -h')}       ${grey(
+        `  ${grey('●')} ${blueBright(`${cliName} -h`)}       ${grey(
           '查看所有命令帮助'
         )}`
       )
@@ -142,7 +147,7 @@ export default async () => {
           console.log()
           console.log('Examples:')
           console.log()
-          console.log(`  ${grey('$')} ${blueBright('mm init magix')}`)
+          console.log(`  ${grey('$')} ${blueBright(`${cliName} init magix`)}`)
           console.log()
         }
       ]
@@ -173,7 +178,7 @@ export default async () => {
           console.log()
           console.log('  Examples:')
           console.log()
-          console.log('    $ mm gallery')
+          console.log(`    $ ${cliName} gallery`)
           console.log()
         }
       ]
@@ -199,15 +204,16 @@ export default async () => {
         '-o, --online [ip]',
         '同 -d 配置，不过这个会标识现在接口环境是预发/线上真实地址'
       ],
-      // ["-t, --template <n>", "设置magix-desiger依赖的项目模板"],
-      // ["--mport <n>", "设置magix-desiger本地服务的端口号"],
       ['--close-hmr', '关闭 HMR 热更新功能'],
       ['--close-docs', '关闭帮助文档提示功能'],
-      ['--close-desiger', '关闭 magix-desiger 功能'],
-      ['--close-inspector', '关闭 magix-inspector 功能'],
+      // ['--close-desiger', '关闭 magix-desiger 功能'],
+      // ['--close-inspector', '关闭 magix-inspector 功能'],
       ['--https', '反向代理 https 的接口'],
-      ['--debug', '开启 debug 模式，会校验 rap 接口等'],
-      ['-i, --ipconfig-index <i>', '默认选取 mm dev -d 时对应的第 i 个配置']
+      // ['--debug', '开启 debug 模式，会校验 rap 接口等'],
+      [
+        '-i, --ipconfig-index <i>',
+        `默认选取 ${cliName} dev -d 时对应的第 i 个配置`
+      ]
     ],
     // 必须为异步方法
     async action(options) {
@@ -219,9 +225,9 @@ export default async () => {
         () => {
           console.log()
           console.log('Examples:')
-          console.log('  $ mm dev')
-          console.log('  $ mm dev -p 8888')
-          console.log('  $ mm dev -d 10.12.13.199')
+          console.log(`  $ ${cliName} dev`)
+          console.log(`  $ ${cliName} dev -p 8888`)
+          console.log(`  $ ${cliName} dev -d 10.12.13.199`)
           console.log()
         }
       ]
@@ -231,26 +237,26 @@ export default async () => {
   /**
    * 快速生成业务模板文件(包含html,ts,less)
    */
-  commands.push({
-    command: 'add',
-    description: '快速生成业务模板文件 (包含 html,ts,less )',
-    // 必须为异步方法
-    async action(options) {
-      await require('./service/commands/add').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log('    $ mm add')
-          console.log()
-        }
-      ]
-    ]
-  })
+  // commands.push({
+  //   command: 'add',
+  //   description: '快速生成业务模板文件 (包含 html,ts,less )',
+  //   // 必须为异步方法
+  //   async action(options) {
+  //     await require('./service/commands/add').default(options)
+  //   },
+  //   on: [
+  //     [
+  //       '--help',
+  //       () => {
+  //         console.log()
+  //         console.log('  Examples:')
+  //         console.log()
+  //         console.log('    $ mm add')
+  //         console.log()
+  //       }
+  //     ]
+  //   ]
+  // })
 
   /**
    * mm build命令，配置遵循commander工具
@@ -269,7 +275,7 @@ export default async () => {
           console.log()
           console.log('  Examples:')
           console.log()
-          console.log('    $ mm build')
+          console.log(`    $ ${cliName} build`)
           // console.log('    $ mm build --local')
           console.log()
         }
@@ -293,7 +299,7 @@ export default async () => {
           console.log()
           console.log('  Examples:')
           console.log()
-          console.log('    $ mm sync')
+          console.log(`    $ ${cliName} sync`)
           console.log()
         }
       ]

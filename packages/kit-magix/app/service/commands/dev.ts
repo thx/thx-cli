@@ -5,11 +5,9 @@
  * mm dev -d <ip>: 启动对接真实接口ip地址的本地开发服务器
  * mm dev -p <port>: 指定服务器的端口号
  */
-import { util } from 'thx-magix-scripts'
+import { util, dev as devApi } from 'thx-magix-scripts'
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer' // A collection of common interactive command line userinterfaces.
-import devApis from '../apis/dev'
-// import { utils } from 'thx-cli-core'
 
 export default async options => {
   const params: any = {}
@@ -71,15 +69,21 @@ export default async options => {
     params.ip = proxyPass
   }
 
+  // 开源版移除部分功能
+  magixCliConfig.cloudBuild = false
+  magixCliConfig.preloadModuleList = false
+  params.isCloseDesiger = true
+  params.isCloseInspector = true
+  params.isCloseSetHost = true
+
   params.port = options.port
   params.isCloseHmr = options.closeHmr
   params.isCloseDocs = options.closeDocs
-  params.isCloseDesiger = options.closeDesiger
-  params.isCloseInspector = options.closeInspector
   params.isHttps = options.https
   params.isDebug = options.debug
+  params.magixCliConfig = magixCliConfig
 
-  const emitter = devApis.exec(params)
+  const emitter = devApi.exec(params)
 
   emitter.on('data', msg => {
     console.log(msg)
