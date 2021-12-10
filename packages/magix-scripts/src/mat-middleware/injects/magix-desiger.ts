@@ -1,7 +1,7 @@
 /**
  * mm dev时注入到页面上的magix-desiger
  */
-import * as requestPromise from 'request-promise' // MO TODO => node-fetch
+import * as requestPromise from 'request-promise' 
 
 export default ({ mdPort = 3007, aiPort }) => {
   return function* combine(next) {

@@ -9,9 +9,8 @@ import { CommanderStatic } from 'commander'
 import * as Koa from 'koa'
 import * as koaStatic from 'koa-static'
 const app = new Koa()
-// const route = require('koa-route');
 
-async function commandAction (command: CommanderStatic) {
+async function commandAction(command: CommanderStatic) {
   const port = command.port
   const home = koaStatic(process.cwd())
   // 3.分配路由（MO TODO 3？）
@@ -28,18 +27,19 @@ async function commandAction (command: CommanderStatic) {
 const commandConfig: ICommandConfig = {
   command: 'dev',
   description: '启动本地开发服务',
-  options: [
-    ['-p, --port <port>', '本地服务端口', 3000]
-  ],
-  async action (command: CommanderStatic) {
+  options: [['-p, --port <port>', '本地服务端口', 3000]],
+  async action(command: CommanderStatic) {
     return commandAction(command)
   },
   on: [
-    ['--help', () => {
-      console.log('\nExamples:')
-      console.log(`  ${grey('$')} ${blueBright('mm dev')}`)
-      console.log()
-    }]
+    [
+      '--help',
+      () => {
+        console.log('\nExamples:')
+        console.log(`  ${grey('$')} ${blueBright('mm dev')}`)
+        console.log()
+      }
+    ]
   ]
 }
 

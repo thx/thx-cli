@@ -1,7 +1,7 @@
 import { describe, it, after } from 'mocha'
 import { spawn } from 'child_process'
 import { expect } from 'chai'
-import { utils } from '@ali/mm-cli-core'
+import { utils } from 'thx-cli-core'
 import { SPAWN_OPTIONS, validSubProcess } from '../../core/test/shared'
 const { getRmxConfig } = utils
 const pkg = require('../package.json')
@@ -10,7 +10,7 @@ describe(pkg.name, () => {
   // const options: SpawnOptions = { stdio: 'pipe', cwd: process.cwd() }
   const options = SPAWN_OPTIONS
 
-  after((done) => {
+  after(done => {
     done()
   })
   it('$ mm clear --clear', function (done) {
@@ -48,7 +48,11 @@ describe(pkg.name, () => {
   })
   it('$ mm clear --add bar.com,faz.com', function (done) {
     this.timeout(5 * 1000)
-    const subprocess = spawn('mm', ['clear', '--add', 'bar.com,faz.com'], options)
+    const subprocess = spawn(
+      'mm',
+      ['clear', '--add', 'bar.com,faz.com'],
+      options
+    )
     validSubProcess(subprocess, options, () => {
       const cliConfig = getRmxConfig()
       const pluginConfig = cliConfig[pkg.name]
@@ -59,7 +63,11 @@ describe(pkg.name, () => {
   })
   it('$ mm clear --add http://bar.com,https://faz.com', function (done) {
     this.timeout(5 * 1000)
-    const subprocess = spawn('mm', ['clear', '--add', 'bar.com,faz.com'], options)
+    const subprocess = spawn(
+      'mm',
+      ['clear', '--add', 'bar.com,faz.com'],
+      options
+    )
     validSubProcess(subprocess, options, () => {
       const cliConfig = getRmxConfig()
       const pluginConfig = cliConfig[pkg.name]

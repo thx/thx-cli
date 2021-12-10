@@ -1,6 +1,5 @@
 import { blueBright, cyanBright, grey } from 'chalk'
 import { EventEmitter } from 'events'
-import simpleGit from 'simple-git'
 import { util } from 'thx-magix-scripts'
 import * as minimist from 'minimist'
 import * as fse from 'fs-extra'
@@ -101,24 +100,6 @@ export default async () => {
       if (pkg.magixCliConfig.initCompleted) {
         await execCommand(pkg.magixCliConfig.initCompleted, { cwd: appPath })
       }
-
-      // if (gitlab !== false) {
-      //   await withSpinner(
-      //     '提交本地代码',
-      //     async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-      //       const git = simpleGit(`${appInfo.cwd}/${appInfo.app}`)
-      //       git.outputHandler((command, stdout, stderr) => {
-      //         // stdout.pipe(process.stdout)
-      //         // stderr.pipe(process.stderr)
-      //       })
-      //       await git.add('-A')
-      //       await git.commit('first commit by thx-cli', {
-      //         '--no-verify': null
-      //       })
-      //       await git.push('origin', 'master')
-      //     }
-      //   )(emitter, appInfo)
-      // }
 
       console.log(`\n应用 ${cyanBright(app)} 创建成功！你可以执行以下命令：\n`)
       console.log(`  ${grey('●')} ${blueBright(`cd ${app}`)}`)
