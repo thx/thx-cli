@@ -66,7 +66,6 @@ export default async function checkModuleOutdated(
   const modules: Array<IModuleInfo> = { kit: kits, plugin: plugins }[type]
   const module = modules.find((module: IModuleInfo) => module.name === name)
 
-  // await sysInstallModule(type, module)
   /** 安装某个套件或插件 */
   const emitter = new EventEmitter()
   emitter

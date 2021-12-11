@@ -15,7 +15,7 @@ function info (module: IKitInfo | IPluginInfo) {
   printToFileAndConsole(grey(`   ├── ${white(module.description)}`))
   if (module.package) {
     printToFileAndConsole(grey(`   ├── ${grey(module.package)}`))
-    printToFileAndConsole(grey(`   ├── ${grey.underline(`https://web.npm.alibaba-inc.com/package/${module.package}`)}`))
+    printToFileAndConsole(grey(`   ├── ${grey.underline(`https://www.npmjs.com/package/${module.package}`)}`))
   }
   if (module.version) {
     printToFileAndConsole(grey(`   └── 本地版本: ${white(module.version)}, 最新版本: ${greenBright(module.latest)}`))

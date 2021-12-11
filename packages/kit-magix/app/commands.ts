@@ -142,7 +142,7 @@ export default async () => {
   commands.push({
     command: 'gallery',
     alias: 'g',
-    description: '安装 zs_gallery 组件并同步到项目 gallery 目录下',
+    description: '安装 magixCliConfig.galleries 配置的所有组件并同步到项目中',
     options: [
       ['-n, --gallery-name <n>', '指定同步单个组件'],
       ['--gallery-repos <repoName>', '指定同步组件库，多个组件库以逗号分隔'],
@@ -174,7 +174,7 @@ export default async () => {
     //     enableSudo: true
     // },
     command: 'dev',
-    description: '本地开发服务',
+    description: '启动本地开发服务器',
     options: [
       ['-p, --port <port>', '设置服务器的端口号，默认 1234'],
       [
@@ -244,7 +244,7 @@ export default async () => {
    */
   commands.push({
     command: 'build',
-    description: '本地云构建',
+    description: '项目构建',
     // 必须为异步方法
     async action(options: CommanderStatic) {
       await require('./service/commands/build').default(options)

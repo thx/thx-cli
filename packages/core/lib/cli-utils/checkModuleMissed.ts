@@ -57,6 +57,6 @@ export default async function checkModuleMissed(
     .on('close', code => logger.info(code))
   await coreInstallCommand(emitter, {
     type,
-    module
+    module: moduleInfo
   })
 }

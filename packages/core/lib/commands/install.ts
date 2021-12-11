@@ -43,7 +43,19 @@ export default async function install(emitter: EventEmitter, params) {
         command = isWin32 ? 'tnpm.cmd' : 'tnpm'
       }
 
-      const args = [link ? 'link' : 'update', module.package, '--color']
+      const installKey = isOpenSource ? 'install' : 'update' //npm install, tnpm update
+      const args = [link ? 'link' : installKey, module.package, '--color']
+
+      // npm install 需要有一个package.json文件才能正常安装包
+      fse.writeJSONSync(
+        `${moduleDir}/package.json`,
+        {
+          dependencies: {
+            [module.package]: ''
+          }
+        },
+        { spaces: 2 }
+      )
 
       // tnpm install 禁止 SUDO 执行 （根据判断env.USER是否为 root），所以需要将 USER 设为其他值
       const rootUser = process.env.USER
