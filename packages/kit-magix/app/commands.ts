@@ -244,6 +244,7 @@ export default async () => {
    */
   commands.push({
     command: 'build',
+    options: [['--check', '开启debug模式构建代码']],
     description: '项目构建',
     // 必须为异步方法
     async action(options: CommanderStatic) {

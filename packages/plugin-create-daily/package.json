@@ -1,0 +1,36 @@
+{
+  "name": "thx-plugin-create-daily",
+  "version": "2.0.54",
+  "description": "THX CLI 插件：自动创建开发分支",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:mmfs/mm-cli.git",
+    "directory": "packages/plugin-create-daily"
+  },
+  "scripts": {
+    "dev": "tsc --watch --pretty --preserveWatchOutput --project tsconfig.json",
+    "build": "tsc --listEmittedFiles --project tsconfig.json",
+    "build:clean": "rm -rf ./dist && yarn run build"
+  },
+  "dependencies": {
+    "thx-cli-core": "1.0.0",
+    "chalk": "^4.1.0",
+    "commander": "^6.0.0",
+    "dateformat": "^3.0.3",
+    "inquirer": "^7.0.0",
+    "semver": "^7.3.2"
+  },
+  "license": "UNLICENSED",
+  "rmxConfig": {
+    "kit": "dev",
+    "type": "plugin",
+    "name": "clear"
+  },
+  "devDependencies": {
+    "madge": "^4.0.0",
+    "nodemon": "^2.0.6",
+    "typescript": "^4.1.3"
+  },
+  "gitHead": "b1996f8226f252e5b3d1e9f3037271680f30233a"
+}

@@ -4,9 +4,8 @@
  * 配置格式遵循 commander 命令行工具
  * 多参数的以 [] 数组形式
  */
-import defaultKitDev from './dev'
 import { ICommandList } from 'thx-cli-core/types'
 
-const commands: ICommandList = [defaultKitDev]
+const commands: ICommandList = []
 
 export default commands

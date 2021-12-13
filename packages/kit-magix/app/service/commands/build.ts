@@ -10,7 +10,7 @@ import * as magixCombineToolConfig from 'magix-combine-tool-config'
 import * as magixComposerToolConfig from 'magix-composer-config'
 
 // 本地构建
-export default async command => {
+export default async options => {
   const startTimeTotal = timekeepingStart()
   const pkg = await utils.getAppPkg()
   const magixCliConfig = pkg.magixCliConfig || {}
@@ -20,7 +20,7 @@ export default async command => {
   Object.assign(magixCombineConfig, {
     log: true,
     checker: true,
-    debug: true
+    debug: !!options.check
   })
 
   let srcFolder, buildFolder, magixCombineTool, combineToolConfig

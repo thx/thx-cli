@@ -17,7 +17,7 @@ import {
 import * as fse from 'fs-extra'
 import { EventEmitter } from 'events'
 import { greenBright } from 'chalk'
-import { IGitLabGroup, ICreateAppInfo } from '../../types/index.d'
+import { ICreateAppInfo } from '../../types/index.d'
 import simpleGit from 'simple-git'
 import logger from '../logger'
 

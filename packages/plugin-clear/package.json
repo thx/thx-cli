@@ -1,7 +1,7 @@
 {
   "name": "thx-plugin-clear",
   "version": "2.1.0",
-  "description": "MM CLI 插件：清除 Chrome 的 HSTS 及 DNS 缓存",
+  "description": "THX CLI 插件：清除 Chrome 的 HSTS 及 DNS 缓存",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
