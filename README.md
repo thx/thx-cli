@@ -7,7 +7,7 @@
   <!-- Guides, documentation, and all things webpack. -->
 </div>
 
-# MM CLI
+# THX CLI
 命令行工具 + 一站式智能研发工作台。
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
@@ -17,64 +17,59 @@
 ## 快速开始
 
 ```sh
-tnpm i -g @ali/mm-cli
-mm install kit @ali/mm-kit-react
-mm install kit @ali/mm-kit-magix
-mm install kit @ali/mm-kit-dev
+npm i -g thx-cli
+mm install kit thx-kit-magix
 mm --help
 ```
 
 ## Packages
 * [packages/command](./packages/command) 命令行工具。
-* [packages/webui](./packages/webui) 本地研发工作台。
-* [packages/playground](./packages/playground) 游乐场。
+* [packages/core](./packages/core) 核心包。
 
 ## 本地开发
 ```sh
-# 1. 设置 yarn 源，并安装依赖
-yarn config set registry https://registry.npm.alibaba-inc.com
-yarn config set sass_binary_site https://web.npm.alibaba-inc.com/mirrors/node-sass/
-yarn run bootstrap
+# 1. 安装依赖
+npm run bootstrap
 
 # 2. 启动本地编译，并自动打开工作台
-yarn run dev
+npm run dev
 
 # 2.1 或者，启动本地开发相关的所有任务，包括：启动本地编译、链接本地仓库到全局、启动测试用例、启动文档生成工具、启动依赖分析工具
-yarn run dev:mece
+npm run dev:mece
 
 # 2.2 或者，只编译指定包，执行下面这行命令后，将只启动 packages/command 和 packages/core 两个目录的本地编译
-yarn run dev --scope @ali/mm-cli --scope @ali/mm-cli-core
+npm run dev --scope thx-cli --scope thx-cli-core
 
 # 3. 进入专属的调试目录
 cd packages/playground
 
 # 4. 执行初始化（初始化一个应用，例如项目名 foo)
-npx mm init
+npx thx init
 
 # 5. 或者，手动启动工作台
 
 ## 5.1 进入应用目录，手动启动工作台
 cd foo
-npx mm web
+npx thx web
 
 ## 5.2 或者，调试一个新工作台
-MM_MODE=development npx mm web --port 7878 
+MM_MODE=development npx thx web --port 7878 
 ```
 
 ## 查看日志
 ```sh
-tail -f ~/.mm/logs/@ali/*.log
+tail -f ~/.thx/logs/@ali/*.log
 ## 或者用 Mac Console.app 查看
-open /Applications/Utilities/Console.app ~/.mm/mm-debug*.log
+open /Applications/Utilities/Console.app ~/.thx/thx-debug*.log
 ```
 
 
 ## 测试用例
 ```sh
 # 执行一次测试用例
-yarn run test
+npm run test
 # 执行测试用例， 并监听文件变化
-yarn run test:watch
+npm run test:watch
 ```
 
 如果是新目录（包），请先安装依赖的测试工具：
@@ -92,18 +87,8 @@ lerna add @types/chai   packages/<package> --dev
 
 ## 发布
 
-> 注意：请必须先全局安装 [@ali/lerna](https://web.npm.alibaba-inc.com/package/@ali/lerna)，再执行发布。
-
-> `yarn global add @ali/lerna`
-
 ```sh
-lerna publish
-# 预发布
-lerna publish prerelease --loglevel verbose
-# 查看详细日志
-lerna publish --loglevel verbose
-# 逐个单独发布
-lerna exec -- tnpm publish
+npm run publish
 ```
 
 ### 测试版发布
@@ -142,31 +127,6 @@ lerna exec --parallel --no-bail --no-private --loglevel verbose -- tnpm publish
   * 支持添加和管理后台服务
   * 支持通过界面管理自定义设置
 
-### WHY NOT RMX CLI V1, WHY MM CLI V2 ?
-
-0. 重复大量腐烂代码，例如，包结构不合理，代码架构不合理，代码结构不合理，模块、方法、变量的命名不合理，重复代码、过期依赖包，等等。
-1. 修复大量异常和错误。
-2. 基于 TS 重写，补齐测试用例，更安全。
-3. 更友好、更丰富的提示信息，更好看的 CLI 主题。
-4. 更好用、更好看的本地研发工作台，更简洁、更安全的任务管理方案，更规范的任务通信方式。
-5. 更合理的产品架构、更内聚的代码实现，全面升级依赖包，方便面向未来迭代。
-6. 扩展更多命令。
-  * mm remote
-  * mm install kit <package>
-  * mm install plugin <package>
-  * mm list --json
-  * mm dev --list
-  * 等等。
-
-### 为什么不是 DEF 套件，而是 MM CLI 套件
-
-首先，迭代管理、代码 CDN 发布，依然基于 DEF 云构建、构建器。
-
-但是，联盟还有更多 DEF 覆盖不到的场景：
-1. 发布物料更复杂，包括代码、ALP 组件、TNPM 包、ALP（HTML 源码、跨域接口、纯 JSON）。
-2. 发布渠道不满足要求，需要支持 CDN、TNPM、ALP、前端灰度环境、后端灰度环境。
-3. 版本管理不满足要求，需要支持 Diamond、Switch、自研版本管理平台、自定义发布范围。
-4. 底层能力不满足要求，需要支持更多效率工具接入（特别是初始化）、支持多任务管理、支持 WebUI 及其扩展。
 
 
 ### 为什么使用全局命令，而不是 `npm run dev` 这种应用命令？
@@ -174,19 +134,7 @@ lerna exec --parallel --no-bail --no-private --loglevel verbose -- tnpm publish
 1. 应用命令是固定的，不方便传递参数，例如按需构建 `mm dev foo,bar`。
 2. 可用的命令不只 `dev`、`build`。
 
-### 为什么安装依赖那么慢？
 
-试试先执行下面的脚本：
-```sh
-yarn config set registry https://registry.npm.alibaba-inc.com
-yarn config set sass_binary_site https://web.npm.alibaba-inc.com/mirrors/node-sass/
-```
-
-再次运行 `yarn` 的耗时对比：
-
-* 无任务配置：282.87s
-* 配置 npm 源：232.01s
-* 配置 sass 二进制文件镜像：7.08s
 
 ### 怎么避免提交校验？
 
