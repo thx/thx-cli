@@ -1,6 +1,6 @@
 {
   "name": "thx-plugin-cert",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "THX CLI 插件：快捷创建本地自签名证书",
   "main": "dist/index.js",
   "repository": {
@@ -14,8 +14,8 @@
     "build:clean": "rm -rf ./dist && yarn run build"
   },
   "dependencies": {
-    "thx-cert": "^1.0.0",
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.0",
+    "thx-cert": "^1.0.0"
   },
   "license": "UNLICENSED",
   "rmxConfig": {

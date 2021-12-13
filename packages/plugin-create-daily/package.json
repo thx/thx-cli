@@ -1,6 +1,6 @@
 {
   "name": "thx-plugin-create-daily",
-  "version": "2.0.54",
+  "version": "2.0.55",
   "description": "THX CLI 插件：自动创建开发分支",
   "main": "dist/index.js",
   "repository": {
@@ -14,12 +14,12 @@
     "build:clean": "rm -rf ./dist && yarn run build"
   },
   "dependencies": {
-    "thx-cli-core": "1.0.0",
     "chalk": "^4.1.0",
     "commander": "^6.0.0",
     "dateformat": "^3.0.3",
     "inquirer": "^7.0.0",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "thx-cli-core": "1.0.1"
   },
   "license": "UNLICENSED",
   "rmxConfig": {
