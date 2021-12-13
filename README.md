@@ -18,8 +18,8 @@
 
 ```sh
 npm i -g thx-cli
-mm install kit thx-kit-magix
-mm --help
+thx init magix
+thx --help
 ```
 
 ## Packages
