@@ -5,25 +5,29 @@ import { CommanderStatic } from 'commander'
 import { blueBright, grey } from 'chalk'
 import create from './create'
 
-export default async (rmx) => {
+export default async () => {
   const plugin = {
     name: 'createDaily',
     command: 'createDaily',
-    description: '自动创建 daily 分支，可以选择时间戳或指定版本形式，避免多人协作分支冲突问题。',
+    description:
+      '自动创建 daily 分支，可以选择时间戳或指定版本形式，避免多人协作分支冲突问题。',
     alias: 'cd',
     options: [
       ['-n, --branch <branch>', '设置语义化的分支名称'],
       ['-t, --timestamp', '是否是时间戳形式分支']
     ],
-    async action (command: CommanderStatic) {
-      create(command, rmx)
+    async action(command: CommanderStatic) {
+      await create(command)
     },
     on: [
-      ['--help', () => {
-        console.log('\nExamples:')
-        console.log(`  ${grey('$')} ${blueBright('mm createDaily')}`)
-        console.log()
-      }]
+      [
+        '--help',
+        () => {
+          console.log('\nExamples:')
+          console.log(`  ${grey('$')} ${blueBright('mm createDaily')}`)
+          console.log()
+        }
+      ]
     ]
   }
 
