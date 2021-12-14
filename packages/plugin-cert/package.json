@@ -1,6 +1,6 @@
 {
   "name": "thx-plugin-cert",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "THX CLI 插件：快捷创建本地自签名证书",
   "main": "dist/index.js",
   "repository": {
