@@ -4,11 +4,8 @@ import { join } from 'path'
 import * as os from 'os'
 import { PROCESS_STATE, SOCKET_EVENT, METHOD_MAPS } from './constant-browser'
 
-// 内外网的标识，根据入口命令判断，mm 开头为内网
-const openSource = isOpenSource()
-
 // 获取入口命令名称 mm/thx
-export function getCliName() {
+function getCliName() {
   const isWin32 = process.platform === 'win32'
   let cliName
 
@@ -21,17 +18,20 @@ export function getCliName() {
   return cliName
 }
 
-// 是否开源标识
-export function isOpenSource() {
+// 内外网的标识，根据入口命令判断，mm 开头为内网
+function isOpenSource() {
   const cliName = getCliName()
   return cliName === 'thx'
 }
+
+export const CLI_NAME = getCliName()
+export const IS_OPEN_SOURCE = isOpenSource()
 
 export function NOW() {
   return moment().format('HH:mm:ss.SSS') // YYYY-MM-DD
 }
 
-export const ALP_API_V1 = openSource
+export const ALP_API_V1 = IS_OPEN_SOURCE
   ? 'https://mo.m.taobao.com/common/thx-cli-module-list' // 内网套件插件列表
   : 'https://mo.m.taobao.com/v1/mm_cli_module_list' // 外网套件插件列表
 
@@ -131,7 +131,7 @@ export const MM_HOST = '127.0.0.1'
 export const MM_PORT = 6868
 
 /** @deprecated => MM_CACHE_FOLDER */
-export const RMX_CACHE_FOLDER = openSource ? '.thx' : '.mm'
+export const RMX_CACHE_FOLDER = IS_OPEN_SOURCE ? '.thx' : '.mm'
 /** @deprecated => MM_HOME */
 export const RMX_HOME = join(os.homedir(), RMX_CACHE_FOLDER)
 /** @deprecated => MM_RC_FILE */
@@ -143,7 +143,7 @@ export const RMX_RC_JSON = '.rmxrc.json'
 
 // =>
 /** MM CLI 本地缓存目录（名称） */
-export const MM_CACHE_FOLDER = openSource ? '.thx' : '.mm' // 外网用 .thx 目录，内网用 .mm 目录
+export const MM_CACHE_FOLDER = IS_OPEN_SOURCE ? '.thx' : '.mm' // 外网用 .thx 目录，内网用 .mm 目录
 /** MM CLI 套件缓存目录（名称） */
 export const MM_KIT_FOLDER = 'kit'
 /** MM CLI 插件缓存目录（名称） */

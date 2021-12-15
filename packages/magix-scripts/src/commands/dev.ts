@@ -70,7 +70,7 @@ export default {
     }
 
     // 入口命令名称 thx/mx
-    const cliName = utils.getCliName()
+    const cliName = utils.CLI_NAME
     const emitter = new EventEmitter()
     const { magixCliConfig = {}, cwd = process.cwd() } = params
 

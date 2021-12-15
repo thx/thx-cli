@@ -4,7 +4,7 @@ import * as chalk from 'chalk'
 import * as util from './util'
 import * as semver from 'semver'
 import { prompt, QuestionCollection } from 'inquirer'
-const { getTnpmPackage } = utils
+const { getTnpmPackage, IS_OPEN_SOURCE } = utils
 const pkg = require('../../package.json')
 
 /**
@@ -63,7 +63,7 @@ export function checkPackageVersionsCorrect() {
         console.log(
           chalk.yellowBright(
             `\nⓘ 检测到本地 node_modules 包版本与 package.json 里不匹配，请重新 ${chalk.cyanBright(
-              'tnpm install'
+              `${IS_OPEN_SOURCE ? 'npm install' : 'tnpm install'}`
             )} 安装`
           )
         )

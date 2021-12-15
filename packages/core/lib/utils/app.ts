@@ -436,9 +436,6 @@ export async function checkDependencies(
   await withSpinner(
     '安装应用依赖',
     async (emitter: EventEmitter, appPath: string) => {
-      // const command = process.platform === 'win32' ? 'tnpm.cmd' : 'tnpm'
-      // const command = 'yarn'
-      // const args = ['install', '--color']
       const nextOptions: SpawnOptions = {
         cwd: appPath,
         ...options

@@ -4,7 +4,7 @@ import {
   withSpinner,
   MODULE_TYPE_MAP,
   spawnCommand,
-  isOpenSource
+  IS_OPEN_SOURCE // 内外网的标识，根据入口命令判断，mm 开头为内网
 } from '../utils'
 import { SpawnOptions } from 'child_process'
 import * as fse from 'fs-extra'
@@ -33,18 +33,16 @@ export default async function install(emitter: EventEmitter, params) {
   // 执行安装或链接命令
   function doit(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // 内外网的标识，根据入口命令判断，mm 开头为内网
-      const openSource = isOpenSource()
       const isWin32 = process.platform === 'win32'
 
       let command
-      if (openSource) {
+      if (IS_OPEN_SOURCE) {
         command = isWin32 ? 'npm.cmd' : 'npm' // 开源的用 npm 安装
       } else {
         command = isWin32 ? 'tnpm.cmd' : 'tnpm'
       }
 
-      const installKey = openSource ? 'install' : 'update' //npm install, tnpm update
+      const installKey = IS_OPEN_SOURCE ? 'install' : 'update' //npm install, tnpm update
       const args = [link ? 'link' : installKey, module.package, '--color']
 
       // npm install 需要有一个package.json文件才能正常安装包

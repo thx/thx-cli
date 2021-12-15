@@ -47,6 +47,7 @@ export default async options => {
         .src(buildFolder + '/**/*.js')
         .pipe(
           gulpEsbuild({
+            pure: ['console.log', 'debugger'],
             minify: true,
             target: magixCliConfig.esBuildTarget || ['es2018'],
             define: { DEBUG: 'false' }

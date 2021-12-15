@@ -19,7 +19,7 @@ const {
   getAppRC,
   // goldlog,
   getKit,
-  getCliName
+  CLI_NAME
 } = utils
 const {
   checkCliOutdated,
@@ -28,7 +28,7 @@ const {
   registerKitCommandList,
   registerPluginCommand
 } = cliUtils
-const cliName = getCliName()
+const cliName = CLI_NAME
 
 // http://patorjk.com/software/taag/#p=display&f=Slant&t=M%20M%20C%20L%20I
 logger.info(

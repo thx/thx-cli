@@ -8,9 +8,9 @@ import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
 
 const { checkPackageVersionsCorrect, replace: replaceUtil } = util
-const { execCommand, withSpinner, checkDependencies, getCliName } = utils
+const { execCommand, withSpinner, checkDependencies, CLI_NAME } = utils
 // 入口命令名称 thx/mx
-const cliName = getCliName()
+const cliName = CLI_NAME
 
 export default async () => {
   const argv = minimist(process.argv.slice(2))
@@ -49,7 +49,7 @@ export default async () => {
 
   commands.push({
     command: 'init',
-    description: '项目初始化, 默认 tnpm install 安装',
+    description: '项目初始化, 默认 npm install 安装',
     params: {
       // 项目名称的校验
       nameValidate(value, answer, scaffoldsMap) {

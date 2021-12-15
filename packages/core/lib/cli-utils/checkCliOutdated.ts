@@ -13,7 +13,8 @@ const {
   getOutdatedPkgs,
   spawn,
   fixLength,
-  needBlockProcessByModuleOutdated
+  needBlockProcessByModuleOutdated,
+  IS_OPEN_SOURCE
 } = utils
 // const pkg: IPackage = require('../../package.json')
 
@@ -75,9 +76,9 @@ export default async function checkCliOutdated(pkg) {
     )
   })
   message.push(
-    `\n运行 ${blueBright(`tnpm install -g ${pkg.name}`)} 或者 ${blueBright(
-      `yarn global add ${pkg.name}`
-    )} 即可更新。`,
+    `\n运行 ${blueBright(
+      `${IS_OPEN_SOURCE ? 'npm' : 'tnpm'} install -g ${pkg.name}`
+    )} 或者 ${blueBright(`yarn global add ${pkg.name}`)} 即可更新。`,
     grey(
       'CHANGELOG: http://gitlab.alibaba-inc.com/mmfs/mm-cli/blob/master/CHANGELOG.md\n'
     ) // MO TODO 缺少文档
