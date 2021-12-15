@@ -2,6 +2,7 @@
   "name": "root",
   "scripts": {
     "bootstrap": "yarn; lerna bootstrap; yarn run build",
+    "install": "tnpm install; lerna exec -- tnpm install; npm run build",
     "clean": "lerna clean --yes",
     "dev": "FORCE_COLOR=1 lerna run dev --parallel",
     "dev:mece": "npm-run-all -p link dev test:watch docs:watch madge:watch git:mode",

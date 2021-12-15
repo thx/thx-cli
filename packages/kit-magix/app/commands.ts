@@ -8,9 +8,9 @@ import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
 
 const { checkPackageVersionsCorrect, replace: replaceUtil } = util
-const { execCommand, withSpinner, checkDependencies } = utils
+const { execCommand, withSpinner, checkDependencies, getCliName } = utils
 // 入口命令名称 thx/mx
-const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
+const cliName = getCliName()
 
 export default async () => {
   const argv = minimist(process.argv.slice(2))

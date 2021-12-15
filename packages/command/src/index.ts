@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // ✘✖︎ ⓘ ✔ ✦ ♨ ℹ️ 🔗👻💥🔥🌈🍭🍬🎁🥇🥈🥉🏆🎗🧩🚐⌚️📱💻⌨️🖥🖨🖱💾💡⚒🛠⚙️🔒🔓🔍❌⭕️🛑⛔️🚫💯💢♨️❗️❕❔❓⚠️♻️🇨🇳🏳️🏴🏁🇱🇷💬📢
+
 import { grey, redBright, blueBright, whiteBright } from 'chalk' // MO Terminal string styling done right
 import * as program from 'commander' // MO the complete solution for node.js command-line programs
 import * as minimist from 'minimist'
@@ -10,9 +11,16 @@ import logger from './logger'
 import { IKitInfo } from 'thx-cli-core/types'
 
 // 入口命令名称 thx/mx
-const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
 const pkg = require('../package.json')
-const { initMMHome, getAppPkg, getAppPath, getAppRC, goldlog, getKit } = utils
+const {
+  initMMHome,
+  getAppPkg,
+  getAppPath,
+  getAppRC,
+  // goldlog,
+  getKit,
+  getCliName
+} = utils
 const {
   checkCliOutdated,
   registerCommand,
@@ -20,6 +28,7 @@ const {
   registerKitCommandList,
   registerPluginCommand
 } = cliUtils
+const cliName = getCliName()
 
 // http://patorjk.com/software/taag/#p=display&f=Slant&t=M%20M%20C%20L%20I
 logger.info(

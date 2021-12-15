@@ -70,7 +70,7 @@ export default {
     }
 
     // 入口命令名称 thx/mx
-    const cliName = /\/([^/]+)$/.exec(process.argv[1])[1]
+    const cliName = utils.getCliName()
     const emitter = new EventEmitter()
     const { magixCliConfig = {}, cwd = process.cwd() } = params
 
@@ -211,9 +211,8 @@ export default {
 
       // 去掉https://等，只留下host
       // 读取ipConfig里的端口信息
-      const hostNameMatchs = /^(?:(?:https?:)?\/\/)?([^/:]+)(?::(\d+))?\/?(.*)/.exec(
-        fullHostName
-      )
+      const hostNameMatchs =
+        /^(?:(?:https?:)?\/\/)?([^/:]+)(?::(\d+))?\/?(.*)/.exec(fullHostName)
       const hostName = hostNameMatchs && hostNameMatchs[1]
       const ipConfigPort = hostNameMatchs && hostNameMatchs[2]
       const pathname = hostNameMatchs && hostNameMatchs[3]
@@ -426,7 +425,7 @@ export default {
         port: matPort,
         limit: magixCliConfig.datalimit || '10mb', // post请求时可以携带参数的大小上限
         timeout: magixCliConfig.timeout || 60 * 1000, // 请求的过期时间，默认60秒
-        ready: function(port) {
+        ready: function (port) {
           // 服务启动成功后的回调
           const openOptions = { app: 'google chrome' }
           const protocol = params.isHttps ? 'https' : 'http'
@@ -503,7 +502,7 @@ export default {
       hmrInst = magixHmr(magixHmrConfig, ws)
 
       // pushState
-      mat.task('pushState', function() {
+      mat.task('pushState', function () {
         mat
           .url([/^((?!\.(css|less|js|html|ico|swf|do)).)*$/])
           .rewrite([[/(\/.*)+/, `/${indexMatch[0]}`]])
@@ -521,8 +520,9 @@ export default {
           emitter.emit(
             'data',
             chalk.green(
-              `[mat] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${rapProjectId ||
-                '尚未配置'}）`
+              `[mat] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${
+                rapProjectId || '尚未配置'
+              }）`
             )
           )
         }
@@ -531,7 +531,7 @@ export default {
         mat
           .url(jsPatterns)
           .rewrite([
-            function(url) {
+            function (url) {
               return rewriteTypes(url, undefined, cwd)
             }
           ])
@@ -616,7 +616,7 @@ export default {
         mat
           .url(jsPatterns)
           .rewrite([
-            function(url) {
+            function (url) {
               return rewriteTypes(url, undefined, cwd)
             }
           ])
