@@ -4,8 +4,7 @@
   "description": "alimama command line tool!",
   "main": "dist/index.js",
   "bin": {
-    "thx": "dist/index.js",
-    "mx": "dist/index.js"
+    "thx": "dist/index.js"
   },
   "repository": {
     "type": "git",
