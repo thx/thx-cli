@@ -1,14 +1,29 @@
 import { install as coreInstallCommand, utils } from 'thx-cli-core'
-import { IModuleType, IKitInfo, IPluginInfo, IKitMap, IPluginMap, ICommandConfig, IModuleInfo } from 'thx-cli-core/types'
+import {
+  IModuleType,
+  IKitInfo,
+  IPluginInfo,
+  IKitMap,
+  IPluginMap,
+  ICommandConfig,
+  IModuleInfo
+} from 'thx-cli-core/types'
 import { EventEmitter } from 'events'
 import * as inquirer from 'inquirer'
 import * as fse from 'fs-extra' // A collection of common interactive command line user interfaces.
 import { CommanderStatic } from 'commander'
 import { grey, green, white, blueBright } from 'chalk'
 import logger from '../logger'
-const { RMX_HOME, getLength, fixLength, MODULE_TYPE_LIST, MODULE_TYPE_MAP } = utils
+const {
+  MM_HOME,
+  getLength,
+  fixLength,
+  MODULE_TYPE_LIST,
+  MODULE_TYPE_MAP,
+  CLI_NAME
+} = utils
 
-export function prepareTypeQuestionList (type: IModuleType) {
+export function prepareTypeQuestionList(type: IModuleType) {
   return [
     {
       type: 'list',
@@ -24,23 +39,48 @@ export function prepareTypeQuestionList (type: IModuleType) {
   ]
 }
 
-export async function prepareModuleQuestionList (type: IModuleType, modules: Array<IKitInfo | IPluginInfo>) {
-  const moduleDir = `${RMX_HOME}/${type}`
+export async function prepareModuleQuestionList(
+  type: IModuleType,
+  modules: Array<IKitInfo | IPluginInfo>
+) {
+  const moduleDir = `${MM_HOME}/${type}`
   // 本地已经安装的套件或插件
   const installedModuleList = await utils.getInstalledModuleList(type)
-  const installedModuleMap: IKitMap | IPluginMap = installedModuleList.reduce((acc, cur) => {
-    acc[cur.name] = cur
-    return acc
-  }, {})
-  const maxNameLength = Math.max(...modules.map(module => getLength(module.name)), 10)
-  const maxPackageLength = Math.max(...modules.map(module => getLength(module.package)), 10)
+  const installedModuleMap: IKitMap | IPluginMap = installedModuleList.reduce(
+    (acc, cur) => {
+      acc[cur.name] = cur
+      return acc
+    },
+    {}
+  )
+  const maxNameLength = Math.max(
+    ...modules.map(module => getLength(module.name)),
+    10
+  )
+  const maxPackageLength = Math.max(
+    ...modules.map(module => getLength(module.package)),
+    10
+  )
   const moduleChoiceList: Array<any> = modules.map(module => {
     // 找出本地安装的套件，打上已安装的标识
     const installedModule = installedModuleMap[module.name]
-    const exist = fse.pathExistsSync(`${moduleDir}/${module.name}/node_modules/${module.package}`)
-    const fixedName = (installedModule && exist)
-      ? `${fixLength(module.name, maxNameLength)}  ${fixLength(module.package, maxPackageLength)}  ${green('已安装')}${grey('（本地版本')} ${white(installedModule.version)}${grey('，最新版本')} ${green(installedModule.latest)}${grey('）')} ${grey(module.description)}`
-      : `${fixLength(module.name, maxNameLength)}  ${fixLength(module.package, maxPackageLength)}  ${grey(module.description)}`
+    const exist = fse.pathExistsSync(
+      `${moduleDir}/${module.name}/node_modules/${module.package}`
+    )
+    const fixedName =
+      installedModule && exist
+        ? `${fixLength(module.name, maxNameLength)}  ${fixLength(
+            module.package,
+            maxPackageLength
+          )}  ${green('已安装')}${grey('（本地版本')} ${white(
+            installedModule.version
+          )}${grey('，最新版本')} ${green(installedModule.latest)}${grey(
+            '）'
+          )} ${grey(module.description)}`
+        : `${fixLength(module.name, maxNameLength)}  ${fixLength(
+            module.package,
+            maxPackageLength
+          )}  ${grey(module.description)}`
     return {
       name: fixedName,
       value: module,
@@ -60,12 +100,16 @@ export async function prepareModuleQuestionList (type: IModuleType, modules: Arr
 }
 
 /** 安装某个套件或插件 */
-export async function installModule (type: 'kit' | 'plugin' /* IModuleType */, module: IModuleInfo | IKitInfo | IPluginInfo, command?: CommanderStatic) {
+export async function installModule(
+  type: 'kit' | 'plugin' /* IModuleType */,
+  module: IModuleInfo | IKitInfo | IPluginInfo,
+  command?: CommanderStatic
+) {
   const emitter = new EventEmitter()
   emitter
-    .on('data', (message) => logger.info(message))
-    .on('error', (error) => logger.error(error))
-    .on('close', (code) => logger.info(code))
+    .on('data', message => logger.info(message))
+    .on('error', error => logger.error(error))
+    .on('close', code => logger.info(code))
   await coreInstallCommand(emitter, {
     type,
     module,
@@ -73,7 +117,11 @@ export async function installModule (type: 'kit' | 'plugin' /* IModuleType */, m
   })
 }
 
-async function commandAction (type: IModuleType | undefined, name: string | undefined, command: CommanderStatic) {
+async function commandAction(
+  type: IModuleType | undefined,
+  name: string | undefined,
+  command: CommanderStatic
+) {
   // 类型：套件 | 插件
   if (type === undefined) {
     const answers = await inquirer.prompt(prepareTypeQuestionList(type))
@@ -83,13 +131,17 @@ async function commandAction (type: IModuleType | undefined, name: string | unde
   // 模块：套件 | 插件
   let module: IKitInfo | IPluginInfo
   const { kits, plugins } = await utils.getModuleList()
-  const modules:Array<IKitInfo | IPluginInfo> = { kit: kits, plugin: plugins }[type]
+  const modules: Array<IKitInfo | IPluginInfo> = { kit: kits, plugin: plugins }[
+    type
+  ]
   if (name === undefined) {
     const moduleQuestionList = await prepareModuleQuestionList(type, modules)
     const answers = await inquirer.prompt(moduleQuestionList)
     module = answers.module
   } else {
-    module = modules.find(module => module.package === name || module.name === name)
+    module = modules.find(
+      module => module.package === name || module.name === name
+    )
   }
 
   if (!module) throw new Error(`未知的套件或插件 ${name}`)
@@ -103,18 +155,19 @@ const commandConfig: ICommandConfig = {
   name: 'install',
   command: 'install [kit|plugin] [name]',
   alias: 'i',
-  options: [
-    ['--link', '以链接方式安装']
-  ],
+  options: [['--link', '以链接方式安装']],
   description: '安装（或更新）套件和插件',
-  async action (type: IModuleType, name: string, command: CommanderStatic) {
+  async action(type: IModuleType, name: string, command: CommanderStatic) {
     await commandAction(type, name, command)
   },
   on: [
-    ['--help', () => {
-      console.log('\nExamples:')
-      console.log(`  ${grey('$')} ${blueBright('mm install')}`)
-    }]
+    [
+      '--help',
+      () => {
+        console.log('\nExamples:')
+        console.log(`  ${grey('$')} ${blueBright(`${CLI_NAME} install`)}`)
+      }
+    ]
   ]
 }
 

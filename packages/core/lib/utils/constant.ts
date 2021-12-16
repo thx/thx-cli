@@ -131,7 +131,7 @@ export const MM_HOST = '127.0.0.1'
 export const MM_PORT = 6868
 
 /** @deprecated => MM_CACHE_FOLDER */
-export const RMX_CACHE_FOLDER = IS_OPEN_SOURCE ? '.thx' : '.mm'
+export const RMX_CACHE_FOLDER = `.${CLI_NAME}`
 /** @deprecated => MM_HOME */
 export const RMX_HOME = join(os.homedir(), RMX_CACHE_FOLDER)
 /** @deprecated => MM_RC_FILE */
@@ -143,7 +143,7 @@ export const RMX_RC_JSON = '.rmxrc.json'
 
 // =>
 /** MM CLI 本地缓存目录（名称） */
-export const MM_CACHE_FOLDER = IS_OPEN_SOURCE ? '.thx' : '.mm' // 外网用 .thx 目录，内网用 .mm 目录
+export const MM_CACHE_FOLDER = `.${CLI_NAME}` // 外网用 .thx 目录，内网用 .mm 目录
 /** MM CLI 套件缓存目录（名称） */
 export const MM_KIT_FOLDER = 'kit'
 /** MM CLI 插件缓存目录（名称） */

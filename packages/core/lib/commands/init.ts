@@ -82,7 +82,7 @@ async function createLocalApp(
   await cloneTemplate(emitter, appInfo)
 
   // 2
-  await spawnCommand('rm', ['-rf', '.git'], { cwd: appPath })
+  await fse.remove(`${appPath}/.git`)
   // await withSpinner(
   //   '设置远程仓库',
   //   async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {

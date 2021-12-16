@@ -8,7 +8,7 @@ import {
 } from '../utils'
 import { SpawnOptions } from 'child_process'
 import * as fse from 'fs-extra'
-import { redBright, greenBright } from 'chalk'
+import { redBright, greenBright, grey } from 'chalk'
 import { EventEmitter } from 'events'
 import logger from '../logger'
 
@@ -105,11 +105,11 @@ export default async function install(emitter: EventEmitter, params) {
   }
 
   // 插件/套件目录下放一个 info.json，描述基础信息
-  const _options = { ...options, cwd: '' }
-  await spawnCommand('mkdir', ['-p', moduleDir], _options)
-
+  await fse.ensureDir(moduleDir)
   await withSpinner(
-    `安装${MODULE_TYPE_MAP[type]} ${module.name} ${module.package}`,
+    `安装${MODULE_TYPE_MAP[type]} ${module.name} ${grey(
+      `[${module.package}]`
+    )}`,
     async (emitter: EventEmitter, params: any) => {
       await doit()
     }

@@ -24,7 +24,7 @@ import {
   ICommandList
 } from 'thx-cli-core/types'
 import logger from '../logger'
-const { getLength, fixLength, MM_HOME } = utils
+const { getLength, fixLength, MM_HOME, CLI_NAME } = utils
 const { checkModuleMissed } = cliUtils
 // MO TODO
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
@@ -329,7 +329,7 @@ const commandConfig: ICommandConfig = {
       '--help',
       () => {
         console.log('\nExamples:')
-        console.log(`  ${grey('$')} ${blueBright('mm init')}`)
+        console.log(`  ${grey('$')} ${blueBright(`${CLI_NAME} init`)}`)
       }
     ]
   ]

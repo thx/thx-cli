@@ -4,7 +4,7 @@ import * as chalk from 'chalk'
 import * as util from './util'
 import * as semver from 'semver'
 import { prompt, QuestionCollection } from 'inquirer'
-const { getTnpmPackage, IS_OPEN_SOURCE } = utils
+const { getTnpmPackage, IS_OPEN_SOURCE, CLI_NAME } = utils
 const pkg = require('../../package.json')
 
 /**
@@ -158,7 +158,7 @@ export async function checkBuilderUpdateTips(unmatchPkg = []) {
   ]
   const answer = await prompt(questions)
   if (answer.isUpdate) {
-    await utils.spawnDowngradeSudo('mm', ['install', 'kit', 'magix'])
+    await utils.spawnDowngradeSudo(CLI_NAME, ['install', 'kit', 'magix'])
   }
 }
 
@@ -246,7 +246,7 @@ export async function checkGalleryUpdate(magixCliConfig, log) {
       process.env.USER = ''
 
       // 更新组件
-      await utils.spawnDowngradeSudo('mm', [
+      await utils.spawnDowngradeSudo(CLI_NAME, [
         'gallery',
         '--gallery-repos',
         updaterGalleries.map(g => g.name).join(',')

@@ -3,7 +3,7 @@ import { IModuleType, IKitInfo, IPluginInfo, ICommandConfig } from 'thx-cli-core
 import { blueBright, cyan, greenBright, grey, white } from 'chalk'
 import { CommanderStatic } from 'commander'
 import logger from '../logger'
-const { MODULE_TYPE_MAP } = utils
+const { MODULE_TYPE_MAP, CLI_NAME } = utils
 
 function printToFileAndConsole (arg, ...args) {
   console.log(arg, ...args)
@@ -62,7 +62,7 @@ const commandConfig: ICommandConfig = {
   on: [
     ['--help', () => {
       console.log('\nExamples:')
-      console.log(`  ${grey('$')} ${blueBright('mm list')}`)
+      console.log(`  ${grey('$')} ${blueBright(`${CLI_NAME} list`)}`)
     }]
   ]
 }

@@ -17,8 +17,6 @@ export default async function uninstall(emitter: EventEmitter, params) {
     `卸载${MODULE_TYPE_MAP[type]} ${module.name} ${module.package}`,
     async (emitter: EventEmitter, params: any) => {
       const moduleDir = `${MM_HOME}/${type}/${module.name}`
-      console.log(`MM_HOME`, MM_HOME)
-      console.log(`moduleDir`, moduleDir)
       logger.info('remove', moduleDir)
       await fse.remove(moduleDir)
     }

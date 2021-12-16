@@ -7,8 +7,12 @@ import { EventEmitter } from 'events'
 import { IModuleInfo } from '../../types'
 import * as minimist from 'minimist'
 const argv = minimist(process.argv.slice(2))
-const { checkUpdateModule, getModuleList, needBlockProcessByModuleOutdated } =
-  utils
+const {
+  checkUpdateModule,
+  getModuleList,
+  needBlockProcessByModuleOutdated,
+  CLI_NAME
+} = utils
 
 /**
  * 检测套件/插件更新
@@ -35,10 +39,10 @@ export default async function checkModuleOutdated(
   if (!needBlockProcessByModuleOutdated(pkgName)) {
     const message = {
       kit: `检测到当前套件 ${blueBright(name)} 有新版本，请运行 ${blueBright(
-        'mm install'
+        `${CLI_NAME} install`
       )} 更新 ${versionDiffInfo}`,
       plugin: `检测到该插件有新版本，请运行 ${blueBright(
-        'mm install'
+        `${CLI_NAME} install`
       )} 更新 ${versionDiffInfo}`
     }[type]
     console.log(`⚠️  ${yellowBright(message)}\n`)
