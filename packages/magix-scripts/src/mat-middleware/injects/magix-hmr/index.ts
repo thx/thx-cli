@@ -89,7 +89,11 @@ export default (
       }
 
       // HMR 热更新只针对 views 目录下的文件生效，其他则全页刷新
-      if (!filePath.includes(`${rootAppName}/src/${rootAppName}/views/`)) {
+      // 兼容 windows 下的文件路径格式
+      const filePathMatchRegExp = new RegExp(
+        `${rootAppName}[/\\\\]src[/\\\\]${rootAppName}[/\\\\]views[/\\\\]`
+      )
+      if (!filePathMatchRegExp.test(filePath)) {
         pathObjs.isReload = true
       }
 
@@ -103,9 +107,18 @@ export default (
       }
 
       function resolvePath2View(_path) {
-        const rexp = new RegExp(`.+(${rootAppName}\/[^\.]+)(?:\.[^\.]+)?`)
+        // 兼容 windows 文件路径格式
+        const rexp = new RegExp(
+          `.+(${rootAppName}[\\\/\\\\][^\.]+)(?:\.[^\.]+)?`
+        )
         const parse = rexp.exec(_path)
-        return parse && parse[1]
+        let result = parse && parse[1]
+
+        // window 下将 x\y\z 格式转化成 x/y/z
+        if (result) {
+          result = result.replace(/\\/g, '/')
+        }
+        return result
       }
 
       // less/html等文件找到最终依赖viewjs

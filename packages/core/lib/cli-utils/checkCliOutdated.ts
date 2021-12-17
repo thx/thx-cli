@@ -14,7 +14,8 @@ const {
   spawn,
   fixLength,
   needBlockProcessByModuleOutdated,
-  IS_OPEN_SOURCE
+  IS_OPEN_SOURCE,
+  CLI_NAME
 } = utils
 // const pkg: IPackage = require('../../package.json')
 
@@ -65,7 +66,7 @@ export default async function checkCliOutdated(pkg) {
   if (!outdatedPkgs.length) return
 
   const message = [
-    yellowBright('\n⚠️  检测到 MM CLI 依赖的核心包可更新，请升级：')
+    yellowBright(`\n⚠️  检测到 ${CLI_NAME} CLI 依赖的核心包可更新，请升级：`)
   ]
   outdatedPkgs.forEach((pkg, index) => {
     const prefix = index === outdatedPkgs.length - 1 ? '└──' : '├──'
@@ -80,9 +81,14 @@ export default async function checkCliOutdated(pkg) {
       `${IS_OPEN_SOURCE ? 'npm' : 'tnpm'} install -g ${pkg.name}`
     )} 或者 ${blueBright(`yarn global add ${pkg.name}`)} 即可更新。`,
     grey(
-      'CHANGELOG: http://gitlab.alibaba-inc.com/mmfs/mm-cli/blob/master/CHANGELOG.md\n'
+      `CHANGELOG: ${
+        IS_OPEN_SOURCE
+          ? 'https://github.com/thx/thx-cli/blob/master/CHANGELOG.md'
+          : 'https://gitlab.alibaba-inc.com/mmfs/mm-cli/blob/master/CHANGELOG.md'
+      }\n`
     ) // MO TODO 缺少文档
   )
+
   console.log(message.join('\n'))
   logger.info(message.join('\n'))
 
