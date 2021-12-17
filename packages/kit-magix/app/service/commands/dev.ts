@@ -83,14 +83,19 @@ export default async options => {
   params.isDebug = options.debug
   params.magixCliConfig = magixCliConfig
 
+  //
   const emitter = devApi.exec(params)
+  function closeCallback(resp) {
+    if (resp.error) {
+      console.log(chalk.red(`✘ ${resp.error}`))
+    }
+
+    // 移除监听器
+    emitter.removeAllListeners()
+  }
 
   emitter.on('data', msg => {
     console.log(msg)
   })
-  emitter.on('close', resp => {
-    if (resp.error) {
-      console.log(chalk.red(`✘ ${resp.error}`))
-    }
-  })
+  emitter.on('close', closeCallback)
 }

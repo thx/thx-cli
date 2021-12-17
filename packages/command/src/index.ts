@@ -10,6 +10,9 @@ import defaultKitCommandList from './kit/index'
 import logger from './logger'
 import { IKitInfo } from 'thx-cli-core/types'
 
+// 取消监听器上限
+process.setMaxListeners(0)
+
 // 入口命令名称 thx/mx
 const pkg = require('../package.json')
 const {
@@ -93,7 +96,7 @@ async function prepare() {
   //     console.log(redBright(`${error}`))
   //   }
   //   return process.exit(1)
-  // } else {
+  // }
   // 初始化 ~/.mm 目录和文件。
   initMMHome()
 

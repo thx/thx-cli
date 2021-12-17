@@ -23,10 +23,16 @@ function getKitCommandListModule(kitInfo: IKitInfo) {
     utils.took(
       'getKitCommandListModule',
       () => {
-        kitCommandListModule = require(`${MM_HOME}/${type}/${kitName}/node_modules/${packageName}/dist/commands`)
+        try {
+          kitCommandListModule = require(`${MM_HOME}/${type}/${kitName}/node_modules/${packageName}/dist/commands`)
+        } catch (error) {
+          logger.error(error)
+          console.error(error)
+        }
       },
       logger
     )
+
     kitCommandListModule = kitCommandListModule.__esModule
       ? kitCommandListModule.default
       : kitCommandListModule

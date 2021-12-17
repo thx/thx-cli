@@ -265,28 +265,5 @@ export default async () => {
     ]
   })
 
-  /**
-   * 安装dependencies包，并同步到项目中
-   */
-  commands.push({
-    command: 'sync',
-    description: '安装 dependencies 包，并同步到项目中',
-    async action(options) {
-      await require('./service/commands/sync').default(options)
-    },
-    on: [
-      [
-        '--help',
-        () => {
-          console.log()
-          console.log('  Examples:')
-          console.log()
-          console.log(`    $ ${cliName} sync`)
-          console.log()
-        }
-      ]
-    ]
-  })
-
   return commands
 }

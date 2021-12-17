@@ -39,10 +39,10 @@ export default async function checkModuleOutdated(
   if (!needBlockProcessByModuleOutdated(pkgName)) {
     const message = {
       kit: `检测到当前套件 ${blueBright(name)} 有新版本，请运行 ${blueBright(
-        `${CLI_NAME} install`
+        `${CLI_NAME} install kit ${name}`
       )} 更新 ${versionDiffInfo}`,
       plugin: `检测到该插件有新版本，请运行 ${blueBright(
-        `${CLI_NAME} install`
+        `${CLI_NAME} install kit ${name}`
       )} 更新 ${versionDiffInfo}`
     }[type]
     console.log(`⚠️  ${yellowBright(message)}\n`)

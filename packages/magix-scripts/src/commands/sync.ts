@@ -5,6 +5,11 @@ import * as chalk from 'chalk'
 import { EventEmitter } from 'events'
 import * as sn from 'thx-snowpack-v1'
 import { utils } from 'thx-cli-core'
+import * as path from 'path'
+import * as PoweredFileSystem from 'pwd-fs'
+
+//@ts-ignore
+const pfs = new PoweredFileSystem()
 const { withSpinner } = utils
 
 /**
@@ -31,9 +36,8 @@ export default {
       const rootAppName = magixCliConfig.rootAppName ?? pkg.name
 
       // snowpack 同步包到项目中的目录地址，默认在 web_modules 下
-      const {
-        snowpackModulesDest = `src/${rootAppName}/web_modules`
-      } = magixCliConfig
+      const { snowpackModulesDest = `src/${rootAppName}/web_modules` } =
+        magixCliConfig
 
       const snowpackConfig = {
         webDependencies: [],
@@ -50,12 +54,13 @@ export default {
       }
 
       // 先安装依赖包
-      await withSpinner('安装依赖包', async () => {
-        const rootUser = process.env.USER
-        process.env.USER = '' // tnpm install 需要判断 USER 不为 root
-        await utils.spawnDowngradeSudo(params.pkgManager, params.args)
-        process.env.USER = rootUser
-      })()
+      // @deprecated 不再每次dev时自动安装包，项目依赖的包应先手动 npm install 进来
+      // await withSpinner('安装依赖包', async () => {
+      //   const rootUser = process.env.USER
+      //   process.env.USER = '' // tnpm install 需要判断 USER 不为 root
+      //   await utils.spawnDowngradeSudo(params.pkgManager, params.args)
+      //   process.env.USER = rootUser
+      // })()
 
       for (const pkgName in pkg.dependencies) {
         snowpackConfig.webDependencies.push(pkgName)
@@ -67,12 +72,16 @@ export default {
           await sn.cli(process.argv, snowpackConfig)
         },
         error => {
+          console.log(error)
           emitter.emit('close', {
             error
           })
           process.exit(1)
         }
       )()
+
+      // 降权生成的文件
+      await pfs.chmod(path.resolve(appPath, snowpackModulesDest), 0o777)
 
       emitter.emit(
         'data',

@@ -20,6 +20,7 @@ import { clear } from 'thx-plugin-clear'
 import * as open from 'open'
 import * as util from '../util/index'
 import * as matMiddleWare from '../mat-middleware/index'
+import syncPromise from './syncPromise'
 
 const { syncGalleryPkg } = util
 const {
@@ -104,9 +105,10 @@ export default {
       }
 
       // 如果项目有 dependencies 则执行 mm sync 同步包到项目中(基于 snowpack)
+      // 不再转发执行 mm sync，直接调用包执行
       if (appPkg.dependencies && Object.keys(appPkg.dependencies).length) {
         // 然后 magix-combine 解析包路径到 snowpack 生成的包路径里
-        await utils.spawnDowngradeSudo(cliName, ['sync'])
+        await syncPromise()
       }
 
       // 判断是否新版 magix5 编译工具
@@ -143,14 +145,17 @@ export default {
         params.isCloseHmr === undefined
           ? magixCliConfig.closeHmr
           : params.isCloseHmr
+
       params.isCloseDocs =
         params.isCloseDocs === undefined
           ? magixCliConfig.closeDocs
           : params.isCloseDocs
+
       params.isCloseDesiger =
         params.isCloseDesiger === undefined
           ? magixCliConfig.closeDesiger
           : params.isCloseDesiger
+
       params.isCloseInspector =
         params.isCloseInspector === undefined
           ? magixCliConfig.closeInspector
