@@ -30,8 +30,7 @@
     "madge": "lerna run madge",
     "madge:watch": "lerna run madge:watch --parallel",
     "docs": "lerna run docs",
-    "docs:watch": "lerna run docs:watch --parallel",
-    "contributors": "ali-contributors"
+    "docs:watch": "lerna run docs:watch --parallel"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^15.0.0",
@@ -63,7 +62,6 @@
     "@types/supertest": "^2.0.10",
     "@types/urijs": "^1.19.11",
     "@types/walk": "^2.3.0",
-    "ali-contributors": "^2.2.2",
     "babel-eslint": "^10.1.0",
     "commitlint": "^9.1.0",
     "depcheck": "^1.2.0",
