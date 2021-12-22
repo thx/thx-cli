@@ -45,7 +45,6 @@ cd packages/playground
 
 # 4. 执行初始化（初始化一个应用，例如项目名 foo)
 npx thx init
- 
 ```
 
 ## 查看日志
