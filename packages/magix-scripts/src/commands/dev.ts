@@ -108,7 +108,11 @@ export default {
       // 不再转发执行 mm sync，直接调用包执行
       if (appPkg.dependencies && Object.keys(appPkg.dependencies).length) {
         // 然后 magix-combine 解析包路径到 snowpack 生成的包路径里
-        await syncPromise()
+        try {
+          await syncPromise()
+        } catch (error) {
+          console.log(error)
+        }
       }
 
       // 判断是否新版 magix5 编译工具

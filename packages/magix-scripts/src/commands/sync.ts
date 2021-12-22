@@ -72,11 +72,9 @@ export default {
           await sn.cli(process.argv, snowpackConfig)
         },
         error => {
-          console.log(error)
           emitter.emit('close', {
             error
           })
-          process.exit(1)
         }
       )()
 
