@@ -45,15 +45,7 @@ cd packages/playground
 
 # 4. 执行初始化（初始化一个应用，例如项目名 foo)
 npx thx init
-
-# 5. 或者，手动启动工作台
-
-## 5.1 进入应用目录，手动启动工作台
-cd foo
-npx thx web
-
-## 5.2 或者，调试一个新工作台
-MM_MODE=development npx thx web --port 7878 
+ 
 ```
 
 ## 查看日志
