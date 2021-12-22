@@ -2,15 +2,15 @@
  * 安装dependencies包，并同步到项目中
  */
 import syncApi from './sync'
-import { utils } from 'thx-cli-core'
-const { IS_OPEN_SOURCE } = utils
+// import { utils } from 'thx-cli-core'
+// const { IS_OPEN_SOURCE } = utils
 
 //
 export default () => {
   return new Promise((resolve, reject) => {
     const syncApiEmitter = syncApi.exec({
-      pkgManager: IS_OPEN_SOURCE ? 'npm' : 'tnpm',
-      args: ['install'],
+      // pkgManager: IS_OPEN_SOURCE ? 'npm' : 'tnpm',
+      // args: ['install'],
       cwd: process.cwd()
     })
 

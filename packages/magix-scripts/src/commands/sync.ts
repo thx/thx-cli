@@ -22,9 +22,9 @@ const { withSpinner } = utils
 export default {
   exec(
     params: any = {
-      cwd: process.cwd(),
-      pkgManager: 'npm',
-      args: ['install']
+      cwd: process.cwd()
+      // pkgManager: 'npm',
+      // args: ['install']
     }
   ) {
     const emitter = new EventEmitter()
