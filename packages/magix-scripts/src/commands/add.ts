@@ -29,6 +29,7 @@ export default async options => {
   const magixCliConfig = await util.getMagixCliConfig()
   const appPath = await utils.getAppPath()
   const pkg = await utils.getAppPkg(appPath)
+  const projectName = pkg.name || 'app'
   // 优先package.json里的localTmplPath配置
   const localTmplPath = magixCliConfig.codeTmpl || 'mama_config/tmpl'
   const isExistLocalTmpl = await util.getExistFile(localTmplPath)
@@ -122,7 +123,6 @@ export default async options => {
 
   // 生成相对view.ts的路径
   function generatePath() {
-    const projectName = pkg.name || 'app'
     const _regexp = new RegExp(`${projectName}.*`)
     const cwd = process.cwd()
     const projectRoot = cwd.replace(_regexp, projectName)
@@ -180,7 +180,8 @@ export default async options => {
             fileName,
             action,
             relativePath,
-            viewPathAbs.replace(/\//g, '_')
+            viewPathAbs.replace(/\//g, '_'),
+            projectName
           ),
           'utf8'
         )

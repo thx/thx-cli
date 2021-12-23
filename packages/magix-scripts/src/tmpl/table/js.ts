@@ -1,8 +1,8 @@
 
-export default function (name, action, path) {
+export default function (name, action, path, vp, projectName) {
   return `
     import Magix from 'magix'
-    import View from '${path}/view'
+    import View from '${projectName}/view'
     Magix.applyStyle('@./${name}.less')
     const paramsStr = ['page', 'pageSize']
     

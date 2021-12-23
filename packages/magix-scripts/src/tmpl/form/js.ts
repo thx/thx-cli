@@ -1,5 +1,5 @@
 
-export default function (name, action, path) {
+export default function (name, action, path, vp, projectName) {
   if (!action) {
     action = {
       requestUrl: '/api/test',
@@ -9,7 +9,7 @@ export default function (name, action, path) {
 
   return `
 import Magix from 'magix'
-import View from '${path}/view'
+import View from '${projectName}/view'
 Magix.applyStyle('@./${name}.less')
 
 export default View.extend({

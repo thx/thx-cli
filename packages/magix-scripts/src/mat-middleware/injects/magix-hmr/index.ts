@@ -112,13 +112,13 @@ export default (
           `.+(${rootAppName}[\\\/\\\\][^\.]+)(?:\.[^\.]+)?`
         )
         const parse = rexp.exec(_path)
-        let result = parse && parse[1]
+        let resolvedPath = parse && parse[1]
 
-        // window 下将 x\y\z 格式转化成 x/y/z
-        if (result) {
-          result = result.replace(/\\/g, '/')
+        // window 下将 x\y\z 路径格式转化成 x/y/z
+        if (resolvedPath) {
+          resolvedPath = resolvedPath.replace(/\\/g, '/')
         }
-        return result
+        return resolvedPath
       }
 
       // less/html等文件找到最终依赖viewjs
