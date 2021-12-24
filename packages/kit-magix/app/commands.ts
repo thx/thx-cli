@@ -1,5 +1,4 @@
-import { blueBright, cyanBright, grey } from 'chalk'
-import { EventEmitter } from 'events'
+import { blueBright, grey } from 'chalk'
 import { util } from 'thx-magix-scripts'
 import * as minimist from 'minimist'
 import * as fse from 'fs-extra'
@@ -7,10 +6,8 @@ import { utils } from 'thx-cli-core'
 import { ICreateAppInfo } from 'thx-cli-core/types'
 import { CommanderStatic } from 'commander'
 
-const { checkPackageVersionsCorrect, replace: replaceUtil } = util
-const { execCommand, withSpinner, checkDependencies, CLI_NAME } = utils
-// 入口命令名称 thx/mx
-const cliName = CLI_NAME
+const { checkPackageVersionsCorrect } = util
+const { checkDependencies, CLI_NAME } = utils // 入口命令名称 thx/mx
 
 export default async () => {
   const argv = minimist(process.argv.slice(2))
@@ -78,48 +75,7 @@ export default async () => {
     // after 方法 cli 会自动执行
     // __after__ 是给 init 特殊提供的, cli 与 webui 共用逻辑
     async __after__(appInfo: ICreateAppInfo, emitter) {
-      const { snapshoot = {}, cwd, app, gitlab } = appInfo
-      const appPath = `${cwd}/${app}`
-      const pkgPath = `${appPath}/package.json`
-      const pkg = await fse.readJSON(pkgPath)
-
-      /**
-       * 初始化项目后，进行全文件的项目名称的替换，目前只支持zs_scaffold脚手架
-       */
-
-      if (snapshoot?.scaffoldInfo?.replaceable) {
-        await withSpinner(
-          '开始进行脚手架的项目全局项目名称替换',
-          async (emitter: EventEmitter, appInfo: ICreateAppInfo) => {
-            await replaceUtil.adjustProject(appInfo)
-          }
-        )(emitter, appInfo)
-      }
-
-      // initCompleted配置：允许 mm init 完执行一些自定义的命令
-      if (pkg.magixCliConfig.initCompleted) {
-        await execCommand(pkg.magixCliConfig.initCompleted, { cwd: appPath })
-      }
-
-      console.log(`\n应用 ${cyanBright(app)} 创建成功！你可以执行以下命令：\n`)
-      console.log(`  ${grey('●')} ${blueBright(`cd ${app}`)}`)
-      console.log(
-        `  ${grey('●')} ${blueBright(`${cliName} dev`)}      ${grey(
-          '启动本地开发服务'
-        )}`
-      )
-      console.log(
-        `  ${grey('●')} ${blueBright(`${cliName} build`)}      ${grey(
-          '本地构建项目'
-        )}`
-      )
-
-      console.log(
-        `  ${grey('●')} ${blueBright(`${cliName} -h`)}       ${grey(
-          '查看所有命令帮助'
-        )}`
-      )
-      console.log('')
+      await require('./service/commands/afterInit').default(appInfo, emitter)
     },
     on: [
       [
@@ -128,7 +84,7 @@ export default async () => {
           console.log()
           console.log('Examples:')
           console.log()
-          console.log(`  ${grey('$')} ${blueBright(`${cliName} init magix`)}`)
+          console.log(`  ${grey('$')} ${blueBright(`${CLI_NAME} init magix`)}`)
           console.log()
         }
       ]
@@ -159,7 +115,7 @@ export default async () => {
           console.log()
           console.log('  Examples:')
           console.log()
-          console.log(`    $ ${cliName} gallery`)
+          console.log(`    $ ${CLI_NAME} gallery`)
           console.log()
         }
       ]
@@ -193,7 +149,7 @@ export default async () => {
       // ['--debug', '开启 debug 模式，会校验 rap 接口等'],
       [
         '-i, --ipconfig-index <i>',
-        `默认选取 ${cliName} dev -d 时对应的第 i 个配置`
+        `默认选取 ${CLI_NAME} dev -d 时对应的第 i 个配置`
       ]
     ],
     // 必须为异步方法
@@ -206,9 +162,9 @@ export default async () => {
         () => {
           console.log()
           console.log('Examples:')
-          console.log(`  $ ${cliName} dev`)
-          console.log(`  $ ${cliName} dev -p 8888`)
-          console.log(`  $ ${cliName} dev -d 10.12.13.199`)
+          console.log(`  $ ${CLI_NAME} dev`)
+          console.log(`  $ ${CLI_NAME} dev -p 8888`)
+          console.log(`  $ ${CLI_NAME} dev -d 10.12.13.199`)
           console.log()
         }
       ]
@@ -257,7 +213,7 @@ export default async () => {
           console.log()
           console.log('  Examples:')
           console.log()
-          console.log(`    $ ${cliName} build`)
+          console.log(`    $ ${CLI_NAME} build`)
           // console.log('    $ mm build --local')
           console.log()
         }
