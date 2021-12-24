@@ -139,7 +139,7 @@ export default (wsPort, host, isMagix5) => {
           isMagix5 ? 'mount' : 'mountView'
         } = function (${isMagix5 ? 'node, ' : ''}path, params) {
             this.viewInitParams = params;
-            oldMountView.apply(this, arguments);
+            return oldMountView.apply(this, arguments);
         };
     });
 
