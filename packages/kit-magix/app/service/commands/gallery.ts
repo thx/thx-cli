@@ -46,16 +46,16 @@ export default async options => {
   if (list) {
     try {
       const gallerys = await galleryApi.list()
-      console.log(chalk.white('↳以下是项目中所有gallery组件信息：'))
+      console.log(chalk.white('↳ 以下是项目中所有 gallery 组件信息：'))
       for (const gallery of gallerys) {
         console.log(
-          chalk.green(` 组件库[${gallery.repoName}]`),
+          chalk.white(` 组件库 [${chalk.greenBright(gallery.repoName)}]`),
           chalk.grey(`${gallery.path}`)
         )
         for (const g of gallery.list) {
           console.log(
             chalk.grey(
-              ` ├── ${chalk.cyan(g.name)} ${chalk.grey(`${g.version}`)}`
+              ` ├── ${chalk.cyanBright(g.name)} ${chalk.grey(`${g.version}`)}`
             )
           )
         }

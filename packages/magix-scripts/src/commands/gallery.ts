@@ -4,8 +4,31 @@
  *  - mm gallery -n <galleryName>: 指定同步某个组件，如果本地有组件有修改过，给出提示
  *  - mm gallery -l: 列出本地所有组件以及组件版本号
  */
+
+/**
+ * galleries配置规则：[{
+ *   name: magix-gallery@1.3.10, //可指定版本号
+ *   path: src/app/gallery, //组件同步到项目中的位置
+ *   ignoreFiles: ["mx-style/_vars_override.less"] //组件中忽略掉修改判断的文件，比如项目中的_vars_override.less
+ *   single: true 标识组件库里只有一个组件
+ * }]
+ * 组件的源仓库package.json 需要配置:
+ *    "thxGalleryPath": "src/magix5-gallery/gallery" // 标识当前组件库的所有组件的存放路径
+ *    "thxGallerySingle": true // 标识当前组件库是否是单组件模式
+ * galleryPath默认以magix-gallery配置进galleries里
+ * galleries配置优先于galleryPath
+ */
 import { utils } from 'thx-cli-core'
-import { cyan, green, grey, white, yellow } from 'chalk'
+import {
+  cyan,
+  green,
+  greenBright,
+  cyanBright,
+  grey,
+  white,
+  yellow,
+  yellowBright
+} from 'chalk'
 import * as util from '../util/index'
 import * as fs from 'fs-extra'
 import * as path from 'path'
@@ -236,7 +259,7 @@ function syncGallery(
       if (galleryName) {
         emitter.emit(
           'data',
-          `${green('✔')} ${cyan(galleryName)} ${grey(gallerysVersion)}`
+          `${green('✔')} ${cyanBright(galleryName)} ${grey(gallerysVersion)}`
         )
       }
     }
@@ -394,9 +417,9 @@ export default {
           galleryFolders.forEach(g => {
             emitter.emit(
               'data',
-              `${green(`\n同步组件库[${g.repositoryName}]`)} ${grey(
-                `${g._galleryPath}`
-              )}`
+              `${white(
+                `\n同步组件库 [${greenBright(g.repositoryName)}]`
+              )} ${grey(`${g._galleryPath}`)}`
             )
 
             if (g.single) {
@@ -450,7 +473,9 @@ export default {
           emitter.emit('data', grey('-------------------'))
           emitter.emit(
             'data',
-            `${green('✔')} ${white(`共同步了${cyan(galleryTotal)}个组件`)}`
+            `${green('✔')} ${white(
+              `共同步了 ${cyanBright(galleryTotal)} 个组件`
+            )}`
           )
           return emitter.emit('close', {})
         }
@@ -488,7 +513,10 @@ export default {
 
       for (const gallery of galleriesConfig) {
         if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
-          emitter.emit('data', cyan(`↳ 安装组件库${gallery.name}`))
+          emitter.emit(
+            'data',
+            white(`\n↳ 安装组件库 [${greenBright(gallery.name)}]`)
+          )
           await installGallery(pkgManager, gallery, emitter, cwd)
         }
       }
@@ -614,15 +642,6 @@ export default {
     const magixCliConfig = await util.getMagixCliConfig(cwd)
     const root = await utils.getAppPath(cwd)
 
-    /**
-     * galleries配置规则：[{
-     *   name: magix-gallery@1.3.10, //可指定版本号
-     *   path: src/app/gallery, //组件同步到项目中的位置
-     *   ignoreFiles: ["mx-style/_vars_override.less"] //组件中忽略掉修改判断的文件，比如项目中的_vars_override.less
-     * }]
-     * galleryPath默认以magix-gallery配置进galleries里
-     * galleries配置优先于galleryPath
-     */
     const galleriesConfig = util.compatGalleriesConfig(magixCliConfig)
 
     for (const gallery of galleriesConfig) {
