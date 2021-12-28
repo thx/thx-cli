@@ -78,8 +78,26 @@ export default {
         }
       )()
 
-      // 降权生成的文件
-      await pfs.chmod(path.resolve(appPath, snowpackModulesDest), 0o777)
+      try {
+        const moduleDest = path.resolve(appPath, snowpackModulesDest)
+        const {
+          env: { SUDO_UID, SUDO_GID }
+        } = process
+
+        // 更改生成文件的 owner
+        if (SUDO_UID && SUDO_GID) {
+          await pfs.chown(
+            moduleDest,
+            parseInt(SUDO_UID, 10),
+            parseInt(SUDO_GID, 10)
+          )
+        }
+
+        // 降权生成的文件
+        await pfs.chmod(moduleDest, 0o777)
+      } catch (error) {
+        console.log(error)
+      }
 
       emitter.emit(
         'data',

@@ -8,6 +8,7 @@ import * as combineTool from 'magix-combine'
 import * as composerTool from 'magix-composer'
 import * as magixCombineToolConfig from 'magix-combine-tool-config'
 import * as magixComposerToolConfig from 'magix-composer-config'
+import { syncPromise } from 'thx-magix-scripts'
 
 // 本地构建
 export default async options => {
@@ -101,6 +102,16 @@ export default async options => {
   }
 
   try {
+    // 如果项目有 dependencies 则执行 snowpack 同步npm包到项目中
+    if (pkg.dependencies && Object.keys(pkg.dependencies).length) {
+      // 然后 magix-combine 解析包路径到 snowpack 生成的包路径里
+      try {
+        await syncPromise()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     // 删除
     await del(buildFolder)
 
