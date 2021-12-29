@@ -3,20 +3,33 @@
  *  - mm gallery: 默认同步所有组件到本地项目中，如果有本地组件被修改过，给出提示，来决定是否覆盖升级
  *  - mm gallery -n <galleryName>: 指定同步某个组件，如果本地有组件有修改过，给出提示
  *  - mm gallery -l: 列出本地所有组件以及组件版本号
+ *  - mm gallery --gallery-repos <repoName>: 指定同步组件库，多个组件库以逗号分隔
  */
 
 /**
  * galleries配置规则：[{
- *   name: magix-gallery@1.3.10, //可指定版本号
- *   path: src/app/gallery, //组件同步到项目中的位置
- *   ignoreFiles: ["mx-style/_vars_override.less"] //组件中忽略掉修改判断的文件，比如项目中的_vars_override.less
- *   single: true 标识组件库里只有一个组件
+ *   //可指定版本号
+ *   name: magix-gallery@1.3.10,
+ *
+ *   // 指定组件库自身要拷贝的文件夹目录，同一个组件库可以多次同步不同目录下的文件 (不配置则默认为 tmpl)
+ *   // 拷贝文件时会忽略掉 __ 打头的文件夹
+ *   originPath: src/magix5-gallery/gallery
+ *
+ *   // 组件同步到项目中的位置
+ *   path: src/app/gallery,
+ *
+ *   // @deprecated 组件中忽略掉修改判断的文件，比如项目中的_vars_override.less
+ *   ignoreFiles: ["mx-style/_vars_override.less"]
+ *
+ *   // 标识组件库是单组件模式
+ *   single: true
  * }]
- * 组件的源仓库package.json 需要配置:
- *    "thxGalleryPath": "src/magix5-gallery/gallery" // 标识当前组件库的所有组件的存放路径
- *    "thxGallerySingle": true // 标识当前组件库是否是单组件模式
- * galleryPath默认以magix-gallery配置进galleries里
- * galleries配置优先于galleryPath
+ *
+ * 组件仓库 mm publish --npm 默认发布到 npm 源，可以配置 magixCliConfig.publisyType = "tnpm" 来指定发布到 tnpm 源
+ *
+ * 兼容老配置：
+ *  - galleryPath默认以magix-gallery配置进galleries里
+ *  - galleries配置优先于galleryPath
  */
 import { utils } from 'thx-cli-core'
 import {
@@ -35,19 +48,19 @@ import * as path from 'path'
 import * as md5 from 'md5'
 import { EventEmitter } from 'events'
 
-const galleryDir = 'tmpl' // 组件仓库下组件存放的目录名
-
+const GALLERY_DIR_DEFAULT = 'tmpl' // 默认组件仓库下组件存放的目录名
 // 匹配magix-gallery仓库tmpl文件夹下非组件的文件夹正则
 const notGalleryFolderRexp = /^__/
 
 /**
- * 获取js文件里的组件版本信息
- */
+ * 获取 js 文件里的组件版本信息，版本配置规则：
+ * 在 js 文件的头部配置 /* ver: 1.0.0 */
+/* */
 function getVersion(filePath): string | undefined {
   const fileContent = fs.readFileSync(filePath, {
     encoding: 'utf8'
   })
-  const version = /\/\*\s*ver\s*:\s*(.+)\s*\*\//.exec(fileContent)
+  const version = /\/\*\s*ver\s*:\s*([^\s]+)\s*\*\//.exec(fileContent)
   if (version) return version[1]
 }
 
@@ -66,14 +79,17 @@ function isModified(
     const originGalleryPath = path.resolve(root, galleryPathOrigin, galleryName)
     const galleryFiles = fs.readdirSync(destGalleryPath)
     const originGalleryFiles = fs.readdirSync(originGalleryPath)
-    const modifyFiles = [] // 有修改过的文件
-    const _galleryPath = `${galleryPath}/${galleryName}`
+    const modifyFiles = [] // 有修改过的文件集合
+    const _galleryPath = path.join(galleryPath, galleryName)
 
     galleryFiles.forEach(file => {
       // 忽略 版本Json
       if (file === 'pkg.json') {
         return
       }
+
+      // 组件文件的路径
+      const filePath = path.join(_galleryPath, file)
 
       // 如果galleries配置的ignoreFiles与该文件相等，则跳过该文件的已修改提示
       for (const ignore of galleryIgnoreFiles) {
@@ -121,7 +137,7 @@ function isModified(
             modifyFiles.push({
               type: 'modified',
               file,
-              filePath: `${_galleryPath}/${file}`
+              filePath
             })
           }
         } catch (error) {
@@ -133,7 +149,7 @@ function isModified(
         modifyFiles.push({
           type: 'deleted',
           file,
-          filePath: `${_galleryPath}/${file}`
+          filePath
         })
       }
     })
@@ -158,8 +174,11 @@ function installGallery(pkgManager, gallery, emitter, cwd): Promise<any> {
     const pkgManagerCmd =
       process.platform === 'win32' ? `${pkgManager}.cmd` : pkgManager
 
+    // --no-save: mm gallery 只纯粹安装包，不配置在package.json的依赖里，避免 snowpack 同步不必要的包问题
     utils
-      .spawn(pkgManagerCmd, ['install', gallery.name, '--color'], { cwd })
+      .spawn(pkgManagerCmd, ['install', gallery.name, '--no-save', '--color'], {
+        cwd
+      })
       .on('data', msg => {
         emitter.emit('data', msg)
       })
@@ -304,14 +323,16 @@ export default {
           let _galleryPath
           let _galleryPathOrigin
           let _repositoryName
-          let _galleryIgnoreFiles
+          // let _galleryIgnoreFiles
 
           for (const gallery of galleriesConfig) {
             const repositoryName = gallery.repoName
             // node_modules下的原始gallery路径
             _galleryPathOrigin = path.resolve(
               root,
-              `node_modules/${repositoryName}/${galleryDir}`
+              'node_modules',
+              repositoryName,
+              gallery.originPath || GALLERY_DIR_DEFAULT
             )
 
             try {
@@ -319,7 +340,7 @@ export default {
               fs.readdirSync(path.resolve(_galleryPathOrigin, name))
               exist = true //
               _galleryPath = gallery.path
-              _galleryIgnoreFiles = gallery.ignoreFiles
+              // _galleryIgnoreFiles = gallery.ignoreFiles
               _repositoryName = repositoryName
               break
             } catch (error) {}
@@ -368,7 +389,9 @@ export default {
               // node_modules下的原始gallery路径
               const _galleryPathOrigin = path.resolve(
                 root,
-                `node_modules/${repositoryName}/${galleryDir}`
+                'node_modules',
+                repositoryName,
+                gallery.originPath || GALLERY_DIR_DEFAULT
               )
               const _gallerys = fs.readdirSync(_galleryPathOrigin)
 
@@ -460,14 +483,21 @@ export default {
             }
 
             // 将 node_modules 下组件的 package.json 复制进项目的组件目录下，用来判断本地组件版本是否有更新
-            emitter.emit(
-              'data',
-              `${grey('✔ 已同步组件库 package.json 信息到项目组件目录下')}`
-            )
-            fs.copy(
-              `node_modules/${g.repositoryName}/package.json`,
-              `${g._galleryPath}/pkg.json`
-            )
+            try {
+              fs.copySync(
+                path.resolve('node_modules', g.repositoryName, 'package.json'),
+                path.resolve(g._galleryPath, 'pkg.json')
+                // `node_modules/${g.repositoryName}/package.json`,
+                // `${g._galleryPath}/pkg.json`
+              )
+
+              emitter.emit(
+                'data',
+                `${grey('✔ 已同步组件库 package.json 信息到项目组件目录下')}`
+              )
+            } catch (error) {
+              emitter.emit('data', error)
+            }
           })
 
           emitter.emit('data', grey('-------------------'))
@@ -538,7 +568,9 @@ export default {
             // node_modules下的原始gallery路径
             _galleryPathOrigin = path.resolve(
               root,
-              `node_modules/${gallery.repoName}/${galleryDir}`
+              'node_modules',
+              gallery.repoName,
+              gallery.originPath || GALLERY_DIR_DEFAULT
             )
 
             try {
@@ -577,7 +609,9 @@ export default {
             // node_modules下的原始gallery路径
             const _galleryPathOrigin = path.resolve(
               root,
-              `node_modules/${gallery.repoName}/${galleryDir}`
+              'node_modules',
+              gallery.repoName,
+              gallery.originPath || GALLERY_DIR_DEFAULT
             )
 
             // 单组件仓库
@@ -664,12 +698,10 @@ export default {
                 const version = getVersion(
                   path.resolve(galleryFullPath, file, _file)
                 )
-                const _version = version ? 'v' + version : ''
-                const _name = file + '/' + path.parse(_file).name
 
                 gallery.list.push({
-                  name: _name,
-                  version: _version
+                  name: `${file}/${path.parse(_file).name}`,
+                  version: version ? `v${version}` : ''
                 })
               }
             })
