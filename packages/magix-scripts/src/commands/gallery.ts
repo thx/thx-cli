@@ -7,12 +7,13 @@
  */
 
 /**
- * galleries配置规则：[{
+ * magixCliConfig.galleries 配置规则：[{
  *   //可指定版本号
  *   name: magix-gallery@1.3.10,
  *
  *   // 指定组件库自身要拷贝的文件夹目录，同一个组件库可以多次同步不同目录下的文件 (不配置则默认为 tmpl)
  *   // 拷贝文件时会忽略掉 __ 打头的文件夹
+ *   // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
  *   originPath: src/magix5-gallery/gallery
  *
  *   // 组件同步到项目中的位置
@@ -22,14 +23,18 @@
  *   ignoreFiles: ["mx-style/_vars_override.less"]
  *
  *   // 标识组件库是单组件模式
+ *   // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
  *   single: true
  * }]
  *
  * 组件仓库 mm publish --npm 默认发布到 npm 源，可以配置 magixCliConfig.publisyType = "tnpm" 来指定发布到 tnpm 源
+ * 组件仓库可以配置自己仓库的同步规则：
+ *  - magixCliConfig.galleryIsSingle // 是否单仓库模式
+ *  - magixCliConfig.gallerySyncPath // 组件库默认要被同步到项目中的目录
  *
  * 兼容老配置：
- *  - galleryPath默认以magix-gallery配置进galleries里
- *  - galleries配置优先于galleryPath
+ *  - galleryPath 默认以 magix-gallery 配置进 galleries 里
+ *  - galleries 配置优先于 galleryPath
  */
 import { utils } from 'thx-cli-core'
 import {
@@ -327,12 +332,20 @@ export default {
 
           for (const gallery of galleriesConfig) {
             const repositoryName = gallery.repoName
+            // 组件仓库的 package.json
+            const galleryPkg = await fs.readJson(
+              path.resolve(root, 'node_modules', repositoryName, 'package.json')
+            )
+
             // node_modules下的原始gallery路径
             _galleryPathOrigin = path.resolve(
               root,
               'node_modules',
               repositoryName,
-              gallery.originPath || GALLERY_DIR_DEFAULT
+              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
+              gallery.originPath ||
+                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+                GALLERY_DIR_DEFAULT
             )
 
             try {
@@ -383,6 +396,11 @@ export default {
 
           for (const gallery of galleriesConfig) {
             const repositoryName = gallery.repoName
+            // 组件仓库的 package.json
+            const galleryPkg = await fs.readJson(
+              path.resolve(root, 'node_modules', repositoryName, 'package.json')
+            )
+
             if (!galleryRepos || galleryRepos.includes(repositoryName)) {
               // src/app/gallery
               const _galleryPath = gallery.path
@@ -391,14 +409,23 @@ export default {
                 root,
                 'node_modules',
                 repositoryName,
-                gallery.originPath || GALLERY_DIR_DEFAULT
+                // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
+                gallery.originPath ||
+                  galleryPkg?.magixCliConfig?.gallerySyncPath ||
+                  GALLERY_DIR_DEFAULT
               )
+
               const _gallerys = fs.readdirSync(_galleryPathOrigin)
 
               // 单组件仓库
-              if (gallery.single) {
+              // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
+              if (
+                gallery.single ||
+                (gallery.single === undefined &&
+                  galleryPkg?.magixCliConfig?.galleryIsSingle)
+              ) {
                 galleryFolders.push({
-                  single: gallery.single,
+                  single: true,
                   repositoryName,
                   _galleryPath,
                   _galleryPathOrigin
@@ -487,8 +514,6 @@ export default {
               fs.copySync(
                 path.resolve('node_modules', g.repositoryName, 'package.json'),
                 path.resolve(g._galleryPath, 'pkg.json')
-                // `node_modules/${g.repositoryName}/package.json`,
-                // `${g._galleryPath}/pkg.json`
               )
 
               emitter.emit(
@@ -565,12 +590,25 @@ export default {
 
         for (const gallery of galleriesConfig) {
           if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
+            // 组件仓库的 package.json
+            const galleryPkg = await fs.readJson(
+              path.resolve(
+                root,
+                'node_modules',
+                gallery.repoName,
+                'package.json'
+              )
+            )
+
             // node_modules下的原始gallery路径
             _galleryPathOrigin = path.resolve(
               root,
               'node_modules',
               gallery.repoName,
-              gallery.originPath || GALLERY_DIR_DEFAULT
+              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
+              gallery.originPath ||
+                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+                GALLERY_DIR_DEFAULT
             )
 
             try {
@@ -604,6 +642,16 @@ export default {
          */
         for (const gallery of galleriesConfig) {
           if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
+            // 组件仓库的 package.json
+            const galleryPkg = await fs.readJson(
+              path.resolve(
+                root,
+                'node_modules',
+                gallery.repoName,
+                'package.json'
+              )
+            )
+
             // src/app/gallery
             const _galleryPath = gallery.path
             // node_modules下的原始gallery路径
@@ -611,11 +659,19 @@ export default {
               root,
               'node_modules',
               gallery.repoName,
-              gallery.originPath || GALLERY_DIR_DEFAULT
+              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
+              gallery.originPath ||
+                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+                GALLERY_DIR_DEFAULT
             )
 
             // 单组件仓库
-            if (gallery.single) {
+            // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
+            if (
+              gallery.single ||
+              (gallery.single === undefined &&
+                galleryPkg?.magixCliConfig?.galleryIsSingle)
+            ) {
               // 本地被修改过
               const modifieds = isModified(
                 '',
