@@ -13,11 +13,11 @@
  *
  *   // 指定组件库自身要拷贝的文件夹目录，同一个组件库可以多次同步不同目录下的文件 (不配置则默认为 tmpl)
  *   // 拷贝文件时会忽略掉 __ 打头的文件夹
- *   // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
- *   originPath: src/magix5-gallery/gallery
+ *   // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+ *   importFrom: src/magix5-gallery/gallery
  *
  *   // 组件同步到项目中的位置
- *   path: src/app/gallery,
+ *   importTo: src/app/gallery, // 原先值：path
  *
  *   // @deprecated 组件中忽略掉修改判断的文件，比如项目中的_vars_override.less
  *   ignoreFiles: ["mx-style/_vars_override.less"]
@@ -30,7 +30,7 @@
  * 组件仓库 mm publish --npm 默认发布到 npm 源，可以配置 magixCliConfig.publisyType = "tnpm" 来指定发布到 tnpm 源
  * 组件仓库可以配置自己仓库的同步规则：
  *  - magixCliConfig.galleryIsSingle // 是否单仓库模式
- *  - magixCliConfig.gallerySyncPath // 组件库默认要被同步到项目中的目录
+ *  - magixCliConfig.galleryExport // 组件库默认要被同步到项目中的目录
  *
  * 兼容老配置：
  *  - galleryPath 默认以 magix-gallery 配置进 galleries 里
@@ -342,9 +342,9 @@ export default {
               root,
               'node_modules',
               repositoryName,
-              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
-              gallery.originPath ||
-                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+              gallery.importFrom ||
+                galleryPkg?.magixCliConfig?.galleryExport ||
                 GALLERY_DIR_DEFAULT
             )
 
@@ -352,7 +352,7 @@ export default {
               // 测试看存在不存在该组件
               fs.readdirSync(path.resolve(_galleryPathOrigin, name))
               exist = true //
-              _galleryPath = gallery.path
+              _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置值 path
               // _galleryIgnoreFiles = gallery.ignoreFiles
               _repositoryName = repositoryName
               break
@@ -403,15 +403,15 @@ export default {
 
             if (!galleryRepos || galleryRepos.includes(repositoryName)) {
               // src/app/gallery
-              const _galleryPath = gallery.path
+              const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
               // node_modules下的原始gallery路径
               const _galleryPathOrigin = path.resolve(
                 root,
                 'node_modules',
                 repositoryName,
-                // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
-                gallery.originPath ||
-                  galleryPkg?.magixCliConfig?.gallerySyncPath ||
+                // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+                gallery.importFrom ||
+                  galleryPkg?.magixCliConfig?.galleryExport ||
                   GALLERY_DIR_DEFAULT
               )
 
@@ -605,9 +605,9 @@ export default {
               root,
               'node_modules',
               gallery.repoName,
-              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
-              gallery.originPath ||
-                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+              gallery.importFrom ||
+                galleryPkg?.magixCliConfig?.galleryExport ||
                 GALLERY_DIR_DEFAULT
             )
 
@@ -615,7 +615,7 @@ export default {
               // 测试看存在不存在该组件
               fs.readdirSync(path.resolve(_galleryPathOrigin, name))
               exist = true //
-              _galleryPath = gallery.path
+              _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
               _galleryIgnoreFiles = gallery.ignoreFiles
               break
             } catch (error) {}
@@ -653,15 +653,15 @@ export default {
             )
 
             // src/app/gallery
-            const _galleryPath = gallery.path
+            const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
             // node_modules下的原始gallery路径
             const _galleryPathOrigin = path.resolve(
               root,
               'node_modules',
               gallery.repoName,
-              // 优先级：originPath > 组件库仓库的 magixCliConfig.gallerySyncPath > 默认目录 tmpl
-              gallery.originPath ||
-                galleryPkg?.magixCliConfig?.gallerySyncPath ||
+              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+              gallery.importFrom ||
+                galleryPkg?.magixCliConfig?.galleryExport ||
                 GALLERY_DIR_DEFAULT
             )
 
@@ -737,7 +737,7 @@ export default {
     for (const gallery of galleriesConfig) {
       gallery.list = []
       try {
-        const _galleryPath = gallery.path
+        const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
         const galleryFullPath = path.resolve(root, _galleryPath)
         const galleryFiles = fs.readdirSync(galleryFullPath)
 
