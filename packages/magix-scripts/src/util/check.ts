@@ -3,6 +3,7 @@ import * as fse from 'fs-extra'
 import * as chalk from 'chalk'
 import * as util from './util'
 import * as semver from 'semver'
+import * as path from 'path'
 import { prompt, QuestionCollection } from 'inquirer'
 const { getTnpmPackage, IS_OPEN_SOURCE, CLI_NAME } = utils
 const pkg = require('../../package.json')
@@ -24,7 +25,7 @@ export function checkPackageVersionsCorrect() {
 
         try {
           const modulePkg = fse.readJsonSync(
-            `${rootPath}/node_modules/${moduleName}/package.json`
+            path.resolve(rootPath, 'node_modules', moduleName, 'package.json')
           )
 
           // 如果包版本是地址类型的，则跳过验证，如 "kmc": "git+ssh://git@gitlab.alibaba-inc.com:jintai.yzq/kmc.git"
@@ -193,7 +194,7 @@ export async function checkGalleryUpdate(magixCliConfig, log) {
       try {
         // 项目组件目录下存放着 pkg.json (同 node_modules 组件目录下的 package.json)
         const localGalleryPkg = await fse.readJson(
-          `${localGallery.path}/pkg.json`
+          path.resolve(localGallery.importTo ?? localGallery.path, 'pkg.json')
         )
 
         if (semver.lt(localGalleryPkg.version, latestPkg.version)) {

@@ -27,10 +27,14 @@
  *   single: true
  * }]
  *
- * 组件仓库 mm publish --npm 默认发布到 npm 源，可以配置 magixCliConfig.publisyType = "tnpm" 来指定发布到 tnpm 源
  * 组件仓库可以配置自己仓库的同步规则：
- *  - magixCliConfig.galleryIsSingle // 是否单仓库模式
- *  - magixCliConfig.galleryExport // 组件库默认要被同步到项目中的目录
+ * {
+ *    magixCliConfig: {
+ *      "galleryIsSingle": true, // 是否单仓库模式
+ *      "galleryExport": "src/magix5-gallery/gallery" // 组件库默认要被同步到项目中的目录
+ *      "galleryNpmClient": "tnpm" // mm publish --npm 默认发布到 npm 源，可以配置成 "tnpm" 来指定发布到 tnpm 源
+ *    }
+ * }
  *
  * 兼容老配置：
  *  - galleryPath 默认以 magix-gallery 配置进 galleries 里
