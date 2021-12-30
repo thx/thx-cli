@@ -117,7 +117,7 @@ export function spawn(command, args, options: SpawnOptions): EventEmitter {
   if (subprocess.stderr) {
     subprocess.stderr.on('data', chunk => {
       const data = chunk.toString().replace(/\n$/, '') // 去除行尾的\n
-      if (/Error:|\[ERROR\]|ERR!/.test(data)) {
+      if (/Error:|\[ERROR\]/.test(data)) {
         // 有 Error: 的认为是错误
         errorRef = data
         emitter.emit('error', data)
