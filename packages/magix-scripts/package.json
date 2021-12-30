@@ -1,6 +1,6 @@
 {
   "name": "thx-magix-scripts",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "main": "dist/index.js",
   "bin": {
     "magix-scripts": "dist/index.js"
