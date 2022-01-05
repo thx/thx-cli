@@ -10,13 +10,26 @@ import * as chalk from 'chalk'
 import * as inquirer from 'inquirer' // A collection of common interactive command line userinterfaces.
 
 export default async options => {
+  const {
+    daily, // mm dev -d
+    online, // mm dev -o
+    ipconfigIndex, // mm dev -i <i> 直接选择ipconfig第i个配置
+    ipconfigName, // mm dev -n <name> 直接选择ipconfig的name对应的配置
+    port, // 端口号
+    closeHmr, // 关闭热更新
+    closeDocs, // 关闭帮助文档小精灵
+    // closeDesiger, // 关闭 magix-desiger
+    // closeInspector, // 关闭 Inspector
+    https // 是否启动 https 服务器
+    // debug // debug 模式会校验 rap 接口
+  } = options
   const params: any = {}
   const magixCliConfig = await util.getMagixCliConfig()
 
   /**
    * mm dev -d(-o) 未输入ip地址，且本地存在ip.config，则从本地配置中读取ip地址
    */
-  const proxyPass = options.daily || options.online
+  const proxyPass = daily || online
 
   // rmx dev -d 对接真实接口，未填ip地址，则从ipConfigs里读取供用户选择
   if (proxyPass === true) {
@@ -24,10 +37,10 @@ export default async options => {
     const { ipConfig = {} } = magixCliConfig
     const choices = []
 
-    for (const desc in ipConfig) {
-      const ip = ipConfig[desc]
+    for (const name in ipConfig) {
+      const ip = ipConfig[name]
       choices.push({
-        name: `${ip}: ${chalk.grey(desc)}`,
+        name: `${ip}: ${chalk.grey(name)}`,
         value: ip
       })
     }
@@ -42,17 +55,24 @@ export default async options => {
     ]
 
     if (choices.length > 1) {
-      if (options.ipconfigIndex !== undefined) {
-        // 指定某个配置
-        params.ip = choices[options.ipconfigIndex - 1]?.value
+      // 指定第 i 个配置
+      if (ipconfigIndex !== undefined) {
+        params.ip = choices[ipconfigIndex - 1]?.value
+      }
 
-        if (!params.ip) {
-          return console.log(chalk.red('✘ ipConfigs 配置里没有找到该条配置'))
-        }
-      } else {
-        // 让用户选择配置
+      // 指定 name 对应的配置
+      else if (ipconfigName !== undefined) {
+        params.ip = ipConfig[ipconfigName]
+      }
+
+      // 让用户选择配置
+      else {
         const answers = await inquirer.prompt(questions)
         params.ip = answers.ip
+      }
+
+      if (!params.ip) {
+        return console.log(chalk.red('✘ ipConfigs 配置里没有找到该条配置'))
       }
     } else if (choices.length === 1) {
       // 只有一个环境ip时，默认直接取第一个
@@ -76,11 +96,11 @@ export default async options => {
   params.isCloseInspector = true
   params.isCloseSetHost = true
 
-  params.port = options.port
-  params.isCloseHmr = options.closeHmr
-  params.isCloseDocs = options.closeDocs
-  params.isHttps = options.https
-  params.isDebug = options.debug
+  params.port = port
+  params.isCloseHmr = closeHmr
+  params.isCloseDocs = closeDocs
+  params.isHttps = https
+  // params.isDebug = debug
   params.magixCliConfig = magixCliConfig
 
   //

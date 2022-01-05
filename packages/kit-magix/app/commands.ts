@@ -150,6 +150,10 @@ export default async () => {
       [
         '-i, --ipconfig-index <i>',
         `默认选取 ${CLI_NAME} dev -d 时对应的第 i 个配置`
+      ],
+      [
+        '-n, --ipconfig-name <name>',
+        '默认选取 mm dev -d 时预发环境名称对应的配置'
       ]
     ],
     // 必须为异步方法
