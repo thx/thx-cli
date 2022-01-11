@@ -7,14 +7,23 @@ export default function (models) {
  */
 
 module.exports = [
-${models.sort((a, b) => {
+${models
+  .sort((a, b) => {
     return a.__id__ - b.__id__
-  }).map(model => `
+  })
+  .map(
+    model => `
   // ${model.__apiName__} - ${model.__projectId__}#${model.__id__}
   {
     "name": "${model.name}",
     "method": "${model.method}",
-    "url": "${model.url}"
+    "url": "${model.url}"${
+      model.__projectName__
+        ? `,
+    "rapProjectId": "${model.__projectId__}",
+    "projectName": "${model.__projectName__}"`
+        : ''
+    }
   }`
   )}
 ]

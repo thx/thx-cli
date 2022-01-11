@@ -5,7 +5,7 @@ const rapAPIPrefixMap = {
 }
 const argv = minimist(process.argv.slice(2))
 
-export default function(
+export default function (
   opts = {
     rapVersion: '',
     projectId: ''
@@ -15,8 +15,11 @@ export default function(
     const rapVersion = opts.rapVersion || '2' // 默认用rap2
     const rapAPIPrefix = rapAPIPrefixMap[rapVersion]
 
-    // RAP项目id来自于命令行参数-i，其次取opts里的配置
-    const projectId = argv.i || opts.projectId || ''
+    // RAP项目id优先级：headers['rap-project-id'] > 命令行参数-i > opts.projectId
+    // 如果接口是跨域的，headers里会带上跨域接口的RAP项目id 'rap-project-id'
+    const projectId =
+      this.headers['rap-project-id'] || argv.i || opts.projectId || ''
+
     this.isRap = true // 标识现在是rap请求
     this.rapProjectId = projectId
 
