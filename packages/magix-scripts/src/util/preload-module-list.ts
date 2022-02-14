@@ -12,16 +12,26 @@ export async function genModuleList() {
       const appPath = await utils.getAppPath()
 
       const jsExtNames = ['.js', '.ts', '.es']
-      const walker = walk.walk(`${appPath}/src/${rootAppName}`)
+      const viewPath = `${appPath}/src/${rootAppName}`
       let count = 0
       const moduleList = []
 
+      const walker = walk.walk(viewPath)
+
       walker.on('file', async (root, fileStats, next) => {
+        console.log(`root`, root)
+        console.log(`fileStats`, fileStats)
+        console.log(`cwd`, process.cwd())
+
         const fileName = fileStats.name
         const extName = path.extname(fileName)
 
         // 只查找js文件并且文件名非_打头的，gallery下的_打头的js文件非模块
-        if (jsExtNames.includes(extName) && /^[^_].+$/.test(fileName)) {
+        if (
+          jsExtNames.includes(extName) &&
+          /^[^_].+$/.test(fileName) &&
+          !root.includes(`${viewPath}/public`) // 排除掉public目录，该目录可能存在没有打包进项目的库文件
+        ) {
           count++
           const name = fileName.replace(extName, '')
           const prefix = new RegExp(`^.+${rootAppName}`)
@@ -34,12 +44,11 @@ export async function genModuleList() {
         next()
       })
 
-      walker.on('errors', function(root, nodeStatsArray, next) {
+      walker.on('errors', function (root, nodeStatsArray, next) {
         next()
       })
 
-      walker.on('end', async function() {
-        // console.log('walk end...', count)
+      walker.on('end', async function () {
         const file = `${appPath}/src/${rootAppName}/preloadModuleList.ts`
         const fileContent = `export default [
   ${moduleList.join(',')}
