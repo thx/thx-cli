@@ -15,14 +15,9 @@ export async function genModuleList() {
       const viewPath = `${appPath}/src/${rootAppName}`
       let count = 0
       const moduleList = []
-
       const walker = walk.walk(viewPath)
 
       walker.on('file', async (root, fileStats, next) => {
-        console.log(`root`, root)
-        console.log(`fileStats`, fileStats)
-        console.log(`cwd`, process.cwd())
-
         const fileName = fileStats.name
         const extName = path.extname(fileName)
 
