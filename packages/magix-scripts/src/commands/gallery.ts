@@ -322,6 +322,11 @@ export default {
       const magixCliConfig = await util.getMagixCliConfig(cwd)
       const galleriesConfig = util.compatGalleriesConfig(magixCliConfig)
 
+      // 过滤出需要处理的组件库
+      const galleriesDispose = galleriesConfig.filter(
+        gallery => !galleryRepos || galleryRepos.includes(gallery.repoName)
+      )
+
       try {
         /**
          * mm gallery -n mx-copy
@@ -334,7 +339,7 @@ export default {
           let _repositoryName
           // let _galleryIgnoreFiles
 
-          for (const gallery of galleriesConfig) {
+          for (const gallery of galleriesDispose) {
             const repositoryName = gallery.repoName
             // 组件仓库的 package.json
             const galleryPkg = await fs.readJson(
@@ -398,71 +403,70 @@ export default {
           // 需要覆盖的组件集合
           const galleryFolders = []
 
-          for (const gallery of galleriesConfig) {
+          for (const gallery of galleriesDispose) {
             const repositoryName = gallery.repoName
+
             // 组件仓库的 package.json
             const galleryPkg = await fs.readJson(
               path.resolve(root, 'node_modules', repositoryName, 'package.json')
             )
 
-            if (!galleryRepos || galleryRepos.includes(repositoryName)) {
-              // src/app/gallery
-              const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
-              // node_modules下的原始gallery路径
-              const _galleryPathOrigin = path.resolve(
-                root,
-                'node_modules',
+            // src/app/gallery
+            const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
+            // node_modules下的原始gallery路径
+            const _galleryPathOrigin = path.resolve(
+              root,
+              'node_modules',
+              repositoryName,
+              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+              gallery.importFrom ||
+                galleryPkg?.magixCliConfig?.galleryExport ||
+                GALLERY_DIR_DEFAULT
+            )
+
+            const _gallerys = fs.readdirSync(_galleryPathOrigin)
+
+            // 单组件仓库
+            // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
+            if (
+              gallery.single ||
+              (gallery.single === undefined &&
+                galleryPkg?.magixCliConfig?.galleryIsSingle)
+            ) {
+              galleryFolders.push({
+                single: true,
                 repositoryName,
-                // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
-                gallery.importFrom ||
-                  galleryPkg?.magixCliConfig?.galleryExport ||
-                  GALLERY_DIR_DEFAULT
-              )
+                _galleryPath,
+                _galleryPathOrigin
+              })
+            }
 
-              const _gallerys = fs.readdirSync(_galleryPathOrigin)
+            // 多组件仓库
+            else {
+              try {
+                const __gallerys = []
 
-              // 单组件仓库
-              // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
-              if (
-                gallery.single ||
-                (gallery.single === undefined &&
-                  galleryPkg?.magixCliConfig?.galleryIsSingle)
-              ) {
+                // 默认全量覆盖
+                _gallerys.forEach(galleryName => {
+                  if (!notGalleryFolderRexp.test(galleryName)) {
+                    __gallerys.push({
+                      galleryName,
+                      _galleryPath,
+                      _galleryPathOrigin
+                    })
+                  }
+                })
+
                 galleryFolders.push({
-                  single: true,
+                  _gallerys: __gallerys,
                   repositoryName,
                   _galleryPath,
                   _galleryPathOrigin
                 })
-              }
-
-              // 多组件仓库
-              else {
-                try {
-                  const __gallerys = []
-
-                  // 默认全量覆盖
-                  _gallerys.forEach(galleryName => {
-                    if (!notGalleryFolderRexp.test(galleryName)) {
-                      __gallerys.push({
-                        galleryName,
-                        _galleryPath,
-                        _galleryPathOrigin
-                      })
-                    }
-                  })
-
-                  galleryFolders.push({
-                    _gallerys: __gallerys,
-                    repositoryName,
-                    _galleryPath,
-                    _galleryPathOrigin
-                  })
-                } catch (error) {
-                  return emitter.emit('close', {
-                    error: `组件库 [${repositoryName}] 同步失败，失败原因如下: ${error}`
-                  })
-                }
+              } catch (error) {
+                return emitter.emit('close', {
+                  error: `组件库 [${repositoryName}] 同步失败，失败原因如下: ${error}`
+                })
               }
             }
           }
@@ -569,15 +573,17 @@ export default {
       // 组件路径可配置在package.json的magixCliConfig里
       const magixCliConfig = await util.getMagixCliConfig(cwd)
       const galleriesConfig = util.compatGalleriesConfig(magixCliConfig)
+      // 过滤出需要处理的组件库
+      const galleriesDispose = galleriesConfig.filter(
+        gallery => !galleryRepos || galleryRepos.includes(gallery.repoName)
+      )
 
-      for (const gallery of galleriesConfig) {
-        if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
-          emitter.emit(
-            'data',
-            white(`\n↳ 安装组件库 [${greenBright(gallery.name)}]`)
-          )
-          await installGallery(pkgManager, gallery, emitter, cwd)
-        }
+      for (const gallery of galleriesDispose) {
+        emitter.emit(
+          'data',
+          white(`\n↳ 安装组件库 [${greenBright(gallery.name)}]`)
+        )
+        await installGallery(pkgManager, gallery, emitter, cwd)
       }
 
       let modifiedGalleryArr = []
@@ -592,38 +598,31 @@ export default {
         let _galleryPathOrigin
         let _galleryIgnoreFiles
 
-        for (const gallery of galleriesConfig) {
-          if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
-            // 组件仓库的 package.json
-            const galleryPkg = await fs.readJson(
-              path.resolve(
-                root,
-                'node_modules',
-                gallery.repoName,
-                'package.json'
-              )
-            )
+        for (const gallery of galleriesDispose) {
+          // 组件仓库的 package.json
+          const galleryPkg = await fs.readJson(
+            path.resolve(root, 'node_modules', gallery.repoName, 'package.json')
+          )
 
-            // node_modules下的原始gallery路径
-            _galleryPathOrigin = path.resolve(
-              root,
-              'node_modules',
-              gallery.repoName,
-              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
-              gallery.importFrom ||
-                galleryPkg?.magixCliConfig?.galleryExport ||
-                GALLERY_DIR_DEFAULT
-            )
+          // node_modules下的原始gallery路径
+          _galleryPathOrigin = path.resolve(
+            root,
+            'node_modules',
+            gallery.repoName,
+            // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+            gallery.importFrom ||
+              galleryPkg?.magixCliConfig?.galleryExport ||
+              GALLERY_DIR_DEFAULT
+          )
 
-            try {
-              // 测试看存在不存在该组件
-              fs.readdirSync(path.resolve(_galleryPathOrigin, name))
-              exist = true //
-              _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
-              _galleryIgnoreFiles = gallery.ignoreFiles
-              break
-            } catch (error) {}
-          }
+          try {
+            // 测试看存在不存在该组件
+            fs.readdirSync(path.resolve(_galleryPathOrigin, name))
+            exist = true //
+            _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
+            _galleryIgnoreFiles = gallery.ignoreFiles
+            break
+          } catch (error) {}
         }
 
         // 根据md5值校验本地文件有无修改，有改过则给出提示
@@ -644,69 +643,62 @@ export default {
         /**
          * 批量
          */
-        for (const gallery of galleriesConfig) {
-          if (!galleryRepos || galleryRepos.includes(gallery.repoName)) {
-            // 组件仓库的 package.json
-            const galleryPkg = await fs.readJson(
-              path.resolve(
-                root,
-                'node_modules',
-                gallery.repoName,
-                'package.json'
-              )
-            )
+        for (const gallery of galleriesDispose) {
+          // 组件仓库的 package.json
+          const galleryPkg = await fs.readJson(
+            path.resolve(root, 'node_modules', gallery.repoName, 'package.json')
+          )
 
-            // src/app/gallery
-            const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
-            // node_modules下的原始gallery路径
-            const _galleryPathOrigin = path.resolve(
-              root,
-              'node_modules',
-              gallery.repoName,
-              // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
-              gallery.importFrom ||
-                galleryPkg?.magixCliConfig?.galleryExport ||
-                GALLERY_DIR_DEFAULT
-            )
+          // src/app/gallery
+          const _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置 path
+          // node_modules下的原始gallery路径
+          const _galleryPathOrigin = path.resolve(
+            root,
+            'node_modules',
+            gallery.repoName,
+            // 优先级: importFrom > 组件库仓库的 magixCliConfig.galleryExport > 默认目录 tmpl
+            gallery.importFrom ||
+              galleryPkg?.magixCliConfig?.galleryExport ||
+              GALLERY_DIR_DEFAULT
+          )
 
-            // 单组件仓库
-            // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
-            if (
-              gallery.single ||
-              (gallery.single === undefined &&
-                galleryPkg?.magixCliConfig?.galleryIsSingle)
-            ) {
-              // 本地被修改过
-              const modifieds = isModified(
-                '',
-                _galleryPath,
-                gallery.ignoreFiles,
-                _galleryPathOrigin,
-                root
-              )
-              if (modifieds.modifyFiles.length) {
-                modifiedGalleryArr.push(modifieds)
-              }
+          // 单组件仓库
+          // 优先级：single > 组件库仓库的 magixCliConfig.galleryIsSingle > 默认 false
+          if (
+            gallery.single ||
+            (gallery.single === undefined &&
+              galleryPkg?.magixCliConfig?.galleryIsSingle)
+          ) {
+            // 本地被修改过
+            const modifieds = isModified(
+              '',
+              _galleryPath,
+              gallery.ignoreFiles,
+              _galleryPathOrigin,
+              root
+            )
+            if (modifieds.modifyFiles.length) {
+              modifiedGalleryArr.push(modifieds)
             }
+          }
 
-            // 多组件仓库
-            else {
-              // 组件文件夹
-              const _gallerys = fs.readdirSync(_galleryPathOrigin)
+          // 多组件仓库
+          else {
+            // 组件文件夹
+            const _gallerys = fs.readdirSync(_galleryPathOrigin)
 
-              for (const galleryName of _gallerys) {
-                // 忽略__打头的文件夹
-                if (!notGalleryFolderRexp.test(galleryName)) {
-                  const modifieds = isModified(
-                    galleryName,
-                    _galleryPath,
-                    gallery.ignoreFiles,
-                    _galleryPathOrigin,
-                    root
-                  )
-                  if (modifieds.modifyFiles.length) {
-                    modifiedGalleryArr.push(modifieds)
-                  }
+            for (const galleryName of _gallerys) {
+              // 忽略__打头的文件夹
+              if (!notGalleryFolderRexp.test(galleryName)) {
+                const modifieds = isModified(
+                  galleryName,
+                  _galleryPath,
+                  gallery.ignoreFiles,
+                  _galleryPathOrigin,
+                  root
+                )
+                if (modifieds.modifyFiles.length) {
+                  modifiedGalleryArr.push(modifieds)
                 }
               }
             }

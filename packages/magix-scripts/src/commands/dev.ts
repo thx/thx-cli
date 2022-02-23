@@ -167,24 +167,16 @@ export default {
 
       // 同步本地 node_modules 下所有组件的 package.json 到项目组件目录下 pkg.json
       // 用项目里的组件 pkg.json 里的版本来判断是否有线上更新的组件版本
-      await utils.withSpinner(
-        '开始同步组件库 package.json 信息到项目中',
-        async () => {
-          await syncGalleryPkg(magixCliConfig.galleries)
-        },
-        err => {
-          if (err.code === 'ENOENT') {
-            emitter.emit(
-              'data',
-              chalk.redBright(
-                `✖︎ 未找到本地安装的组件，请尝试执行 ${chalk.cyan(
-                  `${cliName} gallery`
-                )} 安装`
-              )
-            )
-          }
-        }
-      )()
+
+      try {
+        emitter.emit('data', '开始同步组件库 package.json 信息到项目中')
+        await syncGalleryPkg(magixCliConfig.galleries)
+      } catch (error) {
+        emitter.emit(
+          'data',
+          `未找到本地安装的组件，请尝试执行 ${cliName} gallery 安装组件`
+        )
+      }
 
       // 检查组件库是否需要升级
       await checkGalleryUpdate(magixCliConfig, msg => {
