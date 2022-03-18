@@ -1,25 +1,37 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as ini from 'ini'
-import { execCommandReturn, execCommand, spawnCommand, execCommandSync, spawn } from './process'
+import {
+  execCommandReturn,
+  execCommand,
+  spawnCommand,
+  execCommandSync,
+  spawn
+} from './process'
 import { blueBright, yellowBright } from 'chalk'
 import { prompt } from 'inquirer'
 import * as moment from 'moment'
 
 /**
-   * 获取git信息
-   *
-   * @return {String}
-   */
-export function getGitConfig (dir) {
-  console.trace('不推荐继续使用 `getGitConfig(dir)`，请改用 `getGitInfo(appPath)`')
+ * 获取git信息
+ *
+ * @return {String}
+ */
+export function getGitConfig(dir) {
+  console.trace(
+    '不推荐继续使用 `getGitConfig(dir)`，请改用 `getGitInfo(appPath)`'
+  )
   if (hasGit(dir)) {
     try {
-      const gitConfig = fs.readFileSync(path.join(dir, '.git/config'), 'utf-8').trim()
+      const gitConfig = fs
+        .readFileSync(path.join(dir, '.git/config'), 'utf-8')
+        .trim()
       const config = ini.parse(gitConfig)
       if (config) {
         const url = config['remote "origin"'].url
-        const repo = url.replace('git@gitlab.alibaba-inc.com:', '').replace('.git', '')
+        const repo = url
+          .replace('git@gitlab.alibaba-inc.com:', '')
+          .replace('.git', '')
         const branch = getCurGitBranch(dir)
         return {
           url: url,
@@ -34,14 +46,18 @@ export function getGitConfig (dir) {
   return null
 }
 
-export function getGitInfo (appPath: string) {
+export function getGitInfo(appPath: string) {
   if (hasGit(appPath)) {
     try {
-      const gitConfig = fs.readFileSync(path.join(appPath, '.git/config'), 'utf-8').trim()
+      const gitConfig = fs
+        .readFileSync(path.join(appPath, '.git/config'), 'utf-8')
+        .trim()
       const config = ini.parse(gitConfig)
       if (config) {
         const url = config['remote "origin"'].url
-        const temp = url.replace('git@gitlab.alibaba-inc.com:', '').replace('.git', '')
+        const temp = url
+          .replace('git@gitlab.alibaba-inc.com:', '')
+          .replace('.git', '')
         const [group, name] = temp.split('/')
         const branch = getCurGitBranch(appPath)
         const branchVersion = branch.split('/')[1]
@@ -62,11 +78,11 @@ export function getGitInfo (appPath: string) {
 }
 
 /**
-   * 获取当前分支
-   *
-   * @return {String}
-   */
-export function getCurGitBranch (dir) {
+ * 获取当前分支
+ *
+ * @return {String}
+ */
+export function getCurGitBranch(dir) {
   try {
     const gitHEAD = fs.readFileSync(path.join(dir, '.git/HEAD'), 'utf-8').trim() // ref: refs/heads/daily/0.0.1
     if (gitHEAD) {
@@ -80,16 +96,16 @@ export function getCurGitBranch (dir) {
   return ''
 }
 /**
-   * 是否有git
-   *
-   * @return {String}
-   */
-export function hasGit (dir) {
+ * 是否有git
+ *
+ * @return {String}
+ */
+export function hasGit(dir) {
   return fs.existsSync(path.join(dir, '.git'))
 }
 
 // 获取当前分支名
-export async function getPrecentBranch (cwd?) {
+export async function getPrecentBranch(cwd?) {
   cwd = cwd || process.cwd()
   const branchs: any = await execCommandReturn('git branch', { cwd }) // MO FIXED _cwd 是什么参数，拼写错误 _cwd => cwd
   if (!branchs) {
@@ -103,8 +119,8 @@ export async function getPrecentBranch (cwd?) {
  * 判断是否在 master 分支下
  * @param cwd
  */
-export function isMaster (cwd?) {
-  return new Promise(async (resolve) => {
+export function isMaster(cwd?) {
+  return new Promise(async resolve => {
     const currentBranch = await getPrecentBranch(cwd)
     resolve(currentBranch === 'master')
   })
@@ -115,12 +131,25 @@ export function isMaster (cwd?) {
 const commitMsg = 'auto commit by mm-cli'
 
 // 判断 master 是否有更新
-export async function isMasterUpdate (currentBranch, verify, message = commitMsg, cwd, log) {
+export async function isMasterUpdate(
+  currentBranch,
+  verify,
+  message = commitMsg,
+  cwd,
+  log
+) {
   // 提交当前分支
-  log(`${blueBright('ⓘ [MM CLI]')} [${moment().format('HH:mm:ss')}] 开始提交当前分支`)
+  log(
+    `${blueBright('ⓘ [MM CLI]')} [${moment().format(
+      'HH:mm:ss'
+    )}] 开始提交当前分支`
+  )
   await execCommand('git status', { cwd })
   await execCommand('git add -A', { cwd })
-  await execCommand(`git commit -m "${message}"${verify ? '' : ' --no-verify'}`, { cwd })
+  await execCommand(
+    `git commit -m "${message}"${verify ? '' : ' --no-verify'}`,
+    { cwd }
+  )
 
   // 更新当前分支
   await spawnCommand('git', ['pull', 'origin', currentBranch], { cwd })
@@ -131,10 +160,14 @@ export async function isMasterUpdate (currentBranch, verify, message = commitMsg
 }
 
 // 发布前先提交本地代码，并且合并master代码到当前分支
-export async function mergeMaster (currentBranch, cwd, log) {
+export async function mergeMaster(currentBranch, cwd, log) {
   return new Promise((resolve, reject) => {
     let confliced = false
-    log(`${blueBright('ⓘ [MM CLI]')} [${moment().format('HH:mm:ss')}] 开始合并 master 分支到当前分支`)
+    log(
+      `${blueBright('ⓘ [MM CLI]')} [${moment().format(
+        'HH:mm:ss'
+      )}] 开始合并 master 分支到当前分支`
+    )
 
     spawn('git', ['merge', 'fetch_head'], { cwd })
       .on('data', msg => {
@@ -145,7 +178,11 @@ export async function mergeMaster (currentBranch, cwd, log) {
       })
       .on('close', async resp => {
         if (confliced) {
-          reject(new Error('❌ [MM CLI] 合并 master 分支有冲突，请先解决冲突，再重新发布'))
+          reject(
+            new Error(
+              '❌ [MM CLI] 合并 master 分支有冲突，请先解决冲突，再重新发布'
+            )
+          )
         } else if (resp.error) {
           reject(resp.error)
         } else {
@@ -156,17 +193,28 @@ export async function mergeMaster (currentBranch, cwd, log) {
   })
 }
 
-export async function checkMasterUpdate ({ cwd, branch, uncheck, message, verify, log = console.log }) {
+export async function checkMasterUpdate({
+  cwd,
+  branch,
+  uncheck,
+  message,
+  verify,
+  log = console.log
+}) {
   // 更新 master 代码
   const masterUpdate = await isMasterUpdate(branch, verify, message, cwd, log)
 
   // 如果 master 分支有更新，给出提示
   if (masterUpdate && !uncheck) {
-    const questions = [{
-      type: 'confirm',
-      name: 'merge',
-      message: `${blueBright('ⓘ [MM CLI]')} ${yellowBright('检测到 master 分支有更新，确定要继续发布吗？')}`
-    }]
+    const questions = [
+      {
+        type: 'confirm',
+        name: 'merge',
+        message: `${blueBright('ⓘ [MM CLI]')} ${yellowBright(
+          '检测到 master 分支有更新，确定要继续发布吗？'
+        )}`
+      }
+    ]
     const answers = await prompt(questions)
     if (!answers.merge) {
       process.exit(0)

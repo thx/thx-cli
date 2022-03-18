@@ -6,10 +6,8 @@ import { EventEmitter } from 'events'
 import * as sn from 'thx-snowpack-v1'
 import { utils } from 'thx-cli-core'
 import * as path from 'path'
-import * as PoweredFileSystem from 'pwd-fs'
 
 //@ts-ignore
-const pfs = new PoweredFileSystem()
 const { withSpinner } = utils
 
 /**
@@ -80,21 +78,8 @@ export default {
 
       try {
         const moduleDest = path.resolve(appPath, snowpackModulesDest)
-        const {
-          env: { SUDO_UID, SUDO_GID }
-        } = process
-
-        // 更改生成文件的 owner
-        if (SUDO_UID && SUDO_GID) {
-          await pfs.chown(
-            moduleDest,
-            parseInt(SUDO_UID, 10),
-            parseInt(SUDO_GID, 10)
-          )
-        }
-
         // 降权生成的文件
-        await pfs.chmod(moduleDest, 0o777)
+        await utils.chmod777(moduleDest)
       } catch (error) {
         console.log(error)
       }

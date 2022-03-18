@@ -4,15 +4,19 @@ import * as path from 'path'
 import * as mkdirp from 'mkdirp'
 import { walk } from 'walk'
 import logger from '../logger'
+import * as PoweredFileSystem from 'pwd-fs'
 // import * as parseJson from 'parse-json' // FIXED 1.x 废弃 parse-json
 
+//@ts-ignore
+const pfs = new PoweredFileSystem()
+
 /**
-   * 读取 JSON 文件
-   * @param  {String} file
-   * @return {Mixed}
-   *  - null: read json failed
-   */
-export function readJSON (file) {
+ * 读取 JSON 文件
+ * @param  {String} file
+ * @return {Mixed}
+ *  - null: read json failed
+ */
+export function readJSON(file) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'), file)
   } catch (err) {
@@ -22,20 +26,20 @@ export function readJSON (file) {
   }
 }
 /**
-   * 写入 json 文件
-   * @param {String} file
-   * @param {Object} object
-   */
-export function writeJSON (file, object) {
+ * 写入 json 文件
+ * @param {String} file
+ * @param {Object} object
+ */
+export function writeJSON(file, object) {
   fs.writeFileSync(file, JSON.stringify(object, null, 2) + '\n')
 }
 
 /**
-   * 以安全的方式写入 JSON 数据
-   * @param {String} file
-   * @param {Object} data
-   */
-export function safeWriteJSON (file, data) {
+ * 以安全的方式写入 JSON 数据
+ * @param {String} file
+ * @param {Object} data
+ */
+export function safeWriteJSON(file, data) {
   const time = +new Date()
   const tmpFile = file + '.' + time + '-tmp'
 
@@ -52,11 +56,11 @@ export function safeWriteJSON (file, data) {
   }
 }
 /**
-   * 安全写入文件内容(防止进程竞争导致文件内容损坏)
-   * @param {String} file
-   * @param {String} content
-   */
-export function safeWrite (file, content) {
+ * 安全写入文件内容(防止进程竞争导致文件内容损坏)
+ * @param {String} file
+ * @param {String} content
+ */
+export function safeWrite(file, content) {
   const time = +new Date()
   const tmpFile = file + '.' + time + '-tmp'
 
@@ -71,10 +75,10 @@ export function safeWrite (file, content) {
   }
 }
 /**
-   * 文件是否存在
-   * @return {Boolean}
-   */
-export function exists (file) {
+ * 文件是否存在
+ * @return {Boolean}
+ */
+export function exists(file) {
   try {
     return fs.statSync(file)
   } catch (err) {
@@ -82,13 +86,13 @@ export function exists (file) {
   }
 }
 /**
-   * 获取文件信息, 如果出错就返回 false
-   *
-   * @param  {String} file      文件名
-   * @param  {Boolean} symlink  是否是符号链接
-   * @return {Stats}
-   */
-export function fstat (file, symlink?) {
+ * 获取文件信息, 如果出错就返回 false
+ *
+ * @param  {String} file      文件名
+ * @param  {Boolean} symlink  是否是符号链接
+ * @return {Stats}
+ */
+export function fstat(file, symlink?) {
   try {
     return symlink ? fs.lstatSync(file) : fs.statSync(file)
   } catch (e) {
@@ -96,56 +100,56 @@ export function fstat (file, symlink?) {
   }
 }
 /**
-   * 是否是文件
-   *
-   * @param  {String}  file 文件路径
-   * @return {Boolean}
-   */
-export function isFile (file) {
+ * 是否是文件
+ *
+ * @param  {String}  file 文件路径
+ * @return {Boolean}
+ */
+export function isFile(file) {
   const stat = fstat(file)
 
   return stat ? stat.isFile() : false
 }
 /**
-   * 是否是目录
-   *
-   * @param  {String}  dir 目录路径
-   * @return {Boolean}
-   */
-export function isDirectory (dir) {
+ * 是否是目录
+ *
+ * @param  {String}  dir 目录路径
+ * @return {Boolean}
+ */
+export function isDirectory(dir) {
   const stat = fstat(dir)
 
   return stat ? stat.isDirectory() : false
 }
 /**
-   * 是否是符号链接
-   *
-   * @param  {String}  link 链接路径
-   * @return {Boolean}
-   */
-export function isSymlink (link) {
+ * 是否是符号链接
+ *
+ * @param  {String}  link 链接路径
+ * @return {Boolean}
+ */
+export function isSymlink(link) {
   const stat = fstat(link, true)
 
   return stat ? stat.isSymbolicLink() : false
 }
 /**
-   * 文件是否在某个目录下
-   *
-   * @param {String} file
-   * @param {String} root
-   * @return {Boolean}
-   */
-export function isUnder (file, root) {
+ * 文件是否在某个目录下
+ *
+ * @param {String} file
+ * @param {String} root
+ * @return {Boolean}
+ */
+export function isUnder(file, root) {
   return path.normalize(file).indexOf(path.normalize(root)) === 0
 }
 /**
-   * 指定目录是否属于指定用户/组
-   *
-   * @param {String} dir 文件名
-   * @param {Object} ug  用户/组信息 { uid: ..., gid: ... }
-   * @return {String}
-   */
-export function isBelong (file, ug) {
+ * 指定目录是否属于指定用户/组
+ *
+ * @param {String} dir 文件名
+ * @param {Object} ug  用户/组信息 { uid: ..., gid: ... }
+ * @return {String}
+ */
+export function isBelong(file, ug) {
   const stat = fstat(file)
 
   if (!stat) {
@@ -159,9 +163,9 @@ export function isBelong (file, ug) {
   }
 }
 /**
-   * 修复权限
-   */
-export function fixFileMode (file, mode) {
+ * 修复权限
+ */
+export function fixFileMode(file, mode) {
   if (process.platform === 'win32' || process.getuid() !== 0) {
     return
   }
@@ -175,9 +179,9 @@ export function fixFileMode (file, mode) {
   }
 }
 /**
-   * 修复owner
-   */
-export function fixFileOwner (file) {
+ * 修复owner
+ */
+export function fixFileOwner(file) {
   if (process.platform === 'win32' || process.getuid() !== 0) {
     return
   }
@@ -193,14 +197,14 @@ export function fixFileOwner (file) {
   }
 }
 /**
-   * 创建目录
-   *
-   * 注: 如果目录存在, 就停止创建
-   *
-   * @param {String} dir
-   * @return {Promise}
-   */
-export function mkdir (dir) {
+ * 创建目录
+ *
+ * 注: 如果目录存在, 就停止创建
+ *
+ * @param {String} dir
+ * @return {Promise}
+ */
+export function mkdir(dir) {
   return new Promise((resolve, reject) => {
     if (!exists(dir)) {
       mkdirp(dir, err => {
@@ -216,23 +220,23 @@ export function mkdir (dir) {
   })
 }
 /**
-   * 创建目录
-   *
-   * 注: 如果目录存在, 就停止创建
-   *
-   * @param {String} dir
-   */
-export function mkdirSync (dir) {
+ * 创建目录
+ *
+ * 注: 如果目录存在, 就停止创建
+ *
+ * @param {String} dir
+ */
+export function mkdirSync(dir) {
   if (!exists(dir)) {
     mkdirp.sync(dir)
   }
 }
 /**
-   * 获取目录下的所有子文件夹名
-   *
-   * @param {String} dir
-   */
-export function getAllFloderName (dir) {
+ * 获取目录下的所有子文件夹名
+ *
+ * @param {String} dir
+ */
+export function getAllFloderName(dir) {
   const floders = fs.readdirSync(dir)
   let res = []
   if (floders && floders.length > 0) {
@@ -253,13 +257,16 @@ export function getAllFloderName (dir) {
  * @param  {[String]} fileName 需要查找的目标文件名称
  * @return {[Array]}  返回找到目标文件的目录路径，放在一个数组里
  */
-export function getExistFile (fileName: string, cwd?: string): Promise<Array<string>> {
+export function getExistFile(
+  fileName: string,
+  cwd?: string
+): Promise<Array<string>> {
   console.trace('@deprecated getExistFile(fileName, cwd?) => getFiles(cwd?')
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     cwd = cwd || process.cwd()
     const parts = cwd.split('/')
 
-    function isExistFile (paths) {
+    function isExistFile(paths) {
       if (paths.length === 0) {
         resolve(undefined)
         // resolve(false)
@@ -267,7 +274,7 @@ export function getExistFile (fileName: string, cwd?: string): Promise<Array<str
         return
       }
       const _file = `${paths.join('/')}/${fileName}`
-      fs.stat(_file, (err) => {
+      fs.stat(_file, err => {
         if (!err) {
           resolve(paths)
         } else {
@@ -285,7 +292,7 @@ export function getExistFile (fileName: string, cwd?: string): Promise<Array<str
  * 获取指定目录下的所有文件
  * @param cwd 目录
  */
-export async function getFiles (cwd = process.cwd()): Promise<Array<string>> {
+export async function getFiles(cwd = process.cwd()): Promise<Array<string>> {
   const result = []
   const walker = walk(cwd)
   walker.on('file', function (root, stats, next) {
@@ -304,7 +311,10 @@ export async function getFiles (cwd = process.cwd()): Promise<Array<string>> {
  * @param cwd @string 遍历目录
  * @param replaceer @Function 替换函数，返回新内容
  */
-export async function replacePlaceholders (cwd: string, replaceer: Function): Promise<undefined> {
+export async function replacePlaceholders(
+  cwd: string,
+  replaceer: Function
+): Promise<undefined> {
   const walker = walk(cwd, { filters: ['.git', 'node_modules'] })
   walker.on('file', function (base, stats, next) {
     // if (/\.git/.test(base) || /node_modules/.test(base)) {
@@ -319,7 +329,7 @@ export async function replacePlaceholders (cwd: string, replaceer: Function): Pr
         next()
         return
       }
-      fse.writeFile(`${base}/${stats.name}`, nextData, (error) => {
+      fse.writeFile(`${base}/${stats.name}`, nextData, error => {
         if (error) console.error(error)
         next()
       })
@@ -330,4 +340,19 @@ export async function replacePlaceholders (cwd: string, replaceer: Function): Pr
       resolve(undefined)
     })
   })
+}
+
+// 取消文件的 root 权限
+export async function chmod777(dest) {
+  const {
+    env: { SUDO_UID, SUDO_GID }
+  } = process
+
+  // 更改生成文件的 owner
+  if (SUDO_UID && SUDO_GID) {
+    await pfs.chown(dest, parseInt(SUDO_UID, 10), parseInt(SUDO_GID, 10))
+  }
+
+  // 降权生成的文件
+  await pfs.chmod(dest, 0o777)
 }

@@ -1,4 +1,5 @@
 import {
+  chmod777,
   MM_HOME,
   spawn,
   withSpinner,
@@ -32,7 +33,7 @@ export default async function install(emitter: EventEmitter, params) {
 
   // 执行安装或链接命令
   function doit(): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const isWin32 = process.platform === 'win32'
 
       let command
@@ -59,6 +60,9 @@ export default async function install(emitter: EventEmitter, params) {
       // tnpm install 禁止 SUDO 执行 （根据判断env.USER是否为 root），所以需要将 USER 设为其他值
       const rootUser = process.env.USER
       process.env.USER = ''
+
+      // 安装前先将 .mm 目录取消 root（如有）
+      await chmod777(MM_HOME)
 
       spawn(command, args, options)
         .on('data', message => emitter.emit('data', message))
