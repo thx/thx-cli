@@ -62,7 +62,9 @@ export default async function install(emitter: EventEmitter, params) {
       process.env.USER = ''
 
       // 安装前先将 .mm 目录取消 root（如有）
-      await chmod777(MM_HOME)
+      try {
+        await chmod777(MM_HOME)
+      } catch (error) {} // 忽略执行失败情形
 
       spawn(command, args, options)
         .on('data', message => emitter.emit('data', message))

@@ -42,6 +42,7 @@ export default async function checkModuleMissed(
       }[type]
     }
   ]
+
   const answer = await inquirer.prompt(questions)
   if (!answer.install) {
     return process.exit(0)
