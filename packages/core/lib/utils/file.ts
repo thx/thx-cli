@@ -4,11 +4,8 @@ import * as path from 'path'
 import * as mkdirp from 'mkdirp'
 import { walk } from 'walk'
 import logger from '../logger'
-import * as PoweredFileSystem from 'pwd-fs'
+import { chmodSync, chownSync } from 'fs'
 // import * as parseJson from 'parse-json' // FIXED 1.x 废弃 parse-json
-
-//@ts-ignore
-const pfs = new PoweredFileSystem()
 
 /**
  * 读取 JSON 文件
@@ -342,17 +339,36 @@ export async function replacePlaceholders(
   })
 }
 
-// 取消文件的 root 权限
-export async function chmod777(dest) {
+export function chmod777Single(dest) {
   const {
     env: { SUDO_UID, SUDO_GID }
   } = process
 
   // 更改生成文件的 owner
   if (SUDO_UID && SUDO_GID) {
-    await pfs.chown(dest, parseInt(SUDO_UID, 10), parseInt(SUDO_GID, 10))
+    chownSync(dest, parseInt(SUDO_UID, 10), parseInt(SUDO_GID, 10))
   }
-
   // 降权生成的文件
-  await pfs.chmod(dest, 0o777)
+  chmodSync(dest, 0o777)
+}
+
+// 取消文件的 root 权限
+// 所有文件和目录都要处理到
+export function chmod777(dest, filters = ['.git', 'node_modules']) {
+  return new Promise(resolve => {
+    chmod777Single(dest)
+    const walker = walk(dest, { filters })
+
+    function handle(base, stats, next) {
+      const filePath = path.resolve(base, stats.name)
+      chmod777Single(filePath)
+      next()
+    }
+
+    walker.on('file', handle)
+    walker.on('directory', handle)
+    walker.on('end', () => {
+      resolve(undefined)
+    })
+  })
 }

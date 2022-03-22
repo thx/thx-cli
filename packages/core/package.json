@@ -48,7 +48,6 @@
     "open": "^7.3.0",
     "ora": "^5.0.0",
     "portfinder": "^1.0.28",
-    "pwd-fs": "^2.2.0",
     "semver": "^7.3.2",
     "showdown": "^1.9.1",
     "simple-git": "^2.17.0",

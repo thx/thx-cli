@@ -64,7 +64,9 @@ export default async function install(emitter: EventEmitter, params) {
       // 安装前先将 .mm 目录取消 root（如有）
       try {
         await chmod777(MM_HOME)
-      } catch (error) {} // 忽略执行失败情形
+      } catch (error) {
+        console.log(`chmod error: `, error)
+      } // 忽略执行失败情形
 
       spawn(command, args, options)
         .on('data', message => emitter.emit('data', message))
@@ -93,11 +95,11 @@ export default async function install(emitter: EventEmitter, params) {
             logger.info('install', module.name, module.package)
 
             // 插件/套件目录下放一个 info.json，描述基础信息
-            await fse.writeJSON(
-              `${moduleDir}/info.json`,
-              { type, ...module },
-              { spaces: 2 }
-            )
+            const infoPath = `${moduleDir}/info.json`
+            await fse.writeJSON(infoPath, { type, ...module }, { spaces: 2 })
+            // 降权生成的info文件
+            await chmod777(infoPath)
+
             emitter.emit(
               'data',
               greenBright(
