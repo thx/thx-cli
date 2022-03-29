@@ -220,7 +220,8 @@ export default (wsPort, host, isMagix5) => {
                         let depUri = join(_uri, dep) + '.js' // 模块的完整绝对路径
                         depUri = depUri.replace(/^http(s)?:\\//, 'http$1://') // 修复正确的 http 地址
                         
-                        if (depUri === path) {
+                        // 匹配到依赖，如果有 ?xxx=1 额外参数，得去除
+                        if (depUri === path.replace(/\\?.*$/, '')) {
                           // 递归处理所有依赖模块
                           recur(cache.id)
                           break
