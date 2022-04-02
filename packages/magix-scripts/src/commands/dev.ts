@@ -21,6 +21,8 @@ import * as open from 'open'
 import * as util from '../util/index'
 import * as matMiddleWare from '../mat-middleware/index'
 import syncPromise from './syncPromise'
+import * as minimist from 'minimist'
+const argv = minimist(process.argv.slice(2))
 
 const { syncGalleryPkg } = util
 const {
@@ -178,10 +180,13 @@ export default {
         )
       }
 
-      // 检查组件库是否需要升级
-      await checkGalleryUpdate(magixCliConfig, msg => {
-        emitter.emit('data', msg)
-      })
+      // --skip-update-check跳过检测
+      if (!argv['skip-update-check']) {
+        // 检查组件库是否需要升级
+        await checkGalleryUpdate(magixCliConfig, msg => {
+          emitter.emit('data', msg)
+        })
+      }
 
       // 增加-o 配置，与-d相同，为了标识预发/线上环境
       let proxyPass = params.ip
@@ -427,17 +432,19 @@ export default {
         limit: magixCliConfig.datalimit || '10mb', // post请求时可以携带参数的大小上限
         timeout: magixCliConfig.timeout || 60 * 1000, // 请求的过期时间，默认60秒
         ready: function (port) {
-          // 服务启动成功后的回调
-          const openOptions = { app: 'google chrome' }
-          const protocol = params.isHttps ? 'https' : 'http'
-          const openUrl = `${protocol}://${hostName}:${port}/${pathname}`
-          open(openUrl, openOptions)
+          if (magixCliConfig.autoOpenUrl) {
+            // 服务启动成功后的回调
+            const openOptions = { app: 'google chrome' }
+            const protocol = params.isHttps ? 'https' : 'http'
+            const openUrl = `${protocol}://${hostName}:${port}/${pathname}`
+            open(openUrl, openOptions)
 
-          console.log(
-            chalk.greenBright(
-              `[CLI] 本地服务已启动，请访问: \n ${chalk.grey(`↳ ${openUrl}`)}`
+            console.log(
+              chalk.greenBright(
+                `[CLI] 本地服务已启动，请访问: \n ${chalk.grey(`↳ ${openUrl}`)}`
+              )
             )
-          )
+          }
         },
         // 是否禁止mat的log输出
         log: params.isDebug
