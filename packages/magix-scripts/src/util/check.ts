@@ -187,9 +187,12 @@ export async function checkGalleryUpdate(magixCliConfig, log) {
 
       // gallerys 配置里找到当前 gallery
       // gallerys 里配置的 name 有可能包括版本形式：@ali/zs_gallery@1.0.0
-      const localGallery = galleries.find(g => {
-        return g.repoName === galleryName
-      })
+      const localGallery = galleries.find(g => g.repoName === galleryName) ?? {}
+
+      // 如果 gallery 配置写明版本，则跳过更新提示
+      if (localGallery.version !== undefined) {
+        continue
+      }
 
       try {
         // 项目组件目录下存放着 pkg.json (同 node_modules 组件目录下的 package.json)

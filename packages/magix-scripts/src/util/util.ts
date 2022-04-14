@@ -135,20 +135,26 @@ export function compatGalleriesConfig(magixCliConfig: any = {}) {
   // 兼容老的galleries配置
   if (Object.prototype.toString.call(galleriesConfig) === '[object Object]') {
     const _galleriesConfig = []
-    for (const k in galleriesConfig) {
+
+    for (const galleryName in galleriesConfig) {
+      const { name: repoName, version } = utils.getPkgInfo(galleryName)
+
       _galleriesConfig.push({
-        name: k,
-        repoName: utils.getPkgInfo(k).name,
-        path: galleriesConfig[k]
+        name: galleryName,
+        repoName,
+        version,
+        path: galleriesConfig[galleryName]
       })
     }
     galleriesConfig = _galleriesConfig
   }
 
   for (const gallery of galleriesConfig) {
-    const gName = utils.getPkgInfo(gallery.name).name // 组件库名
-    gallery.repoName = gName
-    if (gName === 'magix-gallery') {
+    const { name, version } = utils.getPkgInfo(gallery.name) // 组件库名,版本
+    gallery.repoName = name
+    gallery.version = version
+
+    if (name === 'magix-gallery') {
       magixGalleryExist = true
     }
   }
