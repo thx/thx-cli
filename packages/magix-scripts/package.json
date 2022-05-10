@@ -21,7 +21,7 @@
     "fs-extra": "6.0.0",
     "get-port": "^5.1.1",
     "inquirer": "^7.3.3",
-    "magix-combine": "3.11.56",
+    "magix-combine": "3.11.58",
     "magix-combine-tool-config": "1.0.19",
     "magix-composer": "3.2.3",
     "magix-composer-config": "1.0.12",
