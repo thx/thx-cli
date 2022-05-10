@@ -1,6 +1,6 @@
 {
   "name": "thx-kit-magix",
-  "version": "1.0.31",
+  "version": "1.0.30",
   "description": "Magix 技术栈套件",
   "author": "chongzhi",
   "main": "dist/commands.js",
