@@ -49,5 +49,6 @@
     "typescript": "^4.1.3"
   },
   "license": "UNLICENSED",
-  "homepage": "https://github.com/thx/thx-cli/tree/master/packages/magix-scripts"
+  "homepage": "https://github.com/thx/thx-cli/tree/master/packages/magix-scripts",
+  "gitHead": "82d189eb347f9e6602ff956a0c3124639cc7e495"
 }
