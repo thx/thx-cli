@@ -227,7 +227,10 @@ export default {
        * 端口优先级，命令行 -p > ipConfig里的端口 > matPort配置
        */
       const matPort =
-        params.port || ipConfigPort || magixCliConfig.matPort || '1234'
+        params.port ||
+        ipConfigPort ||
+        magixCliConfig.matPort ||
+        (params.isHttps ? '443' : '80') // https默认端口443，http默认端口80
 
       // 端口只能为数字
       if (/\D/.test(matPort)) {
