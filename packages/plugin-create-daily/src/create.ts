@@ -2,7 +2,7 @@
  * 根据已存在的版本最大的daily分支来+1创建新的开发分支，避免多人开发分支重复创建冲突
  */
 import { CommanderStatic } from 'commander'
-import { gray, blueBright } from 'chalk'
+import { gray, blueBright, yellowBright } from 'chalk'
 import * as semver from 'semver'
 import * as inquirer from 'inquirer'
 import * as dateformat from 'dateformat'
@@ -187,6 +187,23 @@ export default async (command: CommanderStatic) => {
   // await getRootPath()
 
   const currentBranch = await getPrecentBranch()
+
+  // 不在 master 分支下执行，给出提示
+  if (currentBranch !== 'master') {
+    const questions = [
+      {
+        type: 'confirm',
+        name: 'confirmCheckout', //
+        message: `当前分支不是 ${yellowBright(
+          'master'
+        )} ，确认要基于当前分支创建吗？`
+      }
+    ]
+    const { confirmCheckout } = await inquirer.prompt(questions)
+    if (!confirmCheckout) {
+      return
+    }
+  }
 
   // 先更新下最新的tag/branch等
   await spawnCommand('git', ['pull', 'origin', currentBranch])
