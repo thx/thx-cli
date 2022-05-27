@@ -14,7 +14,11 @@ export default (crossConfigs = []) => {
       2
     )}`
 
-    html = html.replace('</body>', ` <script>${injectJs}</script> </body>`)
+    // 固定放在boot.js前面
+    html = html.replace(
+      /(<script .+boot.js['"]\s*>\s*<\/script>)/,
+      `<script>${injectJs}</script>\n$1`
+    )
     this.body = html
   }
 }
