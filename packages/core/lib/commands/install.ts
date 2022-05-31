@@ -65,8 +65,9 @@ export default async function install(emitter: EventEmitter, params) {
       try {
         await chmod777(MM_HOME)
       } catch (error) {
-        console.log(`chmod error: `, error)
-      } // 忽略执行失败情形
+        // 忽略降权执行失败情形
+        // console.log(`chmod error: `, error)
+      }
 
       spawn(command, args, options)
         .on('data', message => emitter.emit('data', message))

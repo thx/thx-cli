@@ -355,13 +355,24 @@ export function chmod777Single(dest) {
 // 取消文件的 root 权限
 // 所有文件和目录都要处理到
 export function chmod777(dest, filters = ['.git', 'node_modules']) {
-  return new Promise(resolve => {
-    chmod777Single(dest)
+  return new Promise((resolve, reject) => {
+    try {
+      chmod777Single(dest)
+    } catch (error) {
+      reject(error)
+    }
+
     const walker = walk(dest, { filters })
 
     function handle(base, stats, next) {
       const filePath = path.resolve(base, stats.name)
-      chmod777Single(filePath)
+
+      try {
+        chmod777Single(filePath)
+      } catch (error) {
+        reject(error)
+      }
+
       next()
     }
 
