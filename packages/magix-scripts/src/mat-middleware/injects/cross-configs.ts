@@ -16,7 +16,7 @@ export default (crossConfigs = []) => {
 
     // 固定放在boot.js前面
     html = html.replace(
-      /(<script .+boot.js['"]\s*>\s*<\/script>)/,
+      /(<script .+boot.js['"][^>]*>\s*<\/script>)/,
       `<script>${injectJs}</script>\n$1`
     )
     this.body = html
