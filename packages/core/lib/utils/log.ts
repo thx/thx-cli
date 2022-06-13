@@ -5,15 +5,17 @@ import logger from '../logger'
 
 // 黄金令箭 https://log.alibaba-inc.com/track/tools/applyGold
 // 日志格式 http://gm.mmstat.com/mm-cli.system.command?argv=[$]&end=[$]&start=[$]&t={时间戳}
-export function goldlog (
+export function goldlog(
   key = 'mm-cli.system.command',
-  argv: Array<string> = process.argv,
+  argv: Array<string> | string = process.argv,
   start: number = Date.now(),
   end?: number | undefined
 ) {
   const rmxConfig = getRmxConfig()
   const cna = rmxConfig?.user?.username || '-'
-  const url = `http://gm.mmstat.com/${key}?cna=${cna}&cwd=${process.cwd()}&argv=${argv}&start=${start || ''}&end=${end || ''}&t=${Date.now()}`
+  const url = `http://gm.mmstat.com/${key}?cna=${cna}&cwd=${process.cwd()}&argv=${argv}&start=${
+    start || ''
+  }&end=${end || ''}&t=${Date.now()}`
   logger.trace('goldlog', '🏹️', url)
   try {
     fetch(url)
@@ -22,13 +24,15 @@ export function goldlog (
   }
 }
 
-export async function took (label: string, task: Function, byoLogger?) {
+export async function took(label: string, task: Function, byoLogger?) {
   const start = Date.now()
   const nextLogger = byoLogger || logger
   try {
     nextLogger.debug(`⌚️ The task ${cyanBright(label)} ...`)
     await task()
   } finally {
-    nextLogger.debug(`⌚️ The task ${cyanBright(label)} took ${Date.now() - start}ms.`)
+    nextLogger.debug(
+      `⌚️ The task ${cyanBright(label)} took ${Date.now() - start}ms.`
+    )
   }
 }
