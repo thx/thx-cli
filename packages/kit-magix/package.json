@@ -1,6 +1,6 @@
 {
   "name": "thx-kit-magix",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "description": "Magix 技术栈套件",
   "author": "chongzhi",
   "main": "dist/commands.js",
@@ -35,8 +35,8 @@
     "minimist": "^1.2.5",
     "mocha": "^8.0.1",
     "npm-run-all": "^4.1.5",
-    "thx-cli-core": "1.0.16",
-    "thx-magix-scripts": "1.0.40"
+    "thx-cli-core": "1.0.17",
+    "thx-magix-scripts": "1.0.41"
   },
   "devDependencies": {
     "madge": "^4.0.0",
