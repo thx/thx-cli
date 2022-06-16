@@ -9,7 +9,7 @@ import {
 } from '../../types'
 import {
   ALP_API_V1,
-  LOG_GROUP,
+  // LOG_GROUP,
   MM_HOME,
   MM_REMOTE_CACHE_FOLDER
 } from './constant'
@@ -17,10 +17,11 @@ import * as fse from 'fs-extra'
 import logger from '../logger'
 import fetch from 'node-fetch'
 import { getLatestVersion, getTnpmPackage } from './tnpm'
-import * as fs from 'fs'
-import * as os from 'os'
-import { readJSON, getAllFloderName } from './file'
+// import * as fs from 'fs'
+// import * as os from 'os'
+// import { readJSON, getAllFloderName } from './file'
 import { join } from 'path'
+import { skipCheckNpmPackage } from './command'
 import { bgBlueBright, redBright, underline } from 'chalk'
 const semver = require('semver')
 
@@ -47,6 +48,12 @@ export async function checkUpdateModule(
     const localPkg: IPackage = await fse.readJSON(
       `${MM_HOME}/${type}/${name}/node_modules/${pkgName}/package.json`
     )
+
+    // 24小时内跳过版本升级提示
+    if (skipCheckNpmPackage()) {
+      return false
+    }
+
     const latestPkg = await getTnpmPackage(pkgName)
 
     // 如果套件&插件尚未发布，还在本地开发中，则跳过检测。
@@ -67,7 +74,9 @@ export async function checkUpdateModule(
 }
 
 // 缓存模块数据到本地文件，有效期 1 小时
-const CACHE_FETCH_MODULE_LIST_ENABLE = false // 是否开启文件缓存
+const CACHE_FETCH_MODULE_LIST_ENABLE = !process.argv.includes(
+  '--skit-modules-cache'
+) // 是否开启文件缓存，默认开启，可以命令行加参数 --skit-modules-cache 来跳过缓存
 const CACHE_FETCH_MODULE_LIST_MAX_AGE = 1000 * 60 * 60 * 24 // 相对有效时间，默认 24 小时
 const CACHE_FETCH_MODULE_LIST_FILE = 'CACHE_FETCH_MODULE_LIST.json' // 缓存文件名
 const CACHE_FETCH_MODULE_LIST_PATH = join(
