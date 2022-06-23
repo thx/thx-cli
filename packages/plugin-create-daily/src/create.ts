@@ -182,10 +182,6 @@ export default async (command: CommanderStatic) => {
   logger.info(appPath)
   const pkg = getAppPkg(appPath)
   const magixCliConfig = pkg.magixCliConfig || {}
-
-  // 检测是否在项目目录下
-  // await getRootPath()
-
   const currentBranch = await getPrecentBranch()
 
   // 不在 master 分支下执行，给出提示

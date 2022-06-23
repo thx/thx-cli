@@ -25,7 +25,7 @@ interface IClearConfig {
 function printHostList(hosts: Array<string>) {
   console.log(greenBright('ⓘ Clear 已配置域名：'))
   hosts.forEach((host, index) => {
-    const prefix = index < hosts.length - 1 ? '├──' : '└──'
+    const prefix = index < hosts.length - 1 ? '├─' : '└─'
     console.log(whiteBright(`  ${grey(prefix)} ${host}`))
   })
 }
