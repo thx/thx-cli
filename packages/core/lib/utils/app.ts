@@ -19,7 +19,7 @@ import * as JSON5 from 'json5'
  * 获取应用 RC 配置
  * @param appPath 应用目录
  */
-export function getAppRC(appPath: string): IAppRC | undefined {
+export function getAppRC(appPath: string = process.cwd()): IAppRC | undefined {
   const config = getAppConfig(appPath)
   if (config) return config
 
@@ -52,7 +52,11 @@ export async function setAppRC(
  * @param appPath @type string 应用目录
  * MO FIXED 兼容其他 rc 文件
  */
-export async function setAppRCPart(key: string, value: any, appPath: string) {
+export async function setAppRCPart(
+  key: string,
+  value: any,
+  appPath: string = process.cwd()
+) {
   const appRC = getAppRC(appPath) || {}
   appRC[key] = value
   await setAppRC(appPath, appRC)
@@ -123,7 +127,7 @@ export function getAppPkg(appPath: string = process.cwd()): IPackage {
   return appPkg
 }
 
-export function setAppPkg(appPath: string, pkg: IPackage) {
+export function setAppPkg(appPath: string = process.cwd(), pkg: IPackage) {
   const appPkgPath = join(appPath, 'package.json')
   fse.outputFileSync(appPkgPath, JSON.stringify(pkg, null, 2), 'utf8')
 }

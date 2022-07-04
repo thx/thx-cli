@@ -97,7 +97,6 @@ export interface IPackage {
   devDependencies?: any;
   /** @deprecated */
   rmxConfig?: any;
-  /** @deprecated */
   magixCliConfig?: any;
   standard?: any;
   standardx?: any;
