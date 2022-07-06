@@ -23,7 +23,7 @@
     "inquirer": "^7.3.3",
     "magix-combine": "3.11.58",
     "magix-combine-tool-config": "1.0.19",
-    "magix-composer": "3.2.6",
+    "magix-composer": "3.2.7",
     "magix-composer-config": "1.0.12",
     "mat": "^1.0.19",
     "md5": "^2.3.0",
