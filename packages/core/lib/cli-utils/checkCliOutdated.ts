@@ -15,8 +15,8 @@ const {
   fixLength,
   needBlockProcessByModuleOutdated,
   IS_OPEN_SOURCE,
-  CLI_NAME
-  // skipCheckNpmPackage
+  CLI_NAME,
+  skipCheckNpmPackage
 } = utils
 // const pkg: IPackage = require('../../package.json')
 
@@ -32,11 +32,8 @@ const CWD = path.join(__dirname, '../../')
  */
 export default async function checkCliOutdated(pkg) {
   // --skip-update-check跳过检测
-  // skipCheckNpmPackage 一天内跳过检测版本升级，校验有问题暂时废弃
-  if (
-    argv['skip-update-check']
-    //  || skipCheckNpmPackage()
-  ) {
+  // skipCheckNpmPackage 一天内跳过检测版本升级
+  if (argv['skip-update-check'] || skipCheckNpmPackage(pkg.name)) {
     return
   }
 

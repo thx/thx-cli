@@ -4,7 +4,7 @@ import {
   spawn,
   withSpinner,
   MODULE_TYPE_MAP,
-  spawnCommand,
+  // spawnCommand,
   IS_OPEN_SOURCE // 内外网的标识，根据入口命令判断，mm 开头为内网
 } from '../utils'
 import { SpawnOptions } from 'child_process'
@@ -12,6 +12,7 @@ import * as fse from 'fs-extra'
 import { redBright, greenBright, grey } from 'chalk'
 import { EventEmitter } from 'events'
 import logger from '../logger'
+import uninstall from './uninstall'
 
 export default async function install(emitter: EventEmitter, params) {
   const { type, module, link } = params
@@ -36,6 +37,13 @@ export default async function install(emitter: EventEmitter, params) {
     return new Promise(async (resolve, reject) => {
       const isWin32 = process.platform === 'win32'
 
+      // 先移除本地已安装的包
+      try {
+        await uninstall(emitter, params)
+      } catch (error) {
+        console.log(error)
+      }
+
       let command
       if (IS_OPEN_SOURCE) {
         command = isWin32 ? 'npm.cmd' : 'npm' // 开源的用 npm 安装
@@ -43,10 +51,11 @@ export default async function install(emitter: EventEmitter, params) {
         command = isWin32 ? 'tnpm.cmd' : 'tnpm'
       }
 
-      const installKey = IS_OPEN_SOURCE ? 'install' : 'update' //npm install, tnpm update
+      const installKey = 'install' // npm install / tnpm install
       const args = [link ? 'link' : installKey, module.package, '--color']
 
       // npm install 需要有一个package.json文件才能正常安装包
+      fse.ensureDirSync(moduleDir)
       fse.writeJSONSync(
         `${moduleDir}/package.json`,
         {

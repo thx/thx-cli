@@ -21,7 +21,7 @@ import { getLatestVersion, getTnpmPackage } from './tnpm'
 // import * as os from 'os'
 // import { readJSON, getAllFloderName } from './file'
 import { join } from 'path'
-// import { skipCheckNpmPackage } from './command'
+import { skipCheckNpmPackage } from './command'
 import { bgBlueBright, redBright, underline } from 'chalk'
 const semver = require('semver')
 
@@ -50,9 +50,9 @@ export async function checkUpdateModule(
     )
 
     // 24小时内跳过版本升级提示
-    // if (skipCheckNpmPackage()) {
-    //   return false
-    // }
+    if (skipCheckNpmPackage(pkgName)) {
+      return false
+    }
 
     const latestPkg = await getTnpmPackage(pkgName)
 
