@@ -34,9 +34,13 @@ export function skipCheckNpmPackage(pkgName: string): boolean {
 
   const now = Date.now()
   const period = 1000 * 60 * 60 * 24 // 24小时
-  const CHECK_KEY = '__skip_check_npm_package_at'
+  const CHECK_KEY: string = '__skip_check_npm_package_at'
 
-  if (!mmConfig[CHECK_KEY]) {
+  if (
+    !mmConfig[CHECK_KEY] ||
+    // 兼容中间版本存在的 __skip_check_npm_package_at 直接为时间戳的情形
+    typeof mmConfig[CHECK_KEY] === 'number'
+  ) {
     mmConfig[CHECK_KEY] = {}
   }
 
