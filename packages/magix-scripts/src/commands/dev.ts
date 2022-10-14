@@ -24,7 +24,6 @@ import syncPromise from './syncPromise'
 import * as minimist from 'minimist'
 const argv = minimist(process.argv.slice(2))
 
-const { syncGalleryPkg } = util
 const {
   rap,
   proxy,
@@ -40,6 +39,7 @@ const {
 } = matMiddleWare
 
 const {
+  syncGalleryPkg,
   genModuleList,
   genPreloadModule,
   checkBuilder,

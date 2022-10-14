@@ -5,7 +5,7 @@ import logger from '../logger'
 
 // 黄金令箭 https://log.alibaba-inc.com/track/tools/applyGold
 // 日志格式 http://gm.mmstat.com/mm-cli.system.command?argv=[$]&end=[$]&start=[$]&t={时间戳}
-export function goldlog(
+export async function goldlog(
   key = 'mm-cli.system.command',
   argv: Array<string> | string = process.argv,
   start: number = Date.now(),
@@ -18,7 +18,7 @@ export function goldlog(
   }&end=${end || ''}&t=${Date.now()}`
   logger.trace('goldlog', '🏹️', url)
   try {
-    fetch(url)
+    await fetch(url)
   } catch (error) {
     logger.error(error.message)
   }
