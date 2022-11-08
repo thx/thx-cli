@@ -38,7 +38,7 @@ export default async () => {
     }
   }
 
-  const commands = []
+  const commands: any = []
 
   /**
    * 项目初始化

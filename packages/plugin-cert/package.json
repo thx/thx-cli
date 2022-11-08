@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "thx-cert": "^1.0.0"
+    "fs-extra": "^10.1.0",
+    "inquirer": "^8.2.5",
+    "mkcert": "^1.5.1"
   },
   "license": "UNLICENSED",
   "rmxConfig": {
