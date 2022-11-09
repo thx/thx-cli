@@ -1,6 +1,6 @@
 {
   "name": "thx-plugin-create-daily",
-  "version": "2.0.79",
+  "version": "2.0.80",
   "description": "THX CLI 插件：自动创建开发分支",
   "main": "dist/index.js",
   "repository": {
