@@ -1,7 +1,6 @@
 import * as fse from 'fs-extra'
-import { uninstall } from './uninstall'
 import { install } from './install'
-import { SSL_CONFIG_FILE, SSL_CRT_PATH } from '../config/index'
+import { SSL_CONFIG_FILE } from '../config/index'
 
 export async function addDomains(domainsStr = '') {
   let domains = domainsStr.split(',').map(item => item.trim())

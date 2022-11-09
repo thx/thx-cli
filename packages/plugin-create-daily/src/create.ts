@@ -20,8 +20,10 @@ const logger = getLogger(pkg.name)
 
 // 时间戳，避免版本号里有 0 开头，特殊处理下
 const nowDate = new Date()
-const milliseconds = parseInt(dateformat(nowDate, 'l'), 10) // 防止0开头
-const TAG = dateformat(nowDate, 'yyyymmdd.HMMss.') + milliseconds // 小时也防止0开头
+const max = 999
+const min = 100
+const randomNum = Math.ceil(Math.random() * (max - min) + min)
+const TAG = `${dateformat(nowDate, 'yyyymmdd.HHMMss')}.${randomNum}` // 小时也防止0开头
 
 // semver不支持xx.xx.0xx这种0开头的版本，
 // 自行实现.gt对比版本方法
