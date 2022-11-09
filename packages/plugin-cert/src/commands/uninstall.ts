@@ -1,19 +1,10 @@
 import { removeFromStore } from '../platform/darwin'
 import * as fse from 'fs-extra'
-import {
-  SSL_CERTIFICATE_DIR,
-  SSL_CONFIG_FILE,
-  SSL_CRT_PATH,
-  CN
-} from '../config/index'
+import { SSL_CERTIFICATE_DIR, SSL_CONFIG_FILE, CN } from '../config/index'
 
 export async function uninstall() {
-  if (await fse.pathExists(SSL_CRT_PATH)) {
-    let configs
-
-    try {
-      configs = await fse.readJson(SSL_CONFIG_FILE)
-    } catch (error) {}
+  if (await fse.pathExists(SSL_CONFIG_FILE)) {
+    const configs = await fse.readJson(SSL_CONFIG_FILE)
 
     // 删除生成的证书
     await fse.remove(SSL_CERTIFICATE_DIR)

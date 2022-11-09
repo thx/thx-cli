@@ -22,11 +22,6 @@ export async function addDomains(domainsStr = '') {
     }
   }
 
-  // 如果已经存在了，先删除现有的自签证书
-  if (await fse.pathExists(SSL_CRT_PATH)) {
-    await uninstall()
-  }
-
   // 重新安装自签证书
   await install(configs.domains)
 }

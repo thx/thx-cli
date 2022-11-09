@@ -18,8 +18,10 @@ import {
 
 export async function install(domains?) {
   // 如果已经存在了，先删除现有的自签证书
-  if (await fse.pathExists(SSL_CRT_PATH)) {
+  try {
     await uninstall()
+  } catch (error) {
+    console.log(' 移除现有证书失败')
   }
 
   // create a certificate authority
