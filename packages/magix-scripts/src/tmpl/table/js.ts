@@ -1,4 +1,3 @@
-
 export default function (name, action, path, vp, projectName) {
   return `
     import Magix from 'magix'
@@ -9,9 +8,18 @@ export default function (name, action, path, vp, projectName) {
     export default View.extend({
         tmpl: '@${name}.html',
         init (options) {
-          this.options = options
+          this.assign(options)
           this.observeLocation(paramsStr)
         },
+
+        assign(options) {//这里处理外部传入的参数
+          this.options = options
+          this.updater.set({
+            // options
+          });
+          return true; //如果外部数据变化不走当前view的render方法，则返回false，否则就不要该return语句
+        },
+
         async render () {
           const params = {
             relationType: 1
@@ -27,7 +35,8 @@ export default function (name, action, path, vp, projectName) {
           params.pageSize = params.pageSize || 20
           params.page = params.page || 1
 
-          ${action && action.__modelName
+          ${
+            action && action.__modelName
               ? `    
             try {
               const models = [{
@@ -49,13 +58,14 @@ export default function (name, action, path, vp, projectName) {
               this.alert('错误提示', error.msg || error.message, null, {mask: true})
             }
           `
-          : `
+              : `
             this.updater.digest({
               list: [],
               total: 0,
               params
             })
-          `}
+          `
+          }
         },
     
         'setDate<change>' (e) {
