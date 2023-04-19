@@ -21,7 +21,7 @@
     "fs-extra": "6.0.0",
     "get-port": "^5.1.1",
     "inquirer": "^7.3.3",
-    "magix-combine": "3.11.58",
+    "magix-combine": "3.11.60",
     "magix-combine-tool-config": "1.0.20",
     "magix-composer": "3.3.0",
     "magix-composer-config": "1.0.13",
@@ -50,5 +50,6 @@
   },
   "license": "UNLICENSED",
   "homepage": "https://github.com/thx/thx-cli/tree/master/packages/magix-scripts",
-  "gitHead": "cabee6214eba4a40c02ba0389c185890f1f5e8b7"
+  "gitHead": "cabee6214eba4a40c02ba0389c185890f1f5e8b7",
+  "repository": "git@github.com:thx/thx-cli.git"
 }
