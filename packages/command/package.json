@@ -1,6 +1,6 @@
 {
   "name": "thx-cli",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "alimama command line tool!",
   "main": "dist/index.js",
   "bin": {
@@ -31,7 +31,7 @@
     "log4js": "^6.3.0",
     "minimist": "^1.2.5",
     "npm-run-all": "^4.1.5",
-    "thx-cli-core": "1.0.22"
+    "thx-cli-core": "1.0.23"
   },
   "devDependencies": {
     "chai": "^4.2.0",
