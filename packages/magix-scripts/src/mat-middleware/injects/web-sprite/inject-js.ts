@@ -1,3 +1,5 @@
+import { WEB_SPRITE_NAME } from '../../constant'
+
 export function getInjectJs(wsPort) {
   return `;(function(){
   /**
@@ -6,11 +8,11 @@ export function getInjectJs(wsPort) {
 
   const ws = new WebSocket('ws://127.0.0.1:${wsPort}')
   ws.addEventListener('open', e =>{
-      console.log("[WEBUI] websocket 握手成功!");
+      console.log("${WEB_SPRITE_NAME} websocket 握手成功!");
   })
 
   ws.addEventListener('close', e => {
-      console.log('[WEBUI] websocket 服务器关闭了!')
+      console.log('${WEB_SPRITE_NAME} websocket 服务器关闭了!')
   })
 
   let cliHelp_el = document.createElement('div')
@@ -85,7 +87,7 @@ export function getInjectJs(wsPort) {
       <div class="cli-help-trigger" draggable="true">Magix开发帮助 <i style="margin-left:3px; color:#999;" id="cliHelpHide" class="mwu-iconfont" title="隐藏帮助">&#xe662;</i></div> 
       <div class="cli-help-docs-list cli-help-hide"> 
           <i class="mwu-iconfont" id="cliHelpClose" style="position: absolute; right: 15px; top: 15px; cursor:pointer; font-size: 20px; color: #999;">&#xe6fe;</i>
-          <iframe id="cliHelpIframe" style="width:700px;border:0;vertical-align:middle;"></iframe>
+          <iframe id="cliHelpIframe" style="width:900px; border:0; vertical-align:middle;"></iframe>
       </div>
   \`
   
@@ -131,5 +133,16 @@ export function getInjectJs(wsPort) {
   })
 
   cliHelp_body.appendChild(cliHelp_el)
+
+  // postMessage 接收 webSprite 帮助浮层修改crossConfigs触发当前页面刷新，注入新的crossConfigs
+  window.addEventListener('message', (e) => {
+    try {
+        const data = JSON.parse(e.data)
+        if (data?.type === 'updateCrossConfigs') {
+            window.location.reload()
+        } 
+
+    } catch (error) {}
+  })
 }());`
 }

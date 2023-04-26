@@ -28,14 +28,15 @@ const {
   rap,
   proxy,
   rapVerify,
-  magixHmr,
-  rewriteExtension: rewriteTypes,
-  magixCombine: magixAnalyse,
-  webSprite: magixWebui,
-  magixDesiger,
-  devEnv,
-  magixInspector: magixInspectorInject,
-  crossConfigs: crossConfigsInject
+  magixAnalyse,
+  rewriteExtension,
+
+  magixHmrInject, // magix热更新注入
+  webSpriteInject, // magix帮助精灵注入
+  magixDesigerInject, // magix-desiger 注入
+  devEnvInject, // mm dev 开发环境标识注入
+  magixInspectorInject, // magix-inspector 插件注入
+  crossConfigsInject // window.crossConfigs 注入
 } = matMiddleWare
 
 const {
@@ -442,10 +443,9 @@ export default {
             const openUrl = `${protocol}://${hostName}:${port}/${pathname}`
             open(openUrl, openOptions)
 
-            console.log(
-              chalk.greenBright(
-                `[CLI] 本地服务已启动，请访问: \n ${chalk.grey(`↳ ${openUrl}`)}`
-              )
+            utils.printSuccess(
+              `本地服务已启动，请访问: \n ${chalk.grey(`↳ ${openUrl}`)}`,
+              '[CLI]'
             )
           }
         },
@@ -510,7 +510,7 @@ export default {
         port: wsPort
       })
 
-      hmrInst = magixHmr(magixHmrConfig, ws)
+      hmrInst = magixHmrInject(magixHmrConfig, ws)
 
       // pushState
       mat.task('pushState', function () {
@@ -531,7 +531,7 @@ export default {
           emitter.emit(
             'data',
             chalk.green(
-              `[mat] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${
+              `[MTA] 启动对接 RAP 接口模拟开发环境（RAP 项目 id：${
                 rapProjectId || '尚未配置'
               }）`
             )
@@ -543,7 +543,7 @@ export default {
           .url(jsPatterns)
           .rewrite([
             function (url) {
-              return rewriteTypes(url, undefined, cwd)
+              return rewriteExtension(url, undefined, cwd)
             }
           ])
           .use(magixAnalyse(combineTool, ws, cwd))
@@ -552,7 +552,7 @@ export default {
         // window.__isRap__: mm dev
         // window.__isDaily__: mm dev -d
         // window.__isOnline__: mm dev -o
-        const indexMatchUrl = mat.url(indexPatterns).use(devEnv())
+        const indexMatchUrl = mat.url(indexPatterns).use(devEnvInject())
 
         if (!params.isCloseInspector) {
           // 注入magix-inspector插件
@@ -566,23 +566,21 @@ export default {
 
         if (!params.isCloseDocs) {
           // mm dev时页面注入帮助文档
-          indexMatchUrl.use(magixWebui(ws, wsPort))
+          indexMatchUrl.use(webSpriteInject(ws, wsPort))
         }
 
         if (!params.isCloseDesiger) {
           // mm dev注入的magix-desiger
           indexMatchUrl.use(
-            magixDesiger({
+            magixDesigerInject({
               mdPort: dPort,
               aiPort
             })
           )
         }
 
-        // mm dev注入crossConfigs
-        if (magixCliConfig.crossConfigs) {
-          indexMatchUrl.use(crossConfigsInject(magixCliConfig.crossConfigs))
-        }
+        // mm dev 时使用 crossConfigsRap（此为新增配置，一般 apiHost 配置为 RAP 地址）
+        indexMatchUrl.use(crossConfigsInject(true))
 
         // api接口rap模拟数据
         const apiMatchUrl = mat
@@ -617,7 +615,7 @@ export default {
         emitter.emit(
           'data',
           chalk.green(
-            `[mat] 启动对接真实接口开发环境 ${chalk.cyan(
+            `[MTA] 启动对接真实接口开发环境 ${chalk.cyan(
               `(接口代理 ip 地址:${proxyPass || '尚未配置'})`
             )}`
           )
@@ -628,13 +626,13 @@ export default {
           .url(jsPatterns)
           .rewrite([
             function (url) {
-              return rewriteTypes(url, undefined, cwd)
+              return rewriteExtension(url, undefined, cwd)
             }
           ])
           .use(magixAnalyse(combineTool, ws, cwd))
 
         // 注入开发环境变量
-        const indexMatchUrl = mat.url(indexPatterns).use(devEnv())
+        const indexMatchUrl = mat.url(indexPatterns).use(devEnvInject())
 
         if (!params.isCloseInspector) {
           // 注入magix-inspector插件
@@ -650,22 +648,22 @@ export default {
         if (!params.isCloseDocs) {
           // mm dev时页面注入帮助文档
           // mat.url(indexPatterns)
-          indexMatchUrl.use(magixWebui(ws, wsPort))
+          indexMatchUrl.use(webSpriteInject(ws, wsPort))
         }
 
         if (!params.isCloseDesiger) {
           // mm dev注入的magix-desiger
           indexMatchUrl.use(
-            magixDesiger({
+            magixDesigerInject({
               mdPort: dPort,
               aiPort
             })
           )
         }
 
-        // mm dev注入crossConfigs
+        // mm dev -d 时使用 crossConfigs 配置（apihost 一般配置为预发/线上环境）
         if (magixCliConfig.crossConfigs) {
-          indexMatchUrl.use(crossConfigsInject(magixCliConfig.crossConfigs))
+          indexMatchUrl.use(crossConfigsInject(false))
         }
 
         // api接口反向代理到真实接口

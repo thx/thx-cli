@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
-import { greenBright, redBright } from 'chalk'
+import { greenBright, redBright, yellowBright, whiteBright } from 'chalk'
+import * as moment from 'moment'
 import * as ora from 'ora' // https://github.com/AndiDittrich/Node.CLI-Progress
 import * as cliProgress from 'cli-progress'
 
@@ -80,4 +81,37 @@ export function withProgress() {
     cliProgress.Presets.legacy
   )
   return cliProgressBar
+}
+
+// 格式化输出信息，带时间戳
+export function printError(msg, cate?) {
+  console.log(
+    redBright(
+      `✘ [${moment().format('HH:mm:ss')}] ${cate ? `${cate} ` : ''}${msg}`
+    )
+  )
+}
+
+export function printSuccess(msg, cate?) {
+  console.log(
+    greenBright(
+      `✔ [${moment().format('HH:mm:ss')}] ${cate ? `${cate} ` : ''}${msg}`
+    )
+  )
+}
+
+export function printInfo(msg, cate?) {
+  console.log(
+    whiteBright(
+      `  [${moment().format('HH:mm:ss')}] ${cate ? `${cate} ` : ''}${msg}`
+    )
+  )
+}
+
+export function printWarn(msg, cate?) {
+  console.log(
+    yellowBright(
+      `ⓘ [${moment().format('HH:mm:ss')}] ${cate ? `${cate} ` : ''}${msg}`
+    )
+  )
 }

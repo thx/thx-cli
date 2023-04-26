@@ -2,8 +2,9 @@
  * mm dev时注入到页面上的帮助文档
  */
 import * as chalk from 'chalk'
-import * as moment from 'moment'
 import { getInjectJs } from './inject-js'
+import { utils } from 'thx-cli-core'
+import { WEB_SPRITE_NAME } from '../../constant'
 
 export default (ws, wsPort) => {
   return function* combine(next) {
@@ -19,7 +20,7 @@ export default (ws, wsPort) => {
 
     // websocket
     ws.addListener('connection', client => {
-      console.log(chalk.green('websocket握手成功'))
+      utils.printSuccess('websocket握手成功', WEB_SPRITE_NAME)
 
       // 先清除
       client.removeAllListeners('message')
@@ -34,22 +35,14 @@ export default (ws, wsPort) => {
             method = require(`./apis/${data.api}`)
             method = method.__esModule ? method.default : method
           } catch (error) {
-            return console.log(
-              chalk.red(
-                `[WEB_SPRITE] [${moment().format('HH:mm:ss')}] ✘ 接口${
-                  data.api
-                }不存在`
-              )
-            )
+            return utils.printError(`接口${data.api}不存在`, WEB_SPRITE_NAME)
           }
 
-          const params = JSON.stringify(data.params)
-          console.log(
-            chalk.green(
-              `[WEB_SPRITE] [${moment().format('HH:mm:ss')}] 接口请求：${
-                data.api
-              }  ${chalk.grey(`参数：${params || '无'}`)}`
-            )
+          utils.printInfo(
+            `接口请求：${data.api} ${chalk.grey(
+              `参数：${JSON.stringify(data.params) || '无'}`
+            )}`,
+            WEB_SPRITE_NAME
           )
 
           const resp = await method(data.params)

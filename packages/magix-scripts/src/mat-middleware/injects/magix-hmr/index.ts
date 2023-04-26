@@ -5,10 +5,11 @@ import * as path from 'path'
 import * as WebSocket from 'ws'
 import hmrjsfn from './hmr'
 import * as chokidar from 'chokidar'
+import { utils } from 'thx-cli-core'
+import { HMR_HAME } from '../../constant'
 
 export default (
   {
-    customLog = console.log,
     cwd = process.cwd(),
     // 热更新监听的文件
     watchFiles = [
@@ -50,12 +51,13 @@ export default (
       })
     }
 
-    customLog(chalk.green('[HMR] 服务已启动'))
+    utils.printSuccess('服务已启动', HMR_HAME)
     const watcher = chokidar.watch(watchFiles)
 
     watcher.on('change', _filePath => {
       let filePath = path.resolve(cwd, _filePath)
-      customLog(`[HMR] ${chalk.green('file changed')} ${chalk.cyan(filePath)}`)
+
+      utils.printInfo(`file changed! ${chalk.cyan(filePath)}`, HMR_HAME)
 
       /**
        * 针对less/scss文件可以指定它所被import的父级文件，以实现热更新
