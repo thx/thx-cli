@@ -278,6 +278,8 @@ export default {
       if (!params.isCloseSetHost) {
         // 将hostName写入系统host，需要sudo权限
         try {
+          // 先清除同名host的配置（有可能是上次进程未正常关闭残留下来）
+          utils.clearHostsByName(hostName)
           const randomKey = Math.random() // 标识添加的host块
           utils.setHosts(hostName, randomKey)
 
@@ -301,7 +303,8 @@ export default {
               )
             )
 
-            utils.clearHosts(randomKey)
+            // utils.clearHosts(randomKey)
+            utils.clearHostsByName(hostName)
           })
         } catch (error) {
           emitter.emit('data', chalk.yellowBright(`✘ ${error}`))

@@ -32,45 +32,54 @@ export function portIsOccupied(port: number): Promise<boolean> {
   })
 }
 
+// 统一清除设置为127.0.0.1的host对应的配置
+export function clearHostsByName(host) {
+  let hostsContent = fse.readFileSync('/etc/hosts', 'utf-8')
+
+  const regexp = new RegExp(
+    `\\s*#mm-cli-\.\+-start\\s\*127.0.0.1\\s${host}\\s\*#mm-cli-\.\+-end\\s*`,
+    'g'
+  )
+
+  hostsContent = hostsContent.replace(regexp, '\n')
+
+  // 写入hosts
+  writeHosts(hostsContent)
+}
+
 // 设置本地hosts文件
 export function setHosts(host, randomKey) {
   let hostsContent = fse.readFileSync('/etc/hosts', 'utf-8')
-  // let _host = host.replace(/\./g, '\\.')
-  // let regExp = new RegExp(`\\d+\\.\\d+\\.\\d+\\.\\d+\\s+${_host}`, 'g')
 
-  // hostsContent = hostsContent.replace(regExp, '')
+  // 先执行清除同名host的配置（有可能用户之前没有正常关闭进程导致残留host配置）
+
   hostsContent =
     `\n#mm-cli-${randomKey}-start\n127.0.0.1 ${host}\n#mm-cli-${randomKey}-end\n` +
     hostsContent
 
+  // 写入hosts
+  writeHosts(hostsContent)
+}
+
+// 退出进程时清除掉之前设置的host
+export function clearHosts(randomKey) {
+  let hostsContent = fse.readFileSync('/etc/hosts', 'utf-8')
+  const regexp = new RegExp(
+    `\\s#mm-cli-${randomKey}-start\[\^\]\*#mm-cli-${randomKey}-end\\s`
+  )
+  hostsContent = hostsContent.replace(regexp, '')
+
+  // 写入hosts
+  writeHosts(hostsContent)
+}
+
+export function writeHosts(hostsContent) {
   try {
     // 设置本地hosts
     fse.outputFileSync('/etc/hosts', hostsContent, 'utf-8')
   } catch (error) {
     if (error.code === 'EACCES') {
       throw new Error('修改 hosts 文件需要系统 SUDO 权限')
-    } else {
-      throw error
-    }
-  }
-}
-
-// 退出进程时清除掉之前设置的host
-export function clearHosts(randomKey) {
-  try {
-    let hostsContent = fse.readFileSync('/etc/hosts', 'utf-8')
-    const regexp = new RegExp(
-      `\\s#mm-cli-${randomKey}-start\[\^\]\*#mm-cli-${randomKey}-end\\s`
-    )
-    hostsContent = hostsContent.replace(regexp, '')
-
-    // 设置本地hosts
-    fse.outputFileSync('/etc/hosts', hostsContent, 'utf-8')
-  } catch (error) {
-    if (error.code === 'EACCES') {
-      throw new Error(
-        '修改 hosts 文件需要系统权限，请在命令前加 sudo 后再次运行！'
-      )
     } else {
       throw error
     }
