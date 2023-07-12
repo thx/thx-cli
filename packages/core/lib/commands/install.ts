@@ -52,7 +52,12 @@ export default async function install(emitter: EventEmitter, params) {
       }
 
       const installKey = 'install' // npm install / tnpm install
-      const args = [link ? 'link' : installKey, module.package, '--color']
+      const args = [
+        link ? 'link' : installKey,
+        module.package,
+        '--color',
+        '--registry=https://registry.anpm.alibaba-inc.com' // 阿里集团只能使用anpm源
+      ]
 
       // npm install 需要有一个package.json文件才能正常安装包
       fse.ensureDirSync(moduleDir)
