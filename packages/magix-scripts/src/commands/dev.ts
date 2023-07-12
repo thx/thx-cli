@@ -269,7 +269,7 @@ export default {
         ) {
           return emitter.emit('close', {
             error: `检测到本地还未安装自签名 ssl 证书，请先执行 ${chalk.cyan(
-              `${cliName} cert --install`
+              `${cliName} cert`
             )} 插件命令进行本地证书一键自动安装。`
           })
         }
