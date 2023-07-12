@@ -120,7 +120,10 @@ async function installCli(pkg) {
       choices: [
         ...[
           ['yarn', `yarn global add ${pkg.name}`],
-          ['tnpm', `tnpm install -g ${pkg.name}`],
+          [
+            'tnpm',
+            `tnpm install -g ${pkg.name} --registry=https://registry.anpm.alibaba-inc.com`
+          ],
           ['npm', `npm install -g ${pkg.name}`]
         ].map(([name, value]) => ({
           name: `${fixLength(name, 10)} ${grey(value)}`,
