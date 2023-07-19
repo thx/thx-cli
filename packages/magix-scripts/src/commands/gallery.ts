@@ -185,9 +185,19 @@ function installGallery(pkgManager, gallery, emitter, cwd): Promise<any> {
 
     // --no-save: mm gallery 只纯粹安装包，不配置在package.json的依赖里，避免 snowpack 同步不必要的包问题
     utils
-      .spawn(pkgManagerCmd, ['install', gallery.name, '--no-save', '--color'], {
-        cwd
-      })
+      .spawn(
+        pkgManagerCmd,
+        [
+          'install',
+          gallery.name,
+          '--no-save',
+          '--color',
+          '--registry=https://registry.anpm.alibaba-inc.com'
+        ],
+        {
+          cwd
+        }
+      )
       .on('data', msg => {
         emitter.emit('data', msg)
       })
