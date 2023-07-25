@@ -1,6 +1,6 @@
 {
   "name": "thx-magix-scripts",
-  "version": "1.0.60",
+  "version": "1.0.61",
   "main": "dist/index.js",
   "bin": {
     "magix-scripts": "dist/index.js"
@@ -36,8 +36,8 @@
     "request": "^2.79.0",
     "request-promise": "^4.2.6",
     "semver": "^7.3.2",
-    "thx-cli-core": "1.0.25",
-    "thx-plugin-clear": "2.1.26",
+    "thx-cli-core": "1.0.26",
+    "thx-plugin-clear": "2.1.27",
     "thx-snowpack-v1": "^1.7.1",
     "walk": "2.3.14",
     "ws": "^7.3.1"
