@@ -35,7 +35,7 @@ export default async options => {
   if (proxyPass === true) {
     // 优先读取magixCliConfig.ipConfig
     const { ipConfig = {} } = magixCliConfig
-    const choices = []
+    const choices: any = []
 
     for (const name in ipConfig) {
       const ip = ipConfig[name]

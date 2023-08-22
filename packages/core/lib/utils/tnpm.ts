@@ -29,8 +29,8 @@ export async function getTnpmPackage(
 ): Promise<IPackage | undefined> {
   const now = Date.now()
   const api = /^@ali\//.test(pkgName) // 区分内外网的npm包，用不同的api查询
-    ? `https://registry.npm.alibaba-inc.com/${pkgName}/latest`
-    : `https://registry.npm.taobao.org/${pkgName}/latest`
+    ? `https://registry.anpm.alibaba-inc.com/${pkgName}/latest`
+    : `https://registry.npmmirror.com/${pkgName}/latest`
   let pkg: IPackage
   try {
     pkg = await fetch(api, {}).then(resp => resp.json())
