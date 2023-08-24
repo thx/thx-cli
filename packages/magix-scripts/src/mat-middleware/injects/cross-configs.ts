@@ -25,10 +25,13 @@ export default isRap => {
     )}`
 
     // 固定放在入口js文件前面（id="boot"的js文件）
-    html = html.replace(
-      /(<script.+id\s*=\s*['"]boot['"][^>]*>\s*<\/script>)/,
-      `<script>${injectJs}</script>\n$1`
-    )
+    if (crossConfigs?.length) {
+      html = html.replace(
+        /(<script.+id\s*=\s*['"]boot['"][^>]*>\s*<\/script>)/,
+        `<script>${injectJs}</script>\n$1`
+      )
+    }
+
     this.body = html
   }
 }
