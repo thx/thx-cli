@@ -92,8 +92,8 @@ function isModified(
     const _galleryPath = path.join(galleryPath, galleryName)
 
     galleryFiles.forEach(file => {
-      // 忽略 版本Json
-      if (file === 'pkg.json') {
+      // 忽略.json文件
+      if (path.extname(file) === '.json') {
         return
       }
 
@@ -140,9 +140,10 @@ function isModified(
 
           let originMd5 = rexp.exec(fileContent) // 原来的md5
           originMd5 = originMd5 && originMd5[1]
+
           const newMd5 = md5(fileContent.replace(rexp, '')) // 新md5，可能有被修改
 
-          if (originMd5 !== newMd5) {
+          if (originMd5 && originMd5 !== newMd5) {
             modifyFiles.push({
               type: 'modified',
               file,
@@ -211,6 +212,7 @@ function installGallery(pkgManager, gallery, emitter, cwd): Promise<any> {
  * 同步单个组件文件夹内所有文件，不含__打头的文件夹
  */
 function syncGallery(
+  ignoreMd5, // 是否忽略文件生成md5标识
   galleryName,
   galleryPath,
   galleryPathOrigin,
@@ -252,23 +254,25 @@ function syncGallery(
           //
           fs.copySync(originGalleryPath, _destGalleryPath)
 
-          // 对文件md5，放在文件头部注释里
-          try {
-            let fileContent = fs.readFileSync(_destGalleryPath, {
-              encoding: 'utf8'
-            })
-            const fileMd5 = md5(fileContent)
-            if (path.extname(_destGalleryPath) === '.html') {
-              // html注释方式不一样
-              fileContent = `<!--md5:${fileMd5}-->\n${fileContent}`
-            } else {
-              fileContent = `/*md5:${fileMd5}*/\n${fileContent}`
-            }
-            fs.writeFileSync(_destGalleryPath, fileContent)
-            fileCount++
-          } catch (error) {
-            if (error.code === 'EISDIR') {
-              // 忽略文件夹
+          if (path.extname(originGalleryPath) !== '.json' && !ignoreMd5) {
+            // 对文件md5，放在文件头部注释里, 忽略.json文件
+            try {
+              let fileContent = fs.readFileSync(_destGalleryPath, {
+                encoding: 'utf8'
+              })
+              const fileMd5 = md5(fileContent)
+              if (path.extname(_destGalleryPath) === '.html') {
+                // html注释方式不一样
+                fileContent = `<!--md5:${fileMd5}-->\n${fileContent}`
+              } else {
+                fileContent = `/*md5:${fileMd5}*/\n${fileContent}`
+              }
+              fs.writeFileSync(_destGalleryPath, fileContent)
+              fileCount++
+            } catch (error) {
+              if (error.code === 'EISDIR') {
+                // 忽略文件夹
+              }
             }
           }
         } catch (error) {
@@ -348,6 +352,7 @@ export default {
           let _galleryPathOrigin
           let _repositoryName
           // let _galleryIgnoreFiles
+          let currGallery // 当前组件
 
           for (const gallery of galleriesDispose) {
             const repositoryName = gallery.repoName
@@ -371,6 +376,7 @@ export default {
               // 测试看存在不存在该组件
               fs.readdirSync(path.resolve(_galleryPathOrigin, name))
               exist = true //
+              currGallery = gallery
               _galleryPath = gallery.importTo ?? gallery.path // 兼容老的配置值 path
               // _galleryIgnoreFiles = gallery.ignoreFiles
               _repositoryName = repositoryName
@@ -387,6 +393,7 @@ export default {
                 !modifiedGallerys.find(gallery => gallery.galleryName === name))
             ) {
               syncGallery(
+                currGallery.ignoreMd5, // 是否忽略md5生成
                 name,
                 _galleryPath,
                 _galleryPathOrigin,
@@ -444,6 +451,7 @@ export default {
                 galleryPkg?.magixCliConfig?.galleryIsSingle)
             ) {
               galleryFolders.push({
+                ignoreMd5: gallery.ignoreMd5,
                 single: true,
                 repositoryName,
                 _galleryPath,
@@ -468,6 +476,7 @@ export default {
                 })
 
                 galleryFolders.push({
+                  ignoreMd5: gallery.ignoreMd5,
                   _gallerys: __gallerys,
                   repositoryName,
                   _galleryPath,
@@ -494,6 +503,7 @@ export default {
               // 单组件仓库
               if (!isIgnoreModify) {
                 syncGallery(
+                  g.ignoreMd5,
                   '',
                   g._galleryPath,
                   g._galleryPathOrigin,
@@ -515,6 +525,7 @@ export default {
                     ))
                 ) {
                   syncGallery(
+                    g.ignoreMd5,
                     gg.galleryName,
                     gg._galleryPath,
                     gg._galleryPathOrigin,
