@@ -27,6 +27,7 @@ export function getPkgInfo(name: string) {
 export async function getTnpmPackage(
   pkgName: string
 ): Promise<IPackage | undefined> {
+  
   const now = Date.now()
   const api = /^@ali\//.test(pkgName) // 区分内外网的npm包，用不同的api查询
     ? `https://registry.anpm.alibaba-inc.com/${pkgName}/latest`
