@@ -22,7 +22,7 @@
     "get-port": "^5.1.1",
     "inquirer": "^7.3.3",
     "magix-combine": "3.12.0",
-    "magix-combine-tool-config": "1.0.23",
+    "magix-combine-tool-config": "1.0.24",
     "magix-composer": "3.3.0",
     "magix-composer-config": "1.0.13",
     "mat": "^1.0.19",
