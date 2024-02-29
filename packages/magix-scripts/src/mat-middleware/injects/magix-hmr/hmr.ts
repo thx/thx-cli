@@ -213,18 +213,20 @@ export default (wsPort, host, isMagix5) => {
                     // 从所有cache里找有依赖当前模块的模块，也删除模块缓存
                     for (key in seajs.cache) {
                       const cache = seajs.cache[key]
+                      const cacheUri = cache.uri.replace(/\\/[^/]+$/, '') // 只保留目录
                       
                       // 遍历模块的依赖
                       for (const dep of cache.dependencies) {
-                        const _uri = cache.uri.replace(/\\/[^/]+$/, '') // 只保留目录
-                        let depUri = join(_uri, dep) + '.js' // 模块的完整绝对路径
-                        depUri = depUri.replace(/^http(s)?:\\//, 'http$1://') // 修复正确的 http 地址
-                        
-                        // 匹配到依赖，如果有 ?xxx=1 额外参数，得去除
-                        if (depUri === path.replace(/\\?.*$/, '')) {
-                          // 递归处理所有依赖模块
-                          recur(cache.id)
-                          break
+                        if (dep) {
+                          let depUri = join(cacheUri, dep) + '.js' // 模块的完整绝对路径
+                          depUri = depUri.replace(/^http(s)?:\\//, 'http$1://') // 修复正确的 http 地址
+                          
+                          // 匹配到依赖，如果有 ?xxx=1 额外参数，得去除
+                          if (depUri === path.replace(/\\?.*$/, '')) {
+                            // 递归处理所有依赖模块
+                            recur(cache.id)
+                            break
+                          }
                         }
                       }
                     }
