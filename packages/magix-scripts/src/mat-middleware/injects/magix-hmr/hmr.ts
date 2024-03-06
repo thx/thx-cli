@@ -244,6 +244,7 @@ export default (wsPort, host, isMagix5) => {
                 currentVframes.forEach(function (vf) {
                     const info = Magix.parseUrl(vf.path);
                     console.log('[HMR] 重载的模块：', info.path)
+                    vf.${isMagix5 ? 'unmount()' : 'unmountView()'}
                     vf.${isMagix5 ? 'mount' : 'mountView'}(${
     isMagix5 ? 'vf.root, ' : ''
   }vf.path, vf.viewInitParams)
